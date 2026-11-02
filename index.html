@@ -1,11 +1,125 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#090909"><meta name="description" content="ZUNAREBORN — Build yourself. Every day."><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg"><link rel="stylesheet" href="styles.css"><title>ZUNAREBORN</title></head><body>
-<div class="shell"><header><button class="brand" data-view="home"><i>Z</i><span><b>ZUNA<span>RE</span>BORN</b><small>BUILD YOURSELF · EVERY DAY</small></span></button><div class="top"><span>🔥 <b id="streakTop">0</b></span><button data-view="profile" id="avatar">I</button></div></header><main>
-<section class="view active" id="home"><div class="welcome"><div><small class="eyebrow" id="dateLabel">TU REINICIO EMPIEZA HOY</small><h1>Volvé a<br><em>construirte.</em></h1><p id="hello">Un día a la vez. Sin excusas, sin perfección.</p></div><div class="orb"><small>DÍA</small><b id="day">01</b><small id="dayMax">/ 66</small></div></div>
-<div class="hero"><div class="heroTop"><span class="tag" id="modeLabel">● PROGRAMA ACTIVO</span><b id="pct">0%</b></div><h2>El cambio se demuestra.</h2><p>No necesitás hacerlo perfecto. Necesitás volver a hacerlo mañana.</p><div class="track"><i id="programBar"></i></div><div class="between"><small id="daysText">0 de 66 días transcurridos</small><small id="xpText">0 XP</small></div><button class="gold wide" data-view="missions">VER MISIONES DEL DÍA ↗</button></div>
-<div class="sectionTitle"><div><small class="eyebrow">TU RENDIMIENTO</small><h2>Hoy, en números</h2></div><button class="link" data-view="progress">Ver progreso ↗</button></div><div class="stats"><article><small>⚡</small><b id="xp">0</b><label>EXPERIENCIA XP</label></article><article><small>🔥</small><b id="streak">0</b><label>RACHA ACTUAL</label></article><article><small>✓</small><b id="doneToday">0/0</b><label>HOY COMPLETADO</label></article></div>
-<div class="sectionTitle"><div><small class="eyebrow">ENFOQUE DEL DÍA</small><h2>Tus pilares</h2></div><button class="link" data-view="missions">Editar ↗</button></div><div id="pillars" class="pillars"></div><div class="quote"><b>“</b><p id="quoteText">La disciplina es elegir lo que querés más, por encima de lo que querés ahora.</p><small>— ZUNAREBORN</small></div></section>
-<section class="view" id="missions"><div class="pageHead"><small class="eyebrow">ACCIÓN SOBRE INTENCIÓN</small><h1>Misiones <em>diarias.</em></h1><p>Marcá cada pequeña victoria. Todo suma.</p></div><div class="summary"><div><small>PROGRESO DE HOY</small><b id="missionCount">0 / 0</b></div><div class="track"><i id="missionBar"></i></div><div><b class="goldText" id="earned">+0 XP</b><small>GANADOS HOY</small></div></div><div class="filters"><button class="selected" data-filter="all">Todas</button><button data-filter="open">Pendientes</button><button data-filter="done">Completadas</button></div><div id="missionList" class="missionList"></div><button class="outline wide" id="addMission">＋ CREAR MISIÓN PERSONALIZADA</button><p class="note">Las misiones se reinician cada nuevo día. Tu historial y tus XP quedan guardados.</p></section>
-<section class="view" id="progress"><div class="pageHead"><small class="eyebrow">CADA DÍA CUENTA</small><h1>Tu <em>evolución.</em></h1><p>No compares tu capítulo 1 con el capítulo 20 de otra persona.</p></div><div class="level"><div class="levelCircle"><small>NIVEL</small><b id="level">1</b></div><div><span class="tag">RANGO <b id="rank">INICIANTE</b></span><h2 id="levelTitle">El despertar</h2><small id="nextLevel">0 / 500 XP para el próximo nivel</small><div class="track"><i id="levelBar"></i></div></div></div><div class="stats"><article><small>🏆</small><b id="totalDone">0</b><label>MISIONES TOTALES</label></article><article><small>📅</small><b id="activeDays">0</b><label>DÍAS ACTIVOS</label></article><article><small>⚡</small><b id="allXP">0</b><label>XP ACUMULADOS</label></article></div><div class="sectionTitle"><div><small class="eyebrow">CONSISTENCIA</small><h2>Últimos 14 días</h2></div></div><div class="calendar" id="calendar"></div><div class="sectionTitle"><div><small class="eyebrow">TUS ÁREAS</small><h2>Balance personal</h2></div></div><div id="balance" class="pillars"></div><div class="sectionTitle"><div><small class="eyebrow">REFLEXIÓN</small><h2>Diario personal</h2></div></div><div class="journal"><p>¿Qué hiciste bien hoy? ¿Qué podés mejorar mañana?</p><textarea id="journalText" placeholder="Escribí tu reflexión..."></textarea><button class="gold wide" id="saveJournal">GUARDAR REFLEXIÓN ↗</button><small id="journalSaved"></small></div></section>
-<section class="view" id="profile"><div class="pageHead"><small class="eyebrow">TU CAMINO, TUS REGLAS</small><h1>Tu <em>perfil.</em></h1><p>Personalizá tu experiencia y cuidá tu progreso.</p></div><div class="profileBanner"><i id="profileInitial">I</i><div><b id="profileName">Ignacio</b><small id="memberSince">Miembro desde hoy</small></div><span class="tag">LVL <b id="profileLevel">1</b></span></div><div class="settings"><h3>DATOS PERSONALES</h3><label>¿Cómo querés que te llamemos?<input id="nameInput" maxlength="24" placeholder="Tu nombre"></label><label>Tu objetivo principal<select id="goal"><option value="fitness">Mejorar mi físico y rendimiento</option><option value="discipline">Construir disciplina y constancia</option><option value="mind">Fortalecer mi mente y enfoque</option><option value="balance">Equilibrar todas mis áreas</option></select></label><button class="outline wide" id="saveProfile">GUARDAR PERFIL</button></div><div class="settings"><h3>PROGRAMA</h3><p id="modeText">Modo de transformación · 66 días</p><button class="outline wide" id="toggleMode">CAMBIAR A MODO PERMANENTE</button><button class="outline wide" id="restart">REINICIAR PROGRAMA DE 66 DÍAS</button></div><div class="settings"><h3>DATOS Y PRIVACIDAD</h3><p>Tu progreso se guarda en este dispositivo. Exportá una copia para trasladarlo a otro navegador.</p><button class="outline wide" id="export">↓ EXPORTAR COPIA DE SEGURIDAD</button><label class="outline wide import">↑ IMPORTAR COPIA DE SEGURIDAD<input type="file" id="import" accept="application/json"></label><button class="danger wide" id="reset">BORRAR TODOS MIS DATOS</button></div><footer><i>Z</i><b>ZUNAREBORN</b><small>BUILD YOURSELF. EVERY DAY.</small><small>Versión web 1.0</small></footer></section>
-</main><nav><button class="nav active" data-view="home"><b>⌂</b><small>Inicio</small></button><button class="nav" data-view="missions"><b>◈</b><small>Misiones</small></button><button class="nav" data-view="progress"><b>▥</b><small>Progreso</small></button><button class="nav" data-view="profile"><b>◎</b><small>Perfil</small></button></nav></div>
-<div class="backdrop" id="modal"><div class="dialog"><button class="close" id="close">×</button><small class="eyebrow">HACÉ QUE CUENTE</small><h2>Nueva misión</h2><label>Nombre de la misión<input id="newName" maxlength="48" placeholder="Ej. Leer 20 minutos"></label><label>Área<select id="newCategory"><option value="fitness">Físico</option><option value="mind">Mentalidad</option><option value="discipline">Disciplina</option><option value="productivity">Productividad</option><option value="energy">Energía</option></select></label><label>Recompensa<select id="newXP"><option value="10">10 XP · Fácil</option><option value="20" selected>20 XP · Media</option><option value="30">30 XP · Desafío</option></select></label><button class="gold wide" id="create">CREAR MISIÓN ↗</button></div></div><div class="toast" id="toast"></div><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080808">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ZUNAREBORN">
+  <meta name="description" content="ZUNAREBORN — reconstruí tus hábitos, tu disciplina y tu energía.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="icon" href="icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <title>ZUNAREBORN</title>
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <header class="topbar">
+      <button class="brand" data-view="home" aria-label="Inicio">
+        <span class="brand-mark">Z</span>
+        <span class="brand-copy"><strong>ZUNA<span>RE</span>BORN</strong><small>BUILD YOURSELF · EVERY DAY</small></span>
+      </button>
+      <div class="top-actions">
+        <button class="streak-pill" data-view="progress" aria-label="Ver racha">🔥 <b id="topStreak">0</b></button>
+        <button class="avatar" data-view="profile" id="avatarInitial" aria-label="Perfil">Z</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="view-home" class="view active">
+        <div class="welcome-row">
+          <div>
+            <p class="eyebrow" id="todayLabel">HOY</p>
+            <h1>Volvé a <em>construirte.</em></h1>
+            <p class="muted" id="greeting">Un día a la vez.</p>
+          </div>
+          <div class="day-orb"><span>DÍA</span><strong id="dayNumber">01</strong><small id="dayTotal">/ 66</small></div>
+        </div>
+
+        <article class="hero-card">
+          <div class="hero-top"><span class="tag"><i class="live-dot"></i><span id="programModeLabel">PROGRAMA ACTIVO</span></span><strong id="completionPct">0%</strong></div>
+          <h2 id="heroTitle">El cambio se demuestra.</h2>
+          <p id="heroSubtitle">No necesitás hacerlo perfecto. Necesitás volver mañana.</p>
+          <div class="progress-track"><div class="progress-fill" id="mainProgress"></div></div>
+          <div class="progress-meta"><span id="progressDays">0 de 66 días</span><span id="xpLabel">0 XP</span></div>
+          <button class="gold-button" data-view="missions">VER MISIONES DEL DÍA <span>↗</span></button>
+        </article>
+
+        <div class="section-heading"><div><p class="eyebrow">TU RENDIMIENTO</p><h2>Hoy, en números</h2></div><button class="text-button" data-view="progress">Ver progreso ↗</button></div>
+        <div class="stat-grid">
+          <article class="stat-card"><span>⚡</span><strong id="homeXP">0</strong><small>XP TOTAL</small></article>
+          <article class="stat-card"><span>🔥</span><strong id="homeStreak">0</strong><small>RACHA</small></article>
+          <article class="stat-card"><span>✓</span><strong id="homeDone">0/0</strong><small>HOY</small></article>
+        </div>
+
+        <div class="section-heading"><div><p class="eyebrow">DESAFÍO SEMANAL</p><h2 id="weeklyTitle">Semana en construcción</h2></div><button class="text-button" data-view="progress">Detalles ↗</button></div>
+        <article class="weekly-card">
+          <div><span class="weekly-icon">◆</span><div><b id="weeklyChallengeName">Completá 20 misiones</b><small id="weeklyChallengeCopy">Construí consistencia durante esta semana.</small></div></div>
+          <div class="weekly-row"><span id="weeklyProgressText">0 / 20</span><span id="weeklyReward">+150 XP</span></div>
+          <div class="progress-track"><div class="progress-fill" id="weeklyProgress"></div></div>
+        </article>
+
+        <div class="section-heading"><div><p class="eyebrow">ENFOQUE DEL DÍA</p><h2>Tus pilares</h2></div><button class="text-button" data-view="missions">Editar ↗</button></div>
+        <div id="pillarList" class="pillar-list"></div>
+
+        <article class="quote-card"><span>“</span><p id="dailyQuote"></p><small>— ZUNAREBORN</small></article>
+      </section>
+
+      <section id="view-missions" class="view">
+        <div class="page-heading"><p class="eyebrow">ACCIÓN SOBRE INTENCIÓN</p><h1>Misiones <em>diarias.</em></h1><p class="muted">Cumplí lo que importa. La app calcula qué toca hoy según la frecuencia.</p></div>
+        <div class="mission-summary"><div><small>PROGRESO DE HOY</small><strong id="missionCount">0 / 0</strong></div><div class="mini-progress"><i id="missionProgress"></i></div><div class="summary-xp"><b id="missionXP">+0 XP</b><small>GANADOS HOY</small></div></div>
+        <div id="missionFilters" class="filter-row"><button class="filter active" data-filter="all">Todas</button><button class="filter" data-filter="open">Pendientes</button><button class="filter" data-filter="done">Completadas</button></div>
+        <div id="missionList" class="mission-list"></div>
+        <button class="outline-button full" id="addMissionBtn">＋ CREAR HÁBITO / MISIÓN</button>
+        <p class="micro-note">El historial, XP y rachas quedan guardados en este dispositivo.</p>
+      </section>
+
+      <section id="view-progress" class="view">
+        <div class="page-heading"><p class="eyebrow">CADA DÍA CUENTA</p><h1>Tu <em>evolución.</em></h1><p class="muted">Mirá tendencias, no perfección.</p></div>
+        <article class="level-card"><div class="level-ring"><div><small>NIVEL</small><strong id="levelNumber">1</strong></div></div><div class="level-info"><span class="tag">RANGO <b id="rankName">INICIANTE</b></span><h2 id="levelTitle">El despertar</h2><p id="levelNext">0 / 500 XP</p><div class="progress-track"><div class="progress-fill" id="levelProgress"></div></div></div></article>
+        <div class="stat-grid progress-stats"><article class="stat-card"><span>🏆</span><strong id="totalCompleted">0</strong><small>MISIONES</small></article><article class="stat-card"><span>📅</span><strong id="daysActive">0</strong><small>DÍAS ACTIVOS</small></article><article class="stat-card"><span>🔥</span><strong id="bestStreak">0</strong><small>MEJOR RACHA</small></article></div>
+
+        <div class="section-heading"><div><p class="eyebrow">CONSISTENCIA</p><h2>Últimos 30 días</h2></div></div>
+        <article class="calendar-card"><div id="activityGrid" class="activity-grid"></div><div class="legend"><span><i></i>Sin actividad</span><span><i class="mid"></i>En marcha</span><span><i class="high"></i>Día completo</span></div></article>
+
+        <div class="section-heading"><div><p class="eyebrow">LOGROS</p><h2>Insignias</h2></div></div>
+        <div id="achievementGrid" class="achievement-grid"></div>
+
+        <div class="section-heading"><div><p class="eyebrow">TUS ÁREAS</p><h2>Balance personal</h2></div></div>
+        <div id="pillarProgress" class="pillar-progress"></div>
+
+        <div class="section-heading"><div><p class="eyebrow">REFLEXIÓN</p><h2>Diario personal</h2></div></div>
+        <article class="journal-card"><textarea id="journalInput" placeholder="¿Qué hice bien hoy? ¿Qué puedo mejorar mañana?"></textarea><div class="mood-row" id="moodRow"><button data-mood="1">😣</button><button data-mood="2">😕</button><button data-mood="3">😐</button><button data-mood="4">🙂</button><button data-mood="5">🔥</button></div><button class="gold-button full" id="saveJournal">GUARDAR REFLEXIÓN <span>↗</span></button><small id="journalSaved" class="saved-note"></small></article>
+      </section>
+
+      <section id="view-profile" class="view">
+        <div class="page-heading"><p class="eyebrow">TU CAMINO, TUS REGLAS</p><h1>Tu <em>perfil.</em></h1><p class="muted">Personalizá la experiencia y protegé tu progreso.</p></div>
+        <article class="profile-banner"><div class="profile-avatar" id="profileAvatar">Z</div><div><h2 id="profileName">Usuario</h2><p id="profileSince">Miembro desde hoy</p></div><span class="tag">LVL <b id="profileLevel">1</b></span></article>
+
+        <section class="settings-group"><h3>DATOS PERSONALES</h3><label class="field-label">¿Cómo querés que te llamemos?<input id="nameInput" maxlength="24"></label><label class="field-label">Objetivo principal<select id="goalInput"><option value="balance">Equilibrar todas mis áreas</option><option value="fitness">Mejorar mi físico</option><option value="discipline">Construir disciplina</option><option value="mind">Fortalecer mente y enfoque</option><option value="productivity">Mejorar productividad</option></select></label><button class="outline-button full" id="saveProfile">GUARDAR PERFIL</button></section>
+
+        <section class="settings-group"><h3>PROGRAMA</h3><div class="setting-row"><div><b>Modo de transformación</b><small id="modeDescription">66 días de enfoque</small></div><span id="modeSetting" class="setting-value">66 DÍAS</span></div><button class="outline-button full" id="toggleMode">CAMBIAR A MODO PERMANENTE</button><button class="outline-button full" id="restartProgram">REINICIAR CICLO DE 66 DÍAS</button></section>
+
+        <section class="settings-group"><h3>INSTALAR COMO APP</h3><p class="setting-description">En iPhone/iPad: Safari → Compartir → Añadir a pantalla de inicio. Así se abre sin la barra del navegador y se siente mucho más como una app.</p><button class="outline-button full" id="installHelp">VER INSTRUCCIONES</button></section>
+
+        <section class="settings-group"><h3>DATOS Y PRIVACIDAD</h3><p class="setting-description">Esta versión guarda todo localmente. No hay cuenta ni servidor: tus datos no salen del dispositivo.</p><button class="outline-button full" id="exportData">↓ EXPORTAR COPIA DE SEGURIDAD</button><label class="outline-button full import-label">↑ IMPORTAR COPIA<input type="file" id="importData" accept="application/json"></label><button class="danger-button full" id="resetData">BORRAR TODOS MIS DATOS</button></section>
+
+        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.0</small></footer>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navegación"><button class="nav-item active" data-view="home"><span>⌂</span><small>Inicio</small></button><button class="nav-item" data-view="missions"><span>◇</span><small>Misiones</small></button><button class="nav-item" data-view="progress"><span>▥</span><small>Progreso</small></button><button class="nav-item" data-view="profile"><span>◎</span><small>Perfil</small></button></nav>
+  </div>
+
+  <div class="modal-backdrop" id="missionModal" aria-hidden="true"><div class="modal"><button class="modal-close" data-close="missionModal">×</button><p class="eyebrow">HACÉ QUE CUENTE</p><h2>Nueva misión</h2><label class="field-label">Nombre<input id="newMissionName" maxlength="48" placeholder="Ej. Leer 20 minutos"></label><label class="field-label">Área<select id="newMissionCategory"><option value="fitness">Físico</option><option value="mind">Mentalidad</option><option value="discipline">Disciplina</option><option value="productivity">Productividad</option><option value="energy">Energía</option></select></label><label class="field-label">Frecuencia<select id="newMissionFrequency"><option value="daily">Todos los días</option><option value="weekdays">Lunes a viernes</option><option value="weekends">Fines de semana</option><option value="3x">3 veces por semana</option></select></label><label class="field-label">Dificultad<select id="newMissionXP"><option value="10">Fácil · 10 XP</option><option value="20" selected>Media · 20 XP</option><option value="30">Desafío · 30 XP</option></select></label><button class="gold-button full" id="saveNewMission">CREAR MISIÓN <span>↗</span></button></div></div>
+
+  <div class="modal-backdrop" id="onboardingModal" aria-hidden="true"><div class="modal onboarding"><p class="eyebrow">BIENVENIDO A ZUNAREBORN</p><h2>Tu reinicio empieza acá.</h2><p class="modal-copy">No buscamos una racha perfecta. Buscamos un sistema al que puedas volver.</p><div class="onboarding-steps"><div><b>01</b><span>Elegí tus misiones.</span></div><div><b>02</b><span>Ganás XP al cumplirlas.</span></div><div><b>03</b><span>Construí 66 días y seguí en modo permanente.</span></div></div><label class="field-label">Tu nombre<input id="onboardingName" maxlength="24" placeholder="Tu nombre"></label><button class="gold-button full" id="finishOnboarding">EMPEZAR MI REINICIO <span>↗</span></button></div></div>
+
+  <div class="modal-backdrop" id="helpModal" aria-hidden="true"><div class="modal"><button class="modal-close" data-close="helpModal">×</button><p class="eyebrow">INSTALACIÓN</p><h2>Usala como una app.</h2><ol class="help-list"><li>Abrí ZUNAREBORN en Safari.</li><li>Tocá el botón <b>Compartir</b>.</li><li>Elegí <b>Añadir a pantalla de inicio</b>.</li><li>Confirmá el nombre ZUNAREBORN y tocá <b>Añadir</b>.</li></ol></div></div>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
