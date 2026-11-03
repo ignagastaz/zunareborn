@@ -1,23 +1,35 @@
-# ZUNAREBORN 2.9 — Seguimiento deportivo y edición de sesiones
+# ZUNAREBORN 2.10 — Biblioteca profesional
 
-Actualización incremental compatible con los datos de ZUNAREBORN 2.8.
+Actualización **acumulativa** sobre 2.9. Incluye las mejoras de 2.9 (edición de sesiones y comparación deportiva de cuatro semanas) **más** la biblioteca profesional de 2.10.
 
 ## Novedades
-- Comparación de cuatro semanas calendario con minutos y cantidad de entrenamientos registrados.
-- Gráfico de minutos por semana, diferencia porcentual contra la semana anterior cuando existan datos.
-- Observaciones orientativas que no equiparan más minutos con mejor rendimiento ni reemplazan a un entrenador.
-- Edición de una sesión deportiva ya registrada (fecha, disciplina, duración, esfuerzo, nota).
-- No permite marcar prácticas del plan anteriores a la fecha en que se creó el plan.
-- Nuevo cache PWA `zunareborn-v2.9.0` para facilitar actualización de archivos.
 
-## Compatibilidad y seguridad
-- Se mantiene la clave local `zunareborn.v2`: hábitos, XP, objetivos, recordatorios y planes existentes no se migran a otra base.
-- No se conceden XP por editar entrenamientos ni por los gráficos.
-- No se implementan pasos automáticos ni notificaciones push: siguen requiriendo integración adicional.
-- Se recomienda hacer una copia de seguridad desde Perfil antes de cargar estos archivos en GitHub Pages.
+- Nueva sección Biblioteca profesional dentro de **Movimiento**.
+- Cuatro fichas informativas: actividad física OMS, fuerza ACSM 2026, alimentación OMS 2026 y guías argentinas (FAO).
+- Enlaces directos a las fuentes originales para comprobar cada resumen.
+- Aclaración de que son orientaciones generales, no programas individualizados.
+- Diseño negro y dorado responsive y accesos externos seguros.
+- Actualización del caché PWA a `zunareborn-v2.10.0`.
 
-## Publicación
-Descomprimir el ZIP, subir los diez archivos de la carpeta a la **raíz** de `ignagastaz/zunareborn` y confirmar en `main`. GitHub Pages actualiza el sitio. Revisar en iPhone que siga guardado el progreso y que aparezca el gráfico nuevo en Movimiento.
+## Protección de datos
 
-## Nota
-Los números representan sesiones anotadas, no datos verificados automáticamente por sensores. Las estadísticas de cuatro semanas incluyen la semana actual incompleta; interpretar las comparaciones con cuidado.
+- Mantiene `zunareborn.v2` y todos los datos de las versiones anteriores (hábitos, XP, objetivos, entrenamientos, diario y recordatorios).
+- No recopila peso, altura ni información de salud; no genera planes de alimentación automáticos en esta etapa.
+- No se agregan recompensas XP por leer artículos.
+
+## Fuentes
+
+- OMS actividad: https://www.who.int/initiatives/behealthy/physical-activity
+- ACSM fuerza 2026: https://doi.org/10.1249/MSS.0000000000003897
+- OMS alimentación 2026: https://www.who.int/news-room/fact-sheets/detail/healthy-diet
+- Guías alimentarias argentinas (FAO): https://www.fao.org/nutrition/education/food-dietary-guidelines/regions/countries/argentina/en/
+
+## Actualizar en GitHub Pages
+
+1. En ZUNAREBORN, exportar respaldo desde Perfil.
+2. Descomprimir el ZIP.
+3. Subir los 10 archivos directamente a la raíz del repositorio, reemplazando los existentes.
+4. Confirmar en la rama `main`.
+5. Verificar que siga el progreso y que en Movimiento aparezcan Biblioteca profesional y el gráfico deportivo de 4 semanas.
+
+Nota: la app todavía no puede leer pasos automáticos ni enviar push con la app cerrada. Las recomendaciones nutricionales personalizadas requieren diseño adicional y evaluación de seguridad.
