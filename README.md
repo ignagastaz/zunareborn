@@ -1,20 +1,23 @@
-# ZUNAREBORN Web 2.4 — Objetivos personales
+# ZUNAREBORN Web 2.5 — Recordatorios dentro de la aplicación
 
-Actualización incremental de ZUNAREBORN 2.3. Conserva la clave de almacenamiento `zunareborn.v2` y los hábitos, diario, XP, rachas y estadísticas previas.
+Actualización incremental de la versión 2.4, con la misma clave de almacenamiento `zunareborn.v2`.
 
 ## Novedades
-- Pestaña Objetivos: metas a 7, 30 o 90 días, categoría, unidad y cantidad objetivo.
-- Seguimiento manual (+1) o automático enlazado a un hábito existente.
-- Vista resumida de metas activas en Inicio.
-- XP de recompensa (50, 100 o 200) otorgado una sola vez al completar una meta.
-- Objetivos archivables, reintentos tras vencimiento y respaldo en exportación JSON.
-- Los objetivos conseguidos quedan bloqueados para evitar duplicar recompensas.
+- Configuración de avisos en Perfil: activar/desactivar, apertura y cierre del día, avisos de objetivos, horario individual de cada hábito.
+- Campana con contador y bandeja de avisos.
+- Alertas de hábitos pendientes según los días programados.
+- Deduplicación diaria de avisos y límite de historial.
+- Los ajustes y la bandeja se incluyen en el respaldo JSON.
+- Revisión de avisos al abrir, volver a la app o mientras permanece activa.
 
-## Importante
-- Los datos siguen locales, sin sincronización nube.
-- El modo automático solo lee los cumplimientos de hábitos registrados por esta app, no datos de salud ni sensores.
-- Editar un objetivo activo no modifica XP históricos. El registro de metas vinculadas cuenta los días desde la creación del objetivo.
-- Plazo basado en días calendario locales, no notificaciones.
+## Límites **muy importantes**
+Estos son **avisos dentro de la aplicación**, no notificaciones push del sistema. **No llegan con la app cerrada**; para que aparezcan hay que abrir ZUNAREBORN o mantenerla activa. No se utilizan permisos del sistema ni servicios externos. Para push verdaderas en iOS/Android necesitaremos infraestructura (servicio de envío, suscripciones push y pruebas en dispositivos).
 
-## Publicación
-Subí los 10 archivos de la carpeta a la **raíz** del mismo repositorio GitHub. No subas la carpeta como subdirectorio. Primero exportá una copia de seguridad desde Perfil.
+## Actualización desde GitHub Pages
+1. En la versión 2.4, Perfil → Exportar copia de seguridad.
+2. Descomprimí este ZIP y subí el contenido de la carpeta a la raíz del repositorio, sustituyendo los archivos del mismo nombre.
+3. Confirmá el commit en `main` y abrí la PWA. La información existente debería permanecer en el mismo navegador/origen.
+4. Probá activando los avisos y configurando un horario previo a la hora actual para un hábito pendiente. Revisá la campana.
+5. Verificá que sigan presentes hábitos, XP, objetivos, rachas y diario.
+
+No se toca la web publicada automáticamente.

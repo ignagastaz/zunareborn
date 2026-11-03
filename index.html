@@ -21,7 +21,7 @@
         <span class="brand-mark">Z</span>
         <span class="brand-copy"><strong>ZUNA<span>RE</span>BORN</strong><small>BUILD YOURSELF · EVERY DAY</small></span>
       </button>
-      <div class="top-actions">
+      <div class="top-actions"><button class="alert-bell" id="openReminders" aria-label="Ver avisos" title="Avisos">🔔<span id="reminderBadge" class="alert-count" hidden>0</span></button>
         <button class="streak-pill" data-view="progress" aria-label="Ver racha">🔥 <b id="topStreak">0</b></button>
         <button class="avatar" data-view="profile" id="avatarInitial" aria-label="Perfil">Z</button>
       </div>
@@ -129,11 +129,28 @@
 
         <section class="settings-group"><h3>PROGRAMA</h3><div class="setting-row"><div><b>Modo de transformación</b><small id="modeDescription">66 días de enfoque</small></div><span id="modeSetting" class="setting-value">66 DÍAS</span></div><button class="outline-button full" id="toggleMode">CAMBIAR A MODO PERMANENTE</button><button class="outline-button full" id="restartProgram">REINICIAR CICLO DE 66 DÍAS</button></section>
 
+        <section class="settings-group" id="reminderSettings"><h3>RECORDATORIOS Y AVISOS</h3>
+          <p class="setting-description">Esta versión muestra avisos <b>dentro de ZUNAREBORN</b> cuando la abrís o la tenés en pantalla. Aún no envía notificaciones con la app cerrada: eso requiere un servicio push.</p>
+          <label class="notify-switch"><span><b>Activar avisos</b><small>Se guardan en este dispositivo</small></span><input id="remindersEnabled" type="checkbox"></label>
+          <div id="reminderOptions">
+            <label class="notify-switch"><span><b>Inicio del día</b><small>Recordatorio de tus misiones</small></span><input id="morningEnabled" type="checkbox"></label>
+            <label class="field-label">Horario de inicio<input id="morningTime" type="time" value="08:00"></label>
+            <label class="notify-switch"><span><b>Cierre del día</b><small>Avisar si quedan misiones pendientes</small></span><input id="eveningEnabled" type="checkbox"></label>
+            <label class="field-label">Horario de cierre<input id="eveningTime" type="time" value="20:30"></label>
+            <label class="notify-switch"><span><b>Objetivos pendientes</b><small>Resumen de metas activas al entrar</small></span><input id="goalsEnabled" type="checkbox"></label>
+            <p class="field-label">Aviso individual de cada hábito</p>
+            <div id="habitReminderList" class="habit-reminder-list"></div>
+          </div>
+          <button class="outline-button full" id="saveReminders">GUARDAR RECORDATORIOS</button>
+          <button class="outline-button full" id="showReminderInbox">VER BANDEJA DE AVISOS</button>
+          <button class="outline-button full" id="previewReminder">PROBAR UN AVISO</button>
+        </section>
+
         <section class="settings-group"><h3>INSTALAR COMO APP</h3><p class="setting-description">En iPhone/iPad: Safari → Compartir → Añadir a pantalla de inicio. Así se abre sin la barra del navegador y se siente mucho más como una app.</p><button class="outline-button full" id="installHelp">VER INSTRUCCIONES</button></section>
 
         <section class="settings-group"><h3>DATOS Y PRIVACIDAD</h3><p class="setting-description">Esta versión guarda todo localmente. No hay cuenta ni servidor: tus datos no salen del dispositivo.</p><button class="outline-button full" id="exportData">↓ EXPORTAR COPIA DE SEGURIDAD</button><label class="outline-button full import-label">↑ IMPORTAR COPIA<input type="file" id="importData" accept="application/json"></label><button class="danger-button full" id="resetData">BORRAR TODOS MIS DATOS</button></section>
 
-        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.4</small></footer>
+        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.5</small></footer>
       </section>
     </main>
 
@@ -171,6 +188,13 @@
 
   <div class="modal-backdrop" id="helpModal" aria-hidden="true"><div class="modal"><button class="modal-close" data-close="helpModal">×</button><p class="eyebrow">INSTALACIÓN</p><h2>Usala como una app.</h2><ol class="help-list"><li>Abrí ZUNAREBORN en Safari.</li><li>Tocá el botón <b>Compartir</b>.</li><li>Elegí <b>Añadir a pantalla de inicio</b>.</li><li>Confirmá el nombre ZUNAREBORN y tocá <b>Añadir</b>.</li></ol></div></div>
 
+  <div class="modal-backdrop" id="reminderModal" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="reminderModalTitle">
+    <button class="modal-close" data-close="reminderModal" aria-label="Cerrar">×</button><p class="eyebrow">TU CENTRO DE AVISOS</p><h2 id="reminderModalTitle">Recordatorios</h2>
+    <p class="modal-copy">Los avisos aparecen cuando usás ZUNAREBORN. No son notificaciones push del teléfono.</p>
+    <div id="reminderInboxList" class="reminder-inbox"></div>
+    <button class="outline-button full" id="markRemindersRead">MARCAR TODOS COMO LEÍDOS</button>
+    <button class="outline-button full" id="goReminderSettings">CONFIGURAR HORARIOS</button>
+  </div></div>
   <div id="toast" class="toast" role="status"></div>
   <script src="app.js"></script>
 </body>

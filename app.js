@@ -66,6 +66,79 @@
   if(!Array.isArray(state.goals))state.goals=[];
   state.goals=state.goals.filter(g=>g&&typeof g.id==='string'&&typeof g.title==='string');
   let editingGoalId=null,activeGoalFilter='active';
+  // Recordatorios locales: NO prometen notificaciones del sistema con la app cerrada.
+  const reminderDefaults=()=>({enabled:false,morningEnabled:true,morningTime:'08:00',eveningEnabled:true,eveningTime:'20:30',goalsEnabled:false,habitTimes:{},delivered:{},inbox:[]});
+  const cleanClock=v=>typeof v==='string'&&/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(v)?v:null;
+  function migrateReminders(){
+    const r=state.reminders && typeof state.reminders==='object' && !Array.isArray(state.reminders)?state.reminders:{};
+    state.reminders={...reminderDefaults(),...r};
+    if(!state.reminders.habitTimes||typeof state.reminders.habitTimes!=='object'||Array.isArray(state.reminders.habitTimes))state.reminders.habitTimes={};
+    if(!state.reminders.delivered||typeof state.reminders.delivered!=='object'||Array.isArray(state.reminders.delivered))state.reminders.delivered={};
+    if(!Array.isArray(state.reminders.inbox))state.reminders.inbox=[];
+    state.reminders.inbox=state.reminders.inbox.filter(x=>x&&typeof x.id==='string'&&typeof x.title==='string'&&typeof x.message==='string').slice(0,80);
+  }
+  migrateReminders();
+  function currentClock(){const d=new Date();return [String(d.getHours()).padStart(2,'0'),String(d.getMinutes()).padStart(2,'0')].join(':')}
+  function createReminder(id,title,message,now){
+    const r=state.reminders;
+    if(r.delivered[id])return false;
+    r.delivered[id]=isoToday();
+    r.inbox.unshift({id,title,message,time:now.toLocaleString('es-AR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}),read:false});
+    r.inbox=r.inbox.slice(0,80);
+    return true;
+  }
+  function checkReminders(){
+    if(!state.onboarded || !state.reminders.enabled || document.hidden)return;
+    const r=state.reminders, day=isoToday(), clock=currentClock(), due=dueMissions(), pending=due.filter(m=>!doneIds().includes(m.id));
+    let changed=false;
+    if(r.morningEnabled&&cleanClock(r.morningTime)&&clock>=r.morningTime&&pending.length){
+      changed=createReminder(day+'-morning','Empezá con una victoria',`Tenés ${pending.length} ${pending.length===1?'misión pendiente':'misiones pendientes'} para hoy.`,new Date())||changed;
+    }
+    if(r.eveningEnabled&&cleanClock(r.eveningTime)&&clock>=r.eveningTime&&pending.length){
+      changed=createReminder(day+'-evening','Cerrá tu día',`Te ${pending.length===1?'queda':'quedan'} ${pending.length} ${pending.length===1?'misión':'misiones'} por completar.`,new Date())||changed;
+    }
+    if(r.goalsEnabled&&clock>='12:00'){
+      const active=(state.goals||[]).filter(g=>!g.archived&&!g.awarded);
+      if(active.length)changed=createReminder(day+'-goals','Tus objetivos siguen en marcha',`Tenés ${active.length} ${active.length===1?'objetivo activo':'objetivos activos'} para seguir avanzando.`,new Date())||changed;
+    }
+    for(const m of pending){
+      const t=r.habitTimes[m.id];
+      if(cleanClock(t)&&clock>=t){
+        changed=createReminder(day+'-habit-'+m.id,'Misión pendiente',m.name,new Date())||changed;
+      }
+    }
+    // Evitar que el historial de avisos crezca sin límite con los días.
+    if(Object.keys(r.delivered).length>600){const cutoff=addDays(day,-45);for(const k of Object.keys(r.delivered))if(r.delivered[k]<cutoff)delete r.delivered[k];}
+    if(changed){saveRaw();renderReminderInbox();showToast('Tenés nuevos avisos · Tocá la campana');}
+  }
+  function renderReminderInbox(){
+    const r=state.reminders, unread=r.inbox.filter(x=>!x.read).length,badge=$('reminderBadge');
+    badge.hidden=unread===0;badge.textContent=unread>9?'9+':unread;
+    $('reminderInboxList').innerHTML=r.inbox.length?r.inbox.slice(0,30).map(x=>`<article class="reminder-entry ${x.read?'read':''}"><b>${esc(x.title)}</b><small>${esc(x.time||'')}</small><p>${esc(x.message)}</p></article>`).join(''):'<p class="setting-description">Todavía no hay avisos. Configuralos desde Perfil.</p>';
+  }
+  function renderReminderSettings(){
+    const r=state.reminders;
+    if(document.activeElement && document.activeElement.closest && document.activeElement.closest('#reminderSettings'))return;
+    $('remindersEnabled').checked=!!r.enabled;$('morningEnabled').checked=!!r.morningEnabled;
+    $('eveningEnabled').checked=!!r.eveningEnabled;$('goalsEnabled').checked=!!r.goalsEnabled;
+    $('morningTime').value=cleanClock(r.morningTime)||'08:00';$('eveningTime').value=cleanClock(r.eveningTime)||'20:30';
+    $('reminderOptions').style.opacity=r.enabled?'1':'.55';
+    const list=state.missions.filter(m=>!m.archived);
+    $('habitReminderList').innerHTML=list.length?list.map(m=>`<label class="reminder-habit-row"><span>${esc(m.name)}</span><input type="time" aria-label="Aviso para ${esc(m.name)}" data-habit-reminder="${esc(m.id)}" value="${cleanClock(r.habitTimes[m.id])||''}"></label>`).join(''):'<p class="setting-description">Creá un hábito para agregarle horario.</p>';
+  }
+  $('openReminders').addEventListener('click',()=>{checkReminders();renderReminderInbox();openModal('reminderModal');});
+  $('showReminderInbox').addEventListener('click',()=>{checkReminders();renderReminderInbox();openModal('reminderModal');});
+  $('markRemindersRead').addEventListener('click',()=>{state.reminders.inbox.forEach(x=>x.read=true);saveRaw();renderReminderInbox();showToast('Avisos marcados como leídos');});
+  $('goReminderSettings').addEventListener('click',()=>{closeModal('reminderModal');navigate('profile');$('reminderSettings').scrollIntoView({behavior:'smooth',block:'start'});});
+  $('previewReminder').addEventListener('click',()=>{showToast('🔔 Ejemplo: ¡Hoy podés sumar una victoria!');});
+  $('saveReminders').addEventListener('click',()=>{
+    const morning=$('morningTime').value,evening=$('eveningTime').value;
+    if(!cleanClock(morning)||!cleanClock(evening)){showToast('Elegí horarios válidos');return;}
+    const times={};for(const el of document.querySelectorAll('[data-habit-reminder]')){if(el.value){if(!cleanClock(el.value)){showToast('Revisá el horario del hábito');return;}times[el.dataset.habitReminder]=el.value;}}
+    state.reminders={...state.reminders,enabled:$('remindersEnabled').checked,morningEnabled:$('morningEnabled').checked,morningTime:morning,eveningEnabled:$('eveningEnabled').checked,eveningTime:evening,goalsEnabled:$('goalsEnabled').checked,habitTimes:times};
+    saveRaw();checkReminders();showToast('Recordatorios guardados');
+  });
+
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function programDay(s=state){return Math.max(1,daysBetween(s.startDate,isoToday())+1)}
   function frequencyLabel(f,m){return f==='custom' ? `Días elegidos (${(m?.days||[]).length})` : ({daily:'Todos los días',weekdays:'Lun–Vie',weekends:'Fin de semana','3x':'Lun · Mié · Vie'})[f]||'Todos los días'}
@@ -114,7 +187,7 @@
     $('modeSetting').textContent=state.mode==='66'?'66 DÍAS':'PERMANENTE';$('modeDescription').textContent=state.mode==='66'?'66 días de enfoque y progreso':'Sin fecha de finalización';$('toggleMode').textContent=state.mode==='66'?'CAMBIAR A MODO PERMANENTE':'VOLVER AL PROGRAMA DE 66 DÍAS';
     $('todayLabel').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();$('greeting').textContent=(state.name?state.name+', ':'')+'un día a la vez. Sin excusas, sin perfección.';$('dailyQuote').textContent=quotes[new Date().getDate()%quotes.length];
     const wc=weeklyCount();$('weeklyProgressText').textContent=Math.min(wc,20)+' / 20';$('weeklyProgress').style.width=Math.min(100,wc/20*100)+'%';$('weeklyReward').textContent=state.weeklyRewards[weekKey()]?'RECOMPENSA OBTENIDA':'+150 XP';
-    renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();
+    renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();
   }
   function renderPillars(){const due=dueMissions(),done=doneIds();$('pillarList').innerHTML=Object.entries(categories).map(([key,c])=>{const ms=due.filter(m=>m.category===key),count=ms.filter(m=>done.includes(m.id)).length;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><small>${c.desc}</small></div><span class="pillar-value">${count}/${ms.length}</span></div>`}).join('')}
   function weeklyMissionCount(id){return weekDates().filter(d=>doneIds(d).includes(id)).length}
@@ -343,12 +416,12 @@
     clean.missions.forEach(m=>{m.days ||= []});
     return clean;
   }
-  $('importData').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.missions)||!imported.completions)throw Error();state=validateBackup(imported);migrateMissionData();save();showToast('Copia restaurada')}catch{showToast('Archivo inválido')}e.target.value=''});
-  $('resetData').addEventListener('click',()=>{if(confirm('¿Borrar todo tu progreso?')&&confirm('Esta acción no se puede deshacer. ¿Continuar?')){state=fresh();migrateMissionData();saveRaw();render();openModal('onboardingModal')}});
+  $('importData').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.missions)||!imported.completions)throw Error();state=validateBackup(imported);migrateMissionData();migrateReminders();save();showToast('Copia restaurada')}catch{showToast('Archivo inválido')}e.target.value=''});
+  $('resetData').addEventListener('click',()=>{if(confirm('¿Borrar todo tu progreso?')&&confirm('Esta acción no se puede deshacer. ¿Continuar?')){state=fresh();migrateMissionData();migrateReminders();saveRaw();render();openModal('onboardingModal')}});
   $('finishOnboarding').addEventListener('click',()=>{state.name=$('onboardingName').value.trim()||'Usuario';state.onboarded=true;save();closeModal('onboardingModal');showToast('Bienvenido a ZUNAREBORN')});
   if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
   // Si la app permanece abierta durante la medianoche, actualizamos el estado al volver a ella.
   let lastVisibleDay=isoToday();
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){const now=isoToday();if(lastVisibleDay!==now){lastVisibleDay=now;render()}}});
-  saveRaw();render();if(!state.onboarded)openModal('onboardingModal');
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){const now=isoToday();if(lastVisibleDay!==now){lastVisibleDay=now;render()}checkReminders()}});
+  saveRaw();render();if(!state.onboarded)openModal('onboardingModal');checkReminders();setInterval(checkReminders,60000);
 })();
