@@ -90,9 +90,45 @@
   };
   function migrateSport(){
     const existing=state.sport&&typeof state.sport==='object'&&!Array.isArray(state.sport)?state.sport:{};
-    state.sport={primary:sports[existing.primary]?existing.primary:'running',weeklyTarget:Number.isInteger(existing.weeklyTarget)&&existing.weeklyTarget>=1&&existing.weeklyTarget<=7?existing.weeklyTarget:3,sessions:Array.isArray(existing.sessions)?existing.sessions.filter(s=>s&&typeof s.id==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s.date)&&sports[s.sport]&&Number.isInteger(s.minutes)&&s.minutes>=1&&s.minutes<=720).slice(-2000):[]};
+    state.sport={primary:sports[existing.primary]?existing.primary:'running',weeklyTarget:Number.isInteger(existing.weeklyTarget)&&existing.weeklyTarget>=1&&existing.weeklyTarget<=7?existing.weeklyTarget:3,sessions:Array.isArray(existing.sessions)?existing.sessions.filter(s=>s&&typeof s.id==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s.date)&&sports[s.sport]&&Number.isInteger(s.minutes)&&s.minutes>=1&&s.minutes<=720).slice(-2000):[],position:['defender','midfielder','forward','goalkeeper'].includes(existing.position)?existing.position:'defender',focus:existing.focus&&typeof existing.focus==='object'&&!Array.isArray(existing.focus)?existing.focus:{},skillHistory:Array.isArray(existing.skillHistory)?existing.skillHistory.filter(x=>x&&typeof x.sport==='string'&&typeof x.skill==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&Number.isInteger(x.rating)&&x.rating>=1&&x.rating<=5).slice(-1000):[]};
   }
   migrateSport();
+  // Biblioteca introductoria de habilidades. No analiza vídeos ni diagnostica técnica deportiva.
+  const skillLibrary={
+    running:[['posture','Postura y zancada',['Caminar unos minutos para entrar en calor.','Trotar a ritmo cómodo, hombros sueltos y mirada hacia adelante.','Observar si mantenés una respiración natural sin forzar el ritmo.']],['pacing','Control del ritmo',['Empezar suave y aumentar sólo si podés hablar con comodidad.','Observar sensaciones al cambiar ligeramente el ritmo.','Terminar con una vuelta a la calma.']],['endurance','Constancia aeróbica',['Elegir un trayecto seguro y conocido.','Alternar caminata y trote según tu experiencia.','Anotar cómo te sentiste y ajustar la próxima sesión.']]],
+    football:[['position','Posicionamiento',['Identificar tu referencia: compañero, rival y pelota.','Practicar la orientación corporal antes de recibir o defender.','Pausar y observar dónde hay espacio libre.']],['passing','Pase y recepción',['Practicar pases cortos con ambos pies.','Recibir mirando hacia el próximo espacio.','Priorizar precisión antes de velocidad.']],['decision','Lectura del juego',['Antes de recibir, mirar al menos dos opciones.','Practicar una decisión simple en poco espacio.','Anotar cuándo fue mejor pasar, avanzar o mantener posición.']]],
+    gym:[['technique','Técnica de movimiento',['Elegir un ejercicio conocido y carga fácil de controlar.','Realizar movimientos lentos sin perder estabilidad.','Descansar y registrar qué parte necesitás mejorar.']],['mobility','Movilidad',['Realizar movilidad suave de las articulaciones involucradas.','Evitar rangos dolorosos.','Observar si el movimiento se siente más cómodo.']],['progression','Progresión',['Registrar una serie realizada con buena técnica.','Priorizar regularidad y recuperación.','Modificar una sola variable a la vez cuando corresponda.']]],
+    cycling:[['cadence','Ritmo de pedaleo',['Revisar bicicleta, casco y entorno.','Mantener una cadencia cómoda en terreno seguro.','Observar cuándo necesitás bajar la intensidad.']],['handling','Control y seguridad',['Practicar arranque y frenado en zona segura.','Mantener distancia y anticipar obstáculos.','No practicar maniobras riesgosas en circulación.']]],
+    basketball:[['handling','Control del balón',['Botar con ambas manos a una altura cómoda.','Mirar hacia adelante cuando sea posible.','Practicar cambios simples de dirección con control.']],['defense','Defensa y desplazamiento',['Practicar postura estable y desplazamientos laterales suaves.','Mantener la vista en el atacante y el espacio.','Evitar cruzar los pies en desplazamientos cortos cuando dificulte el equilibrio.']],['passing','Pases',['Practicar precisión con un compañero o pared segura.','Moverse a un espacio libre después de pasar.','Observar el momento de la recepción.']]],
+    swimming:[['breathing','Respiración',['Practicar la respiración con supervisión apropiada.','Priorizar comodidad y seguridad acuática.','No hacer ejercicios de apnea ni hiperventilación.']],['alignment','Alineación corporal',['Practicar una postura alargada sin tensión.','Observar la comodidad del deslizamiento.','Pedir corrección técnica a un instructor calificado.']]],
+    other:[['consistency','Constancia técnica',['Elegir un gesto deportivo sencillo.','Practicarlo en un entorno seguro y controlado.','Registrar una observación concreta al terminar.']],['coordination','Coordinación',['Empezar con movimientos lentos.','Priorizar precisión y equilibrio.','Aumentar complejidad sólo cuando estés cómodo.']]]
+  };
+  const footballPositionNotes={defender:'Defensa: ubicáte entre rival y arco, mantené una distancia controlable y coordiná con la línea defensiva.',midfielder:'Mediocampo: escaneá el entorno antes de recibir y buscá líneas de pase.',forward:'Ataque: observá los espacios disponibles y coordiná desmarques sin perder el equilibrio.',goalkeeper:'Arco: trabajá posición de base y comunicación; acciones de caída, salto o impacto requieren entrenador y entorno seguro.'};
+  function currentSkillOptions(){return skillLibrary[state.sport.primary]||skillLibrary.other}
+  function renderSportSkills(){
+    const sport=state.sport.primary, choices=currentSkillOptions(), preferred=state.sport.focus[sport];
+    const selected=choices.some(x=>x[0]===preferred)?preferred:choices[0][0];
+    const select=$('sportSkill');select.innerHTML=choices.map(([id,label])=>`<option value="${id}">${esc(label)}</option>`).join(''); select.value=selected;
+    $('sportPositionWrap').hidden=sport!=='football';$('sportPosition').value=state.sport.position;
+    renderSkillPlan();renderSkillHistory();
+  }
+  function renderSkillPlan(){
+    const entry=currentSkillOptions().find(x=>x[0]===$('sportSkill').value)||currentSkillOptions()[0];
+    const position=state.sport.primary==='football'?'⚽ '+footballPositionNotes[state.sport.position]:'';
+    $('sportSkillPlan').innerHTML=`<h3>${esc(entry[1])}</h3>${position?`<p class="skill-position">${esc(position)}</p>`:''}<ol>${entry[2].map(x=>`<li>${esc(x)}</li>`).join('')}</ol><small>Guía general orientativa · Adaptá la práctica a tu experiencia y seguridad.</small>`;
+  }
+  function renderSkillHistory(){
+    const entries=state.sport.skillHistory.filter(x=>x.sport===state.sport.primary).slice(-8).reverse();
+    $('sportSkillHistory').innerHTML=entries.length?entries.map(x=>`<article class="skill-entry"><div><b>${esc((skillLibrary[x.sport]||[]).find(s=>s[0]===x.skill)?.[1]||x.skill)}</b><small>${esc(x.date)} · Autoevaluación ${x.rating}/5</small>${x.note?`<p>${esc(x.note)}</p>`:''}</div></article>`).join(''):'<div class="empty-state">Todavía no registraste evaluaciones de este deporte.</div>';
+  }
+  $('sportSkill').addEventListener('change',()=>{state.sport.focus[state.sport.primary]=$('sportSkill').value;saveRaw();renderSkillPlan()});
+  $('sportPosition').addEventListener('change',()=>{state.sport.position=$('sportPosition').value;saveRaw();renderSkillPlan()});
+  $('saveSkillAssessment').addEventListener('click',()=>{
+    const rating=Number($('sportSkillRating').value),note=$('sportSkillNote').value.trim();
+    if(!Number.isInteger(rating)||rating<1||rating>5||note.length>180)return showToast('Revisá tu evaluación');
+    state.sport.skillHistory.push({date:isoToday(),sport:state.sport.primary,skill:$('sportSkill').value,rating,note});
+    state.sport.skillHistory=state.sport.skillHistory.slice(-1000);$('sportSkillNote').value='';save();showToast('Evolución registrada');
+  });
   function weeklySportSessions(){const w=weekDates();return state.sport.sessions.filter(s=>w.includes(s.date));}
   function renderSport(){
     const chosen=sports[state.sport.primary],sessions=weeklySportSessions(),minutes=sessions.reduce((n,s)=>n+s.minutes,0);
@@ -103,6 +139,7 @@
     $('homeSportSummary').textContent=sessions.length+' '+(sessions.length===1?'sesión registrada':'sesiones registradas')+' esta semana · '+minutes+' min';
     $('sportGuideIntro').textContent=chosen.intro;
     $('sportDrills').innerHTML=chosen.drills.map((t,i)=>`<div class="sport-drill"><span>${String(i+1).padStart(2,'0')}</span><p>${esc(t)}</p></div>`).join('');
+    renderSportSkills();
     const sorted=[...state.sport.sessions].sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id)).slice(0,20);
     $('trainingList').innerHTML=sorted.length?sorted.map(s=>`<article class="training-entry"><span class="training-entry-icon">${sports[s.sport].icon}</span><div><b>${esc(sports[s.sport].name)} · ${s.minutes} min</b><small>${esc(s.date)} · ${['','Suave','Moderado','Intenso'][s.effort]||'Moderado'}</small>${s.notes?`<p>${esc(s.notes)}</p>`:''}</div><button data-training-delete="${esc(s.id)}" class="training-delete" aria-label="Borrar sesión">×</button></article>`).join(''):'<div class="empty-state"><b>Tu próximo entrenamiento empieza acá.</b>Registrá una sesión para ver tu historial deportivo.</div>';
   }

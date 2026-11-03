@@ -134,6 +134,16 @@
           <label class="field-label">Objetivo de sesiones por semana<select id="sportWeeklyTarget"><option value="1">1 sesión</option><option value="2">2 sesiones</option><option value="3">3 sesiones</option><option value="4">4 sesiones</option><option value="5">5 sesiones</option><option value="6">6 sesiones</option><option value="7">7 sesiones</option></select></label>
           <button class="outline-button full" id="saveSportPreferences">GUARDAR DISCIPLINA</button>
         </article>
+        <section class="sport-learning">
+          <div class="section-heading"><div><p class="eyebrow">ENTRENAMIENTO PERSONALIZADO</p><h2>Tu especialidad</h2></div></div>
+          <p class="sport-subcopy">Elegí qué querés mejorar en tu disciplina. Podés registrar una autoevaluación y repetir la práctica cuando quieras.</p>
+          <label class="field-label" id="sportPositionWrap" hidden>Posición en fútbol<select id="sportPosition"><option value="defender">Defensor/a</option><option value="midfielder">Mediocampista</option><option value="forward">Delantero/a</option><option value="goalkeeper">Arquero/a</option></select></label>
+          <label class="field-label">Habilidad que querés desarrollar<select id="sportSkill"></select></label>
+          <div class="skill-plan" id="sportSkillPlan"></div>
+          <div class="skill-assessment"><label class="field-label">¿Cómo sentiste tu desempeño hoy?<select id="sportSkillRating"><option value="1">1 · Necesito practicar</option><option value="2">2 · Voy progresando</option><option value="3">3 · Bastante bien</option><option value="4">4 · Muy bien</option><option value="5">5 · Lo domino</option></select></label><label class="field-label">Nota breve (opcional)<input id="sportSkillNote" maxlength="180" placeholder="Qué aprendí o qué quiero mejorar"></label><button id="saveSkillAssessment" class="outline-button full">GUARDAR EVALUACIÓN</button></div>
+          <div class="section-heading"><div><p class="eyebrow">TU EVOLUCIÓN</p><h2>Últimas evaluaciones</h2></div></div>
+          <div id="sportSkillHistory" class="skill-history"></div>
+        </section>
         <div class="section-heading"><div><p class="eyebrow">ESTA SEMANA</p><h2>Registro deportivo</h2></div></div>
         <div class="stat-grid"><article class="stat-card"><span>🏅</span><strong id="sportSessions">0</strong><small>SESIONES</small></article><article class="stat-card"><span>⏱</span><strong id="sportMinutes">0</strong><small>MINUTOS</small></article><article class="stat-card"><span>◎</span><strong id="sportTargetProgress">0/3</strong><small>META SEMANAL</small></article></div>
         <button class="gold-button full" id="openTrainingEditor">＋ REGISTRAR ENTRENAMIENTO <span>↗</span></button>
