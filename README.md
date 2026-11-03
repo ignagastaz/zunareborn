@@ -1,35 +1,26 @@
-# ZUNAREBORN 2.10 — Biblioteca profesional
+# ZUNAREBORN 2.11 — Organización alimentaria
 
-Actualización **acumulativa** sobre 2.9. Incluye las mejoras de 2.9 (edición de sesiones y comparación deportiva de cuatro semanas) **más** la biblioteca profesional de 2.10.
+**Actualización acumulativa** sobre ZUNAREBORN 2.8: incluye la 2.9 (edición de entrenamientos y comparación semanal), la 2.10 (biblioteca profesional) y la 2.11 (planificador alimentario).
 
-## Novedades
+## Qué se incorporó
+- Sección **Organizá tus comidas** dentro de Movimiento.
+- Ideas de desayuno, almuerzo y cena para siete días.
+- Dos colecciones orientativas: variadas y vegetarianas.
+- Posibilidad de cambiar las ideas para cada día o toda la semana.
+- Lista orientativa de ingredientes y notas personales.
+- Guardado local y compatibilidad con respaldos JSON existentes.
+- No altera XP, hábitos, objetivos, rachas ni registros deportivos.
 
-- Nueva sección Biblioteca profesional dentro de **Movimiento**.
-- Cuatro fichas informativas: actividad física OMS, fuerza ACSM 2026, alimentación OMS 2026 y guías argentinas (FAO).
-- Enlaces directos a las fuentes originales para comprobar cada resumen.
-- Aclaración de que son orientaciones generales, no programas individualizados.
-- Diseño negro y dorado responsive y accesos externos seguros.
-- Actualización del caché PWA a `zunareborn-v2.10.0`.
+## Límites y seguridad
+Estas son **ideas generales**, no planes individualizados, ni consejos clínicos. No se recogen peso, altura, edad ni condiciones de salud. No se calculan calorías, macros, dietas de adelgazamiento ni dosis de suplementos. Revisar ingredientes por alergias y consultar a un nutricionista matriculado para necesidades particulares. Las sugerencias vegetarianas incluyen huevos y lácteos y no son veganas.
 
-## Protección de datos
+Fuente de principios generales: https://www.who.int/news-room/fact-sheets/detail/healthy-diet
 
-- Mantiene `zunareborn.v2` y todos los datos de las versiones anteriores (hábitos, XP, objetivos, entrenamientos, diario y recordatorios).
-- No recopila peso, altura ni información de salud; no genera planes de alimentación automáticos en esta etapa.
-- No se agregan recompensas XP por leer artículos.
+## Cómo publicar
+1. Abrir ZUNAREBORN y exportar respaldo desde Perfil.
+2. Descomprimir el ZIP y subir **los 10 archivos** a la raíz de `ignagastaz/zunareborn` en GitHub.
+3. Confirmar en `main`; GitHub Pages actualizará automáticamente.
+4. Verificar en Movimiento las secciones deportivas, biblioteca y nutrición.
+5. Comprobar que se conservan XP, hábitos, objetivos, recordatorios y entrenamientos.
 
-## Fuentes
-
-- OMS actividad: https://www.who.int/initiatives/behealthy/physical-activity
-- ACSM fuerza 2026: https://doi.org/10.1249/MSS.0000000000003897
-- OMS alimentación 2026: https://www.who.int/news-room/fact-sheets/detail/healthy-diet
-- Guías alimentarias argentinas (FAO): https://www.fao.org/nutrition/education/food-dietary-guidelines/regions/countries/argentina/en/
-
-## Actualizar en GitHub Pages
-
-1. En ZUNAREBORN, exportar respaldo desde Perfil.
-2. Descomprimir el ZIP.
-3. Subir los 10 archivos directamente a la raíz del repositorio, reemplazando los existentes.
-4. Confirmar en la rama `main`.
-5. Verificar que siga el progreso y que en Movimiento aparezcan Biblioteca profesional y el gráfico deportivo de 4 semanas.
-
-Nota: la app todavía no puede leer pasos automáticos ni enviar push con la app cerrada. Las recomendaciones nutricionales personalizadas requieren diseño adicional y evaluación de seguridad.
+La web publicada no se modifica hasta subir estos archivos. El código necesita pruebas manuales en Safari/iOS y Android.

@@ -204,6 +204,25 @@
           </div>
           <p class="evidence-warning">Estas referencias no sustituyen a un médico, nutricionista matriculado o entrenador acreditado. La edad, alergias, lesiones y condiciones médicas requieren valoración individual. ZUNAREBORN no está afiliada a estas organizaciones. Fuentes revisadas: noviembre de 2026.</p>
         </section>
+
+        <section class="nutrition-planner" aria-labelledby="nutritionTitle">
+          <div class="section-heading"><div><p class="eyebrow">ZUNAREBORN NUTRITION · NUEVO</p><h2 id="nutritionTitle">Organizá tus comidas</h2></div></div>
+          <p class="sport-subcopy">Ideas para organizar una semana de comidas con alimentos comunes. No son una dieta calculada para tu peso ni un plan médico: adaptá porciones y elecciones a tus necesidades.</p>
+          <div class="nutrition-toolbar">
+            <label class="field-label">Ideas de comidas<select id="nutritionPattern"><option value="mixed">Variadas</option><option value="vegetarian">Vegetarianas</option></select></label>
+            <button id="nutritionRefresh" class="outline-button">REORGANIZAR ESTA SEMANA ↻</button>
+          </div>
+          <div class="nutrition-notice"><strong>Antes de usar estas ideas</strong><p>Verificá ingredientes y alergias. Si sos menor de edad, estás embarazada, tenés una enfermedad o necesitás objetivos nutricionales específicos, consultá a un nutricionista matriculado. No se calculan calorías ni se indican restricciones.</p></div>
+          <div class="section-heading"><div><p class="eyebrow">PLANIFICACIÓN FLEXIBLE</p><h2>Tu semana</h2></div></div>
+          <div id="nutritionWeek" class="nutrition-week"></div>
+          <div class="section-heading"><div><p class="eyebrow">ORGANIZACIÓN</p><h2>Lista orientativa</h2></div></div>
+          <p class="sport-subcopy">Ingredientes frecuentes de las ideas seleccionadas; revisá lo que ya tenés en casa y ajustá cantidades según las personas que coman.</p>
+          <div id="nutritionShopping" class="nutrition-shopping"></div>
+          <label class="field-label">Notas de compras / sustituciones<textarea id="nutritionNotes" rows="3" maxlength="800" placeholder="Ej. Ya tengo arroz, comprar tomate..." style="width:100%"></textarea></label>
+          <button id="nutritionSaveNotes" class="outline-button full">GUARDAR MIS NOTAS</button>
+          <p class="micro-note">Toda la planificación se guarda en tu navegador y viaja con tu copia de seguridad. No suma XP ni cambia tus objetivos deportivos.</p>
+          <a href="https://www.who.int/news-room/fact-sheets/detail/healthy-diet" target="_blank" rel="noopener noreferrer" class="nutrition-source">Fuente general: OMS — alimentación saludable ↗</a>
+        </section>
         <article class="sport-future"><b>🚶 Pasos automáticos — próxima integración</b><p>Esta web todavía no puede consultar Apple Health o Health Connect en segundo plano. No mostramos pasos ficticios. Cuando construyamos el puente móvil, pediremos permiso para leer los datos reales.</p></article>
       </section>
 
@@ -237,7 +256,7 @@
 
         <section class="settings-group"><h3>DATOS Y PRIVACIDAD</h3><p class="setting-description">Esta versión guarda todo localmente. No hay cuenta ni servidor: tus datos no salen del dispositivo.</p><button class="outline-button full" id="exportData">↓ EXPORTAR COPIA DE SEGURIDAD</button><label class="outline-button full import-label">↑ IMPORTAR COPIA<input type="file" id="importData" accept="application/json"></label><button class="danger-button full" id="resetData">BORRAR TODOS MIS DATOS</button></section>
 
-        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.6</small></footer>
+        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.11</small></footer>
       </section>
     </main>
 

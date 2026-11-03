@@ -38,7 +38,7 @@
     {id:'xp1000',icon:'◆',name:'Mil puntos',copy:'Acumulá 1.000 XP.',test:s=>s.xp>=1000},
     {id:'day30',icon:'◌',name:'30 días',copy:'Llegá al día 30 del programa.',test:s=>programDay(s)>=30}
   ];
-  function fresh(){return {version:2,onboarded:false,name:'',goal:'balance',mode:'66',startDate:isoToday(),xp:0,streak:0,bestStreak:0,lastActive:null,missions:defaults.map(x=>({...x})),completions:{},journal:{},mood:{},createdAt:isoToday(),weeklyRewards:{},goals:[],sport:{primary:'running',weeklyTarget:3,sessions:[]}}}
+  function fresh(){return {version:2,onboarded:false,name:'',goal:'balance',mode:'66',startDate:isoToday(),xp:0,streak:0,bestStreak:0,lastActive:null,missions:defaults.map(x=>({...x})),completions:{},journal:{},mood:{},createdAt:isoToday(),weeklyRewards:{},goals:[],nutrition:{pattern:'mixed',weeks:{},notes:''},sport:{primary:'running',weeklyTarget:3,sessions:[]}}}
   function load(){
     try{
       const raw=localStorage.getItem(KEY); if(raw) return {...fresh(),...JSON.parse(raw)};
@@ -48,6 +48,74 @@
   }
   let state=load(), activeFilter='all', selectedMood=null, toastTimer, editingMissionId=null, viewedMonth=isoToday().slice(0,7), viewedDate=isoToday(), viewedHabitId=null;
   const $=id=>document.getElementById(id);
+
+  // Nutrición: ideas orientativas, SIN calorías, dietas restrictivas ni datos biométricos.
+  const nutritionMenus = {
+    mixed:[
+      {meals:['Yogur natural con fruta y avena','Arroz con pollo y vegetales','Tortilla con ensalada'],items:['yogur','fruta','avena','arroz','pollo','vegetales','huevos','hojas verdes']},
+      {meals:['Tostadas integrales con queso y fruta','Ensalada de lentejas y vegetales','Pescado al horno con papa'],items:['pan integral','queso','fruta','lentejas','vegetales','pescado','papa']},
+      {meals:['Avena con leche y banana','Fideos con salsa de tomate y carne magra','Sándwich de verduras y huevo'],items:['avena','leche','banana','fideos','tomate','carne magra','pan','verduras','huevos']},
+      {meals:['Yogur con frutos secos y fruta','Tarta de verduras con ensalada','Pollo con batata y brócoli'],items:['yogur','frutos secos','fruta','verduras','masa de tarta','pollo','batata','brócoli']},
+      {meals:['Pan integral con palta','Ensalada de arroz y atún','Sopa de verduras con tostadas'],items:['pan integral','palta','arroz','atún','verduras']},
+      {meals:['Huevos revueltos con pan','Guiso de lentejas con verduras','Wrap de pollo y vegetales'],items:['huevos','pan','lentejas','verduras','tortillas de trigo','pollo']},
+      {meals:['Fruta, yogur y avena','Pasta con verduras y queso','Arroz con huevo y vegetales'],items:['fruta','yogur','avena','pasta','verduras','queso','arroz','huevos']}
+    ],
+    vegetarian:[
+      {meals:['Yogur con fruta y avena','Ensalada de garbanzos y vegetales','Tortilla con espinaca'],items:['yogur','fruta','avena','garbanzos','vegetales','huevos','espinaca']},
+      {meals:['Tostadas con queso y tomate','Lentejas con arroz y verduras','Sopa de calabaza y pan integral'],items:['pan integral','queso','tomate','lentejas','arroz','verduras','calabaza']},
+      {meals:['Avena con leche y banana','Pasta con tomate y porotos','Omelette con ensalada'],items:['avena','leche','banana','pasta','tomate','porotos','huevos','hojas verdes']},
+      {meals:['Fruta y yogur natural','Tarta de verduras','Arroz salteado con tofu y vegetales'],items:['fruta','yogur','masa de tarta','verduras','arroz','tofu']},
+      {meals:['Pan integral con palta','Hamburguesa casera de lentejas','Sopa de verduras y queso'],items:['pan integral','palta','lentejas','verduras','queso']},
+      {meals:['Huevos y tostadas','Ensalada de quinoa y garbanzos','Fideos con brócoli y queso'],items:['huevos','pan','quinoa','garbanzos','fideos','brócoli','queso']},
+      {meals:['Yogur con frutos secos','Arroz con porotos y ensalada','Sandwich de queso y vegetales'],items:['yogur','frutos secos','arroz','porotos','hojas verdes','pan integral','queso','vegetales']}
+    ]
+  };
+  function migrateNutrition(){
+    const n=state.nutrition&&typeof state.nutrition==='object'&&!Array.isArray(state.nutrition)?state.nutrition:{};
+    state.nutrition={pattern:n.pattern==='vegetarian'?'vegetarian':'mixed',weeks:n.weeks&&typeof n.weeks==='object'&&!Array.isArray(n.weeks)?n.weeks:{},notes:typeof n.notes==='string'?n.notes.slice(0,800):''};
+  }
+  migrateNutrition();
+  function nutritionWeekId(){return weekKey()}
+  function ensureNutritionWeek(){
+    const key=nutritionWeekId();
+    const current=state.nutrition.weeks[key];
+    if(!current||current.pattern!==state.nutrition.pattern||!Array.isArray(current.indexes)||current.indexes.length!==7){
+      state.nutrition.weeks[key]={pattern:state.nutrition.pattern,indexes:[0,1,2,3,4,5,6]};
+    }
+    return state.nutrition.weeks[key];
+  }
+  function renderNutrition(){
+    const pref=state.nutrition.pattern;
+    $('nutritionPattern').value=pref;
+    const plan=ensureNutritionWeek(), menu=nutritionMenus[pref];
+    const date=nutritionWeekId();
+    $('nutritionWeek').innerHTML=plan.indexes.map((index,i)=>{
+      const d=addDays(date,i),day=localDate(d).toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'short'});
+      const meals=menu[index%menu.length].meals;
+      return `<article class="nutrition-day"><header><h3>${esc(day)}</h3><button data-rotate-meal="${i}" aria-label="Cambiar ideas de comida para ${esc(day)}">Cambiar ↻</button></header><div class="nutrition-meals"><div class="nutrition-meal"><span>Desayuno</span><b>${esc(meals[0])}</b></div><div class="nutrition-meal"><span>Almuerzo</span><b>${esc(meals[1])}</b></div><div class="nutrition-meal"><span>Cena</span><b>${esc(meals[2])}</b></div></div></article>`;
+    }).join('');
+    const ingredients=[...new Set(plan.indexes.flatMap(i=>menu[i%menu.length].items))].sort((a,b)=>a.localeCompare(b,'es'));
+    $('nutritionShopping').innerHTML=ingredients.map(item=>`<span>${esc(item)}</span>`).join('');
+    if(document.activeElement!==$('nutritionNotes'))$('nutritionNotes').value=state.nutrition.notes;
+  }
+  $('nutritionPattern').addEventListener('change',()=>{
+    state.nutrition.pattern=$('nutritionPattern').value==='vegetarian'?'vegetarian':'mixed';
+    ensureNutritionWeek();save();showToast('Ideas actualizadas');
+  });
+  $('nutritionWeek').addEventListener('click',e=>{
+    const btn=e.target.closest('[data-rotate-meal]');if(!btn)return;
+    const i=Number(btn.dataset.rotateMeal);if(!Number.isInteger(i)||i<0||i>6)return;
+    const week=ensureNutritionWeek();week.indexes[i]=(week.indexes[i]+1)%7;
+    save();showToast('Ideas del día actualizadas');
+  });
+  $('nutritionRefresh').addEventListener('click',()=>{
+    if(!confirm('¿Cambiar las ideas de esta semana? Tus notas se conservarán.'))return;
+    const week=ensureNutritionWeek();week.indexes=week.indexes.map(i=>(i+1)%7);save();showToast('Semana reorganizada');
+  });
+  $('nutritionSaveNotes').addEventListener('click',()=>{
+    state.nutrition.notes=$('nutritionNotes').value.slice(0,800);save();showToast('Notas de compras guardadas');
+  });
+
   const saveRaw=()=>localStorage.setItem(KEY,JSON.stringify(state));
   // Registrar XP por evento para que editar la dificultad no reescriba el pasado.
   function migrateMissionData(){
@@ -339,7 +407,7 @@
     $('modeSetting').textContent=state.mode==='66'?'66 DÍAS':'PERMANENTE';$('modeDescription').textContent=state.mode==='66'?'66 días de enfoque y progreso':'Sin fecha de finalización';$('toggleMode').textContent=state.mode==='66'?'CAMBIAR A MODO PERMANENTE':'VOLVER AL PROGRAMA DE 66 DÍAS';
     $('todayLabel').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();$('greeting').textContent=(state.name?state.name+', ':'')+'un día a la vez. Sin excusas, sin perfección.';$('dailyQuote').textContent=quotes[new Date().getDate()%quotes.length];
     const wc=weeklyCount();$('weeklyProgressText').textContent=Math.min(wc,20)+' / 20';$('weeklyProgress').style.width=Math.min(100,wc/20*100)+'%';$('weeklyReward').textContent=state.weeklyRewards[weekKey()]?'RECOMPENSA OBTENIDA':'+150 XP';
-    renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();
+    renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();
   }
   function renderPillars(){const due=dueMissions(),done=doneIds();$('pillarList').innerHTML=Object.entries(categories).map(([key,c])=>{const ms=due.filter(m=>m.category===key),count=ms.filter(m=>done.includes(m.id)).length;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><small>${c.desc}</small></div><span class="pillar-value">${count}/${ms.length}</span></div>`}).join('')}
   function weeklyMissionCount(id){return weekDates().filter(d=>doneIds(d).includes(id)).length}
@@ -565,13 +633,18 @@
     }
     clean.sport=clean.sport&&typeof clean.sport==='object'&&!Array.isArray(clean.sport)?clean.sport:{primary:'running',weeklyTarget:3,sessions:[]};
     clean.goals=Array.isArray(clean.goals)?clean.goals:[];
+    const nutrition=clean.nutrition&&typeof clean.nutrition==='object'&&!Array.isArray(clean.nutrition)?clean.nutrition:{};
+    if(nutrition.notes!==undefined&&(typeof nutrition.notes!=='string'||nutrition.notes.length>800))throw Error('Notas de nutrición inválidas');
+    if(nutrition.weeks!==undefined&&(!nutrition.weeks||typeof nutrition.weeks!=='object'||Array.isArray(nutrition.weeks)||Object.keys(nutrition.weeks).length>500))throw Error('Plan de comidas inválido');
+    if(nutrition.weeks&&Object.entries(nutrition.weeks).some(([key,w])=>!/^\d{4}-\d{2}-\d{2}$/.test(key)||!w||typeof w!=='object'||!['mixed','vegetarian'].includes(w.pattern)||!Array.isArray(w.indexes)||w.indexes.length!==7||!w.indexes.every(i=>Number.isInteger(i)&&i>=0&&i<=6)))throw Error('Semana alimentaria inválida');
+    clean.nutrition=nutrition;
     if(clean.goals.length>500||!clean.goals.every(g=>g&&typeof g.id==='string'&&g.id.length<120&&typeof g.title==='string'&&g.title.length<=70&&Number.isSafeInteger(g.target)&&g.target>=1&&g.target<=10000&&['short','medium','long'].includes(g.horizon)&&/^\d{4}-\d{2}-\d{2}$/.test(g.startDate)&&Number.isSafeInteger(g.manualCount)&&g.manualCount>=0&&g.manualCount<=10000&&typeof g.awarded==='boolean'&&(!g.linkedMissionId||typeof g.linkedMissionId==='string')))throw Error('Objetivos inválidos');
     // El respaldo importado puede venir de v2.1, sin snapshots.
     clean.missions.forEach(m=>{m.days ||= []});
     return clean;
   }
-  $('importData').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.missions)||!imported.completions)throw Error();state=validateBackup(imported);migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();save();showToast('Copia restaurada')}catch{showToast('Archivo inválido')}e.target.value=''});
-  $('resetData').addEventListener('click',()=>{if(confirm('¿Borrar todo tu progreso?')&&confirm('Esta acción no se puede deshacer. ¿Continuar?')){state=fresh();migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();saveRaw();render();openModal('onboardingModal')}});
+  $('importData').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.missions)||!imported.completions)throw Error();state=validateBackup(imported);migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();migrateNutrition();save();showToast('Copia restaurada')}catch{showToast('Archivo inválido')}e.target.value=''});
+  $('resetData').addEventListener('click',()=>{if(confirm('¿Borrar todo tu progreso?')&&confirm('Esta acción no se puede deshacer. ¿Continuar?')){state=fresh();migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();migrateNutrition();saveRaw();render();openModal('onboardingModal')}});
   $('finishOnboarding').addEventListener('click',()=>{state.name=$('onboardingName').value.trim()||'Usuario';state.onboarded=true;save();closeModal('onboardingModal');showToast('Bienvenido a ZUNAREBORN')});
   if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
   // Si la app permanece abierta durante la medianoche, actualizamos el estado al volver a ella.
