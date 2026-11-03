@@ -1,16 +1,20 @@
-# ZUNAREBORN Web v2.3 · Estadísticas y progreso
+# ZUNAREBORN Web 2.4 — Objetivos personales
 
-Actualización sobre la versión 2.2 que mantiene la misma clave de almacenamiento (`zunareborn.v2`).
+Actualización incremental de ZUNAREBORN 2.3. Conserva la clave de almacenamiento `zunareborn.v2` y los hábitos, diario, XP, rachas y estadísticas previas.
 
 ## Novedades
-- Calendario mensual navegable con detalles por día y XP histórico.
-- Resumen de semana en curso con conteos reales, días activos, XP por misiones y minigráfico.
-- Historial individual de los últimos 30 días para cada hábito, incluso archivados.
-- Pantallas y estilos compatibles con móviles.
-- Caché PWA actualizado.
+- Pestaña Objetivos: metas a 7, 30 o 90 días, categoría, unidad y cantidad objetivo.
+- Seguimiento manual (+1) o automático enlazado a un hábito existente.
+- Vista resumida de metas activas en Inicio.
+- XP de recompensa (50, 100 o 200) otorgado una sola vez al completar una meta.
+- Objetivos archivables, reintentos tras vencimiento y respaldo en exportación JSON.
+- Los objetivos conseguidos quedan bloqueados para evitar duplicar recompensas.
 
-## Alcance y precisión
-Los conteos históricos son registros reales de misiones completadas. Los cambios de frecuencia o archivado no conservan una fotografía exacta de qué hábitos correspondían a cada fecha pasada; por ello, esta versión **no inventa porcentajes históricos**. El resumen semanal no incluye los XP de bonus, solamente los XP por misiones.
+## Importante
+- Los datos siguen locales, sin sincronización nube.
+- El modo automático solo lee los cumplimientos de hábitos registrados por esta app, no datos de salud ni sensores.
+- Editar un objetivo activo no modifica XP históricos. El registro de metas vinculadas cuenta los días desde la creación del objetivo.
+- Plazo basado en días calendario locales, no notificaciones.
 
-## Instalación
-Hacé una copia de seguridad en Perfil antes de subir estos 10 archivos a la raíz del repositorio de GitHub Pages. Subí el contenido de la carpeta, no el ZIP ni la carpeta entera. No borres datos de Safari.
+## Publicación
+Subí los 10 archivos de la carpeta a la **raíz** del mismo repositorio GitHub. No subas la carpeta como subdirectorio. Primero exportá una copia de seguridad desde Perfil.

@@ -54,6 +54,8 @@
           <article class="stat-card"><span>✓</span><strong id="homeDone">0/0</strong><small>HOY</small></article>
         </div>
 
+        <div class="section-heading"><div><p class="eyebrow">METAS PERSONALES</p><h2>Objetivos en marcha</h2></div><button class="text-button" data-view="goals">Ver todos ↗</button></div>
+        <div id="homeGoals" class="goal-home-list"></div>
         <div class="section-heading"><div><p class="eyebrow">DESAFÍO SEMANAL</p><h2 id="weeklyTitle">Semana en construcción</h2></div><button class="text-button" data-view="progress">Detalles ↗</button></div>
         <article class="weekly-card">
           <div><span class="weekly-icon">◆</span><div><b id="weeklyChallengeName">Completá 20 misiones</b><small id="weeklyChallengeCopy">Construí consistencia durante esta semana.</small></div></div>
@@ -77,6 +79,15 @@
         <details class="archive-details"><summary>Hábitos archivados (<span id="archivedCount">0</span>)</summary><div id="archivedList"></div></details>
         <button class="outline-button full" id="addMissionBtn">＋ CREAR HÁBITO / MISIÓN</button>
         <p class="micro-note">El historial, XP y rachas quedan guardados en este dispositivo.</p>
+      </section>
+
+      <section id="view-goals" class="view">
+        <div class="page-heading"><p class="eyebrow">CONSTRUÍ UNA DIRECCIÓN</p><h1>Tus <em>objetivos.</em></h1><p class="muted">Metas concretas, pasos pequeños y progreso medible.</p></div>
+        <div class="goal-summary"><div><small>OBJETIVOS ACTIVOS</small><strong id="goalsActive">0</strong></div><div><small>COMPLETADOS</small><strong id="goalsComplete">0</strong></div><div><small>XP DE METAS</small><strong id="goalsXP">0</strong></div></div>
+        <button class="gold-button full" id="createGoalBtn">＋ CREAR OBJETIVO <span>↗</span></button>
+        <div id="goalFilters" class="filter-row"><button class="filter active" data-goal-filter="active">En marcha</button><button class="filter" data-goal-filter="completed">Terminados</button><button class="filter" data-goal-filter="all">Todos</button></div>
+        <div id="goalsList" class="goals-list"></div>
+        <p class="micro-note">Los objetivos vinculados a hábitos se actualizan con los cumplimientos registrados, sin duplicar XP.</p>
       </section>
 
       <section id="view-progress" class="view">
@@ -122,11 +133,11 @@
 
         <section class="settings-group"><h3>DATOS Y PRIVACIDAD</h3><p class="setting-description">Esta versión guarda todo localmente. No hay cuenta ni servidor: tus datos no salen del dispositivo.</p><button class="outline-button full" id="exportData">↓ EXPORTAR COPIA DE SEGURIDAD</button><label class="outline-button full import-label">↑ IMPORTAR COPIA<input type="file" id="importData" accept="application/json"></label><button class="danger-button full" id="resetData">BORRAR TODOS MIS DATOS</button></section>
 
-        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.3</small></footer>
+        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.4</small></footer>
       </section>
     </main>
 
-    <nav class="bottom-nav" aria-label="Navegación"><button class="nav-item active" data-view="home"><span>⌂</span><small>Inicio</small></button><button class="nav-item" data-view="missions"><span>◇</span><small>Misiones</small></button><button class="nav-item" data-view="progress"><span>▥</span><small>Progreso</small></button><button class="nav-item" data-view="profile"><span>◎</span><small>Perfil</small></button></nav>
+    <nav class="bottom-nav" aria-label="Navegación"><button class="nav-item active" data-view="home"><span>⌂</span><small>Inicio</small></button><button class="nav-item" data-view="missions"><span>◇</span><small>Misiones</small></button><button class="nav-item" data-view="goals"><span>◎</span><small>Objetivos</small></button><button class="nav-item" data-view="progress"><span>▥</span><small>Progreso</small></button><button class="nav-item" data-view="profile"><span>♙</span><small>Perfil</small></button></nav>
   </div>
 
   <div class="modal-backdrop" id="missionModal" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="missionModalTitle">
@@ -143,6 +154,20 @@
   </div></div>
 
   <div class="modal-backdrop" id="onboardingModal" aria-hidden="true"><div class="modal onboarding"><p class="eyebrow">BIENVENIDO A ZUNAREBORN</p><h2>Tu reinicio empieza acá.</h2><p class="modal-copy">No buscamos una racha perfecta. Buscamos un sistema al que puedas volver.</p><div class="onboarding-steps"><div><b>01</b><span>Elegí tus misiones.</span></div><div><b>02</b><span>Ganás XP al cumplirlas.</span></div><div><b>03</b><span>Construí 66 días y seguí en modo permanente.</span></div></div><label class="field-label">Tu nombre<input id="onboardingName" maxlength="24" placeholder="Tu nombre"></label><button class="gold-button full" id="finishOnboarding">EMPEZAR MI REINICIO <span>↗</span></button></div></div>
+
+  <div class="modal-backdrop" id="goalModal" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="goalModalTitle">
+    <button class="modal-close" data-close="goalModal" aria-label="Cerrar">×</button>
+    <p class="eyebrow">TU PRÓXIMA CONQUISTA</p><h2 id="goalModalTitle">Nuevo objetivo</h2>
+    <label class="field-label">¿Qué querés conseguir?<input id="goalTitle" maxlength="70" placeholder="Ej. Entrenar 12 veces este mes"></label>
+    <label class="field-label">Área<select id="goalCategory"><option value="fitness">Físico</option><option value="mind">Mentalidad</option><option value="discipline">Disciplina</option><option value="productivity">Productividad</option><option value="energy">Energía</option></select></label>
+    <label class="field-label">Plazo<select id="goalHorizon"><option value="short">Corto · 7 días</option><option value="medium" selected>Mediano · 30 días</option><option value="long">Largo · 90 días</option></select></label>
+    <label class="field-label">¿Cuántas veces / unidades? <input id="goalTarget" type="number" min="1" max="10000" step="1" value="10"></label>
+    <label class="field-label">Unidad <input id="goalUnit" maxlength="18" placeholder="Ej. sesiones, páginas, km" value="veces"></label>
+    <label class="field-label">Seguimiento<select id="goalLink"><option value="">Manual — actualizo el avance yo</option></select></label>
+    <p class="micro-note">Si vinculás un hábito, el objetivo contará sus registros desde la fecha de creación de la meta. Una meta completada entrega XP una sola vez.</p>
+    <button class="gold-button full" id="saveGoalBtn">GUARDAR OBJETIVO <span>↗</span></button>
+    <button class="danger-button full" id="archiveGoalBtn" hidden>ARCHIVAR OBJETIVO</button>
+  </div></div>
 
   <div class="modal-backdrop" id="helpModal" aria-hidden="true"><div class="modal"><button class="modal-close" data-close="helpModal">×</button><p class="eyebrow">INSTALACIÓN</p><h2>Usala como una app.</h2><ol class="help-list"><li>Abrí ZUNAREBORN en Safari.</li><li>Tocá el botón <b>Compartir</b>.</li><li>Elegí <b>Añadir a pantalla de inicio</b>.</li><li>Confirmá el nombre ZUNAREBORN y tocá <b>Añadir</b>.</li></ol></div></div>
 

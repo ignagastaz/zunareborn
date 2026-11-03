@@ -38,7 +38,7 @@
     {id:'xp1000',icon:'◆',name:'Mil puntos',copy:'Acumulá 1.000 XP.',test:s=>s.xp>=1000},
     {id:'day30',icon:'◌',name:'30 días',copy:'Llegá al día 30 del programa.',test:s=>programDay(s)>=30}
   ];
-  function fresh(){return {version:2,onboarded:false,name:'',goal:'balance',mode:'66',startDate:isoToday(),xp:0,streak:0,bestStreak:0,lastActive:null,missions:defaults.map(x=>({...x})),completions:{},journal:{},mood:{},createdAt:isoToday(),weeklyRewards:{}}}
+  function fresh(){return {version:2,onboarded:false,name:'',goal:'balance',mode:'66',startDate:isoToday(),xp:0,streak:0,bestStreak:0,lastActive:null,missions:defaults.map(x=>({...x})),completions:{},journal:{},mood:{},createdAt:isoToday(),weeklyRewards:{},goals:[]}}
   function load(){
     try{
       const raw=localStorage.getItem(KEY); if(raw) return {...fresh(),...JSON.parse(raw)};
@@ -62,6 +62,10 @@
     });
   }
   migrateMissionData();
+  // Datos v2.3 y anteriores: los objetivos empiezan vacíos sin tocar XP ni hábitos.
+  if(!Array.isArray(state.goals))state.goals=[];
+  state.goals=state.goals.filter(g=>g&&typeof g.id==='string'&&typeof g.title==='string');
+  let editingGoalId=null,activeGoalFilter='active';
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function programDay(s=state){return Math.max(1,daysBetween(s.startDate,isoToday())+1)}
   function frequencyLabel(f,m){return f==='custom' ? `Días elegidos (${(m?.days||[]).length})` : ({daily:'Todos los días',weekdays:'Lun–Vie',weekends:'Fin de semana','3x':'Lun · Mié · Vie'})[f]||'Todos los días'}
@@ -110,7 +114,7 @@
     $('modeSetting').textContent=state.mode==='66'?'66 DÍAS':'PERMANENTE';$('modeDescription').textContent=state.mode==='66'?'66 días de enfoque y progreso':'Sin fecha de finalización';$('toggleMode').textContent=state.mode==='66'?'CAMBIAR A MODO PERMANENTE':'VOLVER AL PROGRAMA DE 66 DÍAS';
     $('todayLabel').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();$('greeting').textContent=(state.name?state.name+', ':'')+'un día a la vez. Sin excusas, sin perfección.';$('dailyQuote').textContent=quotes[new Date().getDate()%quotes.length];
     const wc=weeklyCount();$('weeklyProgressText').textContent=Math.min(wc,20)+' / 20';$('weeklyProgress').style.width=Math.min(100,wc/20*100)+'%';$('weeklyReward').textContent=state.weeklyRewards[weekKey()]?'RECOMPENSA OBTENIDA':'+150 XP';
-    renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();
+    renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();
   }
   function renderPillars(){const due=dueMissions(),done=doneIds();$('pillarList').innerHTML=Object.entries(categories).map(([key,c])=>{const ms=due.filter(m=>m.category===key),count=ms.filter(m=>done.includes(m.id)).length;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><small>${c.desc}</small></div><span class="pillar-value">${count}/${ms.length}</span></div>`}).join('')}
   function weeklyMissionCount(id){return weekDates().filter(d=>doneIds(d).includes(id)).length}
@@ -179,6 +183,86 @@
   function renderAchievements(){$('achievementGrid').innerHTML=achievements.map(a=>{const ok=a.test(state);return `<article class="achievement ${ok?'':'locked'}"><span>${a.icon}</span><b>${a.name}</b><small>${ok?'Desbloqueado':a.copy}</small></article>`}).join('')}
   function renderPillarProgress(){$('pillarProgress').innerHTML=Object.entries(categories).map(([key,c])=>{let due=0,done=0;weekDates().forEach(d=>{const ms=state.missions.filter(m=>!m.archived&&!m.paused&&m.category===key&&dueToday(m,d));due+=ms.length;done+=ms.filter(m=>doneIds(d).includes(m.id)).length});const pct=due?Math.round(done/due*100):0;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><div class="pillar-bar"><i style="width:${pct}%"></i></div></div><span class="pillar-value">${pct}%</span></div>`}).join('')}
   function renderJournal(){if(document.activeElement!==$('journalInput'))$('journalInput').value=state.journal[isoToday()]||'';selectedMood=state.mood[isoToday()]||null;document.querySelectorAll('#moodRow button').forEach(b=>b.classList.toggle('active',Number(b.dataset.mood)===selectedMood))}
+  // --- Objetivos personales ---
+  const goalHorizonDays={short:7,medium:30,long:90};
+  const goalReward={short:50,medium:100,long:200};
+  function goalEndDate(g){return addDays(g.startDate,(goalHorizonDays[g.horizon]||30)-1)}
+  function goalCount(g){
+    let value=Number.isSafeInteger(g.manualCount)?Math.max(0,g.manualCount):0;
+    if(g.linkedMissionId){
+      for(const [day,ids] of Object.entries(state.completions||{})){
+        if(day>=g.startDate&&day<=goalEndDate(g)&&Array.isArray(ids)&&ids.includes(g.linkedMissionId))value++;
+      }
+    }
+    return value;
+  }
+  function goalIsDone(g){return !!g.awarded}
+  function goalIsExpired(g){return !g.awarded&&isoToday()>goalEndDate(g)}
+  function awardGoals(){
+    let changed=false;
+    for(const g of state.goals){
+      if(g.archived||g.awarded||goalIsExpired(g))continue;
+      if(goalCount(g)>=g.target){g.awarded=true;g.awardedAt=isoToday();g.rewardGranted=goalReward[g.horizon]||100;state.xp+=g.rewardGranted;changed=true;}
+    }
+    if(changed)showToast('¡Objetivo cumplido! Recompensa de XP');
+    return changed;
+  }
+  function goalCard(g,compact=false){
+    const count=goalCount(g),pct=Math.min(100,Math.round(100*count/g.target)),done=goalIsDone(g),expired=goalIsExpired(g);
+    const label=done?'LOGRADO ✓':expired?'PLAZO VENCIDO':'EN MARCHA';
+    const category=categories[g.category]?.name||'Personal';
+    return `<article class="goal-card ${done?'completed':expired?'expired':''}">
+      <div class="goal-head"><div><p class="eyebrow">${esc(category)} · ${g.horizon==='short'?'CORTO':g.horizon==='long'?'LARGO':'MEDIANO'} PLAZO</p><h3>${esc(g.title)}</h3></div><span class="goal-status">${label}</span></div>
+      <p class="goal-meta">${esc(g.linkedMissionId?'Automático · hábito vinculado':'Registro manual')} · Hasta ${esc(localDate(goalEndDate(g)).toLocaleDateString('es-AR',{day:'numeric',month:'short'}))} · ${done?'+'+(g.rewardGranted||0)+' XP obtenidos':'+'+(goalReward[g.horizon]||100)+' XP al lograrlo'}</p>
+      <div class="goal-progress-row"><span>${Math.min(count,g.target)} / ${g.target} ${esc(g.unit||'veces')}</span><b>${pct}%</b></div><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      ${compact?'':`<div class="goal-actions">${!g.linkedMissionId&&!done&&!expired?`<button data-goal-add="${esc(g.id)}">＋ 1 ${esc(g.unit||'unidad')}</button>`:''}<button class="goal-edit" data-goal-edit="${esc(g.id)}">${done?'Ver detalles':'Editar'}</button>${expired?`<button data-goal-renew="${esc(g.id)}">Nuevo intento</button>`:''}</div>`}
+    </article>`;
+  }
+  function renderGoals(){
+    const goals=state.goals.filter(g=>!g.archived);
+    $('goalsActive').textContent=goals.filter(g=>!g.awarded&&!goalIsExpired(g)).length;
+    $('goalsComplete').textContent=goals.filter(g=>g.awarded).length;
+    $('goalsXP').textContent=goals.reduce((n,g)=>n+(g.rewardGranted||0),0);
+    const display=goals.filter(g=>activeGoalFilter==='all'||(activeGoalFilter==='completed'?g.awarded:!g.awarded)).sort((a,b)=>Number(a.awarded)-Number(b.awarded));
+    $('goalsList').innerHTML=display.length?display.map(g=>goalCard(g)).join(''):'<div class="goal-empty">No hay objetivos en esta categoría. <b>Empezá por una meta alcanzable.</b></div>';
+    const featured=goals.filter(g=>!g.awarded&&!goalIsExpired(g)).slice(0,2);
+    $('homeGoals').innerHTML=featured.length?featured.map(g=>goalCard(g,true)).join(''):'<div class="goal-empty">Todavía no tenés objetivos activos.<br><button class="text-button" data-view="goals">Crear mi primera meta ↗</button></div>';
+    document.querySelectorAll('[data-goal-filter]').forEach(b=>b.classList.toggle('active',b.dataset.goalFilter===activeGoalFilter));
+  }
+  function openGoalEditor(id=null){
+    editingGoalId=id;
+    const g=id?state.goals.find(x=>x.id===id):null;if(id&&!g)return;
+    $('goalModalTitle').textContent=g?'Editar objetivo':'Nuevo objetivo';
+    $('goalTitle').value=g?.title||'';$('goalCategory').value=g?.category||'fitness';
+    $('goalHorizon').value=g?.horizon||'medium';$('goalTarget').value=String(g?.target||10);$('goalUnit').value=g?.unit||'veces';
+    $('goalLink').innerHTML='<option value="">Manual — actualizo el avance yo</option>'+state.missions.filter(m=>!m.archived).map(m=>`<option value="${esc(m.id)}">Automático · ${esc(m.name)}</option>`).join('');
+    $('goalLink').value=g?.linkedMissionId||'';
+    const locked=!!g?.awarded;
+    ['goalTitle','goalCategory','goalHorizon','goalTarget','goalUnit','goalLink'].forEach(field=>$(field).disabled=locked);
+    $('saveGoalBtn').hidden=locked;
+    $('archiveGoalBtn').hidden=!g;
+    openModal('goalModal');
+  }
+  $('createGoalBtn').addEventListener('click',()=>openGoalEditor());
+  $('goalFilters').addEventListener('click',e=>{const b=e.target.closest('[data-goal-filter]');if(b){activeGoalFilter=b.dataset.goalFilter;renderGoals()}});
+  $('goalsList').addEventListener('click',e=>{
+    const add=e.target.closest('[data-goal-add]');if(add){const g=state.goals.find(x=>x.id===add.dataset.goalAdd);if(!g||g.awarded||g.archived||g.linkedMissionId||goalIsExpired(g))return;g.manualCount=Math.min(g.target,Math.max(0,g.manualCount||0)+1);awardGoals();save();return}
+    const edit=e.target.closest('[data-goal-edit]');if(edit){openGoalEditor(edit.dataset.goalEdit);return}
+    const renew=e.target.closest('[data-goal-renew]');if(renew){const prev=state.goals.find(x=>x.id===renew.dataset.goalRenew);if(!prev)return;state.goals.push({...prev,id:'goal-'+Date.now(),startDate:isoToday(),manualCount:0,awarded:false,awardedAt:null,rewardGranted:0,archived:false});save();showToast('Nuevo intento creado')}
+  });
+  $('saveGoalBtn').addEventListener('click',()=>{
+    const title=$('goalTitle').value.trim(),target=Number($('goalTarget').value),unit=$('goalUnit').value.trim()||'veces',horizon=$('goalHorizon').value;
+    if(!title||!Number.isSafeInteger(target)||target<1||target>10000||unit.length>18||!goalHorizonDays[horizon]){showToast('Revisá nombre, cantidad y plazo');return}
+    const props={title,category:$('goalCategory').value,horizon,target,unit,linkedMissionId:$('goalLink').value||null};
+    let g=editingGoalId?state.goals.find(x=>x.id===editingGoalId):null;
+    if(g){if(g.awarded)return;Object.assign(g,props)}
+    else state.goals.push({id:'goal-'+Date.now(),...props,startDate:isoToday(),manualCount:0,awarded:false,archived:false,rewardGranted:0});
+    closeModal('goalModal');awardGoals();save();showToast(g?'Objetivo actualizado':'Objetivo creado');editingGoalId=null;
+  });
+  $('archiveGoalBtn').addEventListener('click',()=>{
+    const g=state.goals.find(x=>x.id===editingGoalId);if(!g||!confirm('¿Archivar este objetivo? Su historial y XP seguirán guardados.'))return;
+    g.archived=true;closeModal('goalModal');save();showToast('Objetivo archivado');editingGoalId=null;
+  });
   $('missionFilters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b){activeFilter=b.dataset.filter;renderMissions()}});
   $('missionList').addEventListener('click',e=>{
     const t=e.target.closest('[data-toggle]');
@@ -188,7 +272,7 @@
       state.completionXP[date] ||= {};
       const awarded=was?(state.completionXP[date][id]??m.xp):m.xp;
       if(was)delete state.completionXP[date][id];else state.completionXP[date][id]=m.xp;
-      state.xp=Math.max(0,state.xp+(was?-awarded:awarded));save();showToast(was?'Misión desmarcada':'Misión completada · +'+awarded+' XP');return;
+      state.xp=Math.max(0,state.xp+(was?-awarded:awarded));awardGoals();save();showToast(was?'Misión desmarcada':'Misión completada · +'+awarded+' XP');return;
     }
     const edit=e.target.closest('[data-edit]');if(edit)openMissionEditor(edit.dataset.edit);
   });
@@ -253,6 +337,8 @@
       if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||!entries||typeof entries!=='object'||Array.isArray(entries))throw Error('Historial de XP inválido');
       for(const [id,xp] of Object.entries(entries))if(id.length>120||!Number.isFinite(xp)||xp<0||xp>500)throw Error('XP histórico inválido');
     }
+    clean.goals=Array.isArray(clean.goals)?clean.goals:[];
+    if(clean.goals.length>500||!clean.goals.every(g=>g&&typeof g.id==='string'&&g.id.length<120&&typeof g.title==='string'&&g.title.length<=70&&Number.isSafeInteger(g.target)&&g.target>=1&&g.target<=10000&&['short','medium','long'].includes(g.horizon)&&/^\d{4}-\d{2}-\d{2}$/.test(g.startDate)&&Number.isSafeInteger(g.manualCount)&&g.manualCount>=0&&g.manualCount<=10000&&typeof g.awarded==='boolean'&&(!g.linkedMissionId||typeof g.linkedMissionId==='string')))throw Error('Objetivos inválidos');
     // El respaldo importado puede venir de v2.1, sin snapshots.
     clean.missions.forEach(m=>{m.days ||= []});
     return clean;
