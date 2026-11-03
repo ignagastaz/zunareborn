@@ -1,37 +1,34 @@
-# ZUNAREBORN Web v2.0
+# ZUNAREBORN — actualización de estabilidad v2.1
 
-Versión mejorada de la PWA, pensada para iPhone/iPad y GitHub Pages.
+Esta actualización parte del ZIP original del repositorio `zunareborn-main.zip`. No cambia el nombre del almacenamiento: mantiene `zunareborn.v2` para reutilizar los datos locales.
 
-## Mejoras principales
-- Onboarding inicial.
-- Misiones/hábitos con frecuencia: diaria, lunes-viernes, fines de semana o 3 veces por semana.
-- Misiones personalizadas eliminables.
-- XP, niveles, rangos, racha actual y mejor racha.
-- Desafío semanal con recompensa automática de XP.
-- Calendario de actividad de 30 días.
-- Sistema de logros/insignias.
-- Balance semanal por pilares.
-- Diario con estado de ánimo.
-- Modo 66 días + modo permanente.
-- Exportación/importación de respaldo.
-- PWA con iconos PNG para iOS y service worker actualizado.
-- Migración automática de datos de la versión v1 cuando sea posible.
+## Cambios
 
-## Limitación actual importante
-Los datos siguen guardándose localmente en el navegador (`localStorage`). No existe todavía una cuenta ni sincronización en nube. Esto evita necesitar backend, claves o servicios externos en esta etapa, pero significa que iPhone e iPad no se sincronizan automáticamente.
+- Fechas del calendario local (Argentina, iPhone/Android) en vez de usar fechas UTC.
+- Cálculo de días independiente de cambios de horario de verano.
+- Mejor manejo de rachas, semanas y los 30 días de actividad.
+- Las misiones personalizadas ahora se **archivan** en vez de borrar sus completados históricos y XP.
+- Se evita que una recompensa semanal se otorgue dos veces al desmarcar o remarcar misiones.
+- Validación adicional de archivos de copia de seguridad.
+- Actualización del panel al regresar a la app tras cambiar el día.
+- Renovación de caché PWA a v2.1.
 
-## Cómo actualizar GitHub Pages
-Reemplazá los archivos del repositorio por los de esta carpeta, manteniéndolos en la raíz del repositorio. GitHub Pages volverá a desplegar automáticamente.
+## Cómo publicar
 
-Archivos a subir:
-- index.html
-- styles.css
-- app.js
-- manifest.webmanifest
-- sw.js
-- icon-180.png
-- icon-192.png
-- icon-512.png
-- README.md
+1. **Primero exportá un respaldo** desde Perfil → Exportar copia de seguridad en cada dispositivo donde uses la aplicación.
+2. Descargá el ZIP original del repositorio de GitHub como segundo respaldo.
+3. Subí los archivos de esta carpeta a la **raíz** del repositorio `ignagastaz/zunareborn` en la rama `main`, reemplazando los existentes.
+4. En GitHub Pages esperá a que termine la publicación, abrí la app en Safari y revisá XP, misiones, rachas y diario.
+5. Si no ves los cambios inmediatamente, cerrá/reabrí la pestaña o la app instalada y recargá.
 
-Si Safari conserva la versión anterior, cerrá la PWA/Safari, volvé a abrir y recargá. Si la instalaste en inicio y persiste el caché, puede ser necesario quitar el acceso directo y añadirlo nuevamente.
+## Límites conocidos
+
+- Los datos siguen guardados únicamente en el dispositivo; no hay sincronización automática.
+- La recompensa semanal se conserva aunque después se desmarque una misión; esto es intencional para evitar duplicados.
+- Los hábitos `3× semana` siguen programados los lunes/miércoles/viernes, no son tres días a elección.
+- Los XP antiguos no se recalculan retrospectivamente porque no existe un registro histórico inmutable de recompensas.
+- Falta probar todas las funciones en Safari real e iPhone/Android antes de llamar esta versión estable.
+
+## Próxima etapa
+
+Separar lógica de fechas/hábitos en módulos probables, añadir edición segura de hábitos, calendarios completos, e integración progresiva de notificaciones. El podómetro automático requiere una app nativa con HealthKit / Health Connect, no puede implementarse de modo fiable solo en GitHub Pages.

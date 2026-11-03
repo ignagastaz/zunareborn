@@ -1,9 +1,13 @@
 (() => {
   const KEY = 'zunareborn.v2';
   const LEGACY_KEY = 'zunareborn.v1';
-  const isoToday = () => new Date().toISOString().slice(0,10);
+  // Fechas calendario locales: sin el desfase UTC y resistentes al horario de verano.
+  const dateKey = date => [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+  const isoToday = () => dateKey(new Date());
   const localDate = d => new Date(d + 'T12:00:00');
-  const daysBetween = (a,b) => Math.floor((localDate(b)-localDate(a))/86400000);
+  const addDays = (d,n) => { const result=localDate(d);result.setDate(result.getDate()+n);return dateKey(result); };
+  const utcCalendarTime = d => {const [y,m,day]=d.split('-').map(Number);return Date.UTC(y,m-1,day)};
+  const daysBetween = (a,b) => Math.round((utcCalendarTime(b)-utcCalendarTime(a))/86400000);
   const categories = {
     fitness:{name:'Físico',icon:'◉',desc:'Entrenamiento, movimiento y cuidado corporal'},
     mind:{name:'Mentalidad',icon:'✧',desc:'Lectura, reflexión y aprendizaje'},
@@ -55,24 +59,30 @@
     if(m.frequency==='3x') return [1,3,5].includes(day);
     return true;
   }
-  function dueMissions(date=isoToday()){return state.missions.filter(m=>dueToday(m,date))}
+  function dueMissions(date=isoToday()){return state.missions.filter(m=>!m.archived && dueToday(m,date))}
   function doneIds(date=isoToday()){return state.completions[date]||[]}
   function totalDone(s=state){return Object.values(s.completions||{}).reduce((n,a)=>n+a.length,0)}
   function dayXP(date=isoToday()){return doneIds(date).reduce((n,id)=>n+(state.missions.find(m=>m.id===id)?.xp||0),0)}
   function levelInfo(){const level=Math.floor(state.xp/500)+1,within=state.xp%500;const titles=['El despertar','La construcción','La constancia','La transformación','La disciplina','La evolución','La excelencia','El renacer'];const ranks=['INICIANTE','DISCIPLINADO','CONSTANTE','IMPARABLE','TRANSFORMADO','MAESTRO'];return {level,within,title:titles[Math.min(level-1,titles.length-1)],rank:ranks[Math.min(Math.floor((level-1)/2),ranks.length-1)]}}
-  function weekKey(date=isoToday()){const d=localDate(date);const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.toISOString().slice(0,10)}
-  function weekDates(){const start=localDate(weekKey());return Array.from({length:7},(_,i)=>{const d=new Date(start);d.setDate(start.getDate()+i);return d.toISOString().slice(0,10)})}
+  function weekKey(date=isoToday()){const day=(localDate(date).getDay()+6)%7;return addDays(date,-day)}
+  function weekDates(){const start=weekKey();return Array.from({length:7},(_,i)=>addDays(start,i))}
   function weeklyCount(){return weekDates().reduce((n,d)=>n+doneIds(d).length,0)}
   function updateStreak(){
     const dates=Object.keys(state.completions).filter(d=>(state.completions[d]||[]).length>0).sort();
     if(!dates.length){state.streak=0;state.bestStreak=Math.max(state.bestStreak||0,0);return}
-    const t=isoToday(), y=new Date(Date.now()-86400000).toISOString().slice(0,10);
+    const t=isoToday(), y=addDays(t,-1);
     let anchor=dates.includes(t)?t:(dates.includes(y)?y:null); if(!anchor){state.streak=0;return}
-    let streak=0, cur=localDate(anchor);
-    while(true){const key=cur.toISOString().slice(0,10);if((state.completions[key]||[]).length>0){streak++;cur.setDate(cur.getDate()-1)}else break}
+    let streak=0, key=anchor;
+    while((state.completions[key]||[]).length>0 && streak<10000){streak++;key=addDays(key,-1)}
     state.streak=streak;state.bestStreak=Math.max(state.bestStreak||0,streak);
   }
-  function grantWeeklyReward(){const key=weekKey();if(weeklyCount()>=20&&!state.weeklyRewards[key]){state.weeklyRewards[key]=true;state.xp+=150;showToast('Desafío semanal completado · +150 XP')}}
+  function grantWeeklyReward(){
+    const key=weekKey();
+    // Recompensa única por semana: no se vuelve a otorgar si se desmarca una misión.
+    if(weeklyCount()>=20&&!state.weeklyRewards[key]){
+      state.weeklyRewards[key]=true;state.xp+=150;showToast('Desafío semanal completado · +150 XP');
+    }
+  }
   function save(){updateStreak();grantWeeklyReward();saveRaw();render()}
   function showToast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2300)}
   function navigate(view){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+view));document.querySelectorAll('.nav-item').forEach(v=>v.classList.toggle('active',v.dataset.view===view));window.scrollTo({top:0,behavior:'smooth'});if(view==='missions')renderMissions()}
@@ -90,12 +100,12 @@
   }
   function renderPillars(){const due=dueMissions(),done=doneIds();$('pillarList').innerHTML=Object.entries(categories).map(([key,c])=>{const ms=due.filter(m=>m.category===key),count=ms.filter(m=>done.includes(m.id)).length;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><small>${c.desc}</small></div><span class="pillar-value">${count}/${ms.length}</span></div>`}).join('')}
   function renderMissions(){const due=dueMissions(),done=doneIds();let list=due.filter(m=>activeFilter==='all'||(activeFilter==='done'?done.includes(m.id):!done.includes(m.id)));$('missionList').innerHTML=list.length?list.map(m=>{const isDone=done.includes(m.id),c=categories[m.category]||categories.discipline;return `<article class="mission-item ${isDone?'done':''}"><button class="mission-check" data-toggle="${esc(m.id)}" aria-label="${isDone?'Desmarcar':'Completar'}">${isDone?'✓':''}</button><div class="mission-copy"><b>${esc(m.name)}</b><small>${c.name} · ${frequencyLabel(m.frequency)} · ${isDone?'Completada':'Pendiente'}</small></div><span class="mission-xp">+${m.xp} XP</span>${m.custom?`<button class="mission-menu" data-delete="${esc(m.id)}" aria-label="Eliminar">×</button>`:''}</article>`}).join(''):`<div class="empty-state"><b>Todo al día.</b>No hay misiones en esta categoría.</div>`;document.querySelectorAll('.filter').forEach(b=>b.classList.toggle('active',b.dataset.filter===activeFilter))}
-  function renderActivity(){const cells=[];for(let i=29;i>=0;i--){const d=new Date(Date.now()-i*86400000).toISOString().slice(0,10),due=state.missions.filter(m=>dueToday(m,d)).length,count=doneIds(d).length,level=count===0?'':count>=Math.max(1,due)?'high':'mid';cells.push(`<div class="activity-cell ${level}" title="${d}: ${count}"><span>${localDate(d).getDate()}</span></div>`)}$('activityGrid').innerHTML=cells.join('')}
+  function renderActivity(){const cells=[];for(let i=29;i>=0;i--){const d=addDays(isoToday(),-i),due=state.missions.filter(m=>!m.archived&&dueToday(m,d)).length,count=doneIds(d).length,level=count===0?'':count>=Math.max(1,due)?'high':'mid';cells.push(`<div class="activity-cell ${level}" title="${d}: ${count}"><span>${localDate(d).getDate()}</span></div>`)}$('activityGrid').innerHTML=cells.join('')}
   function renderAchievements(){$('achievementGrid').innerHTML=achievements.map(a=>{const ok=a.test(state);return `<article class="achievement ${ok?'':'locked'}"><span>${a.icon}</span><b>${a.name}</b><small>${ok?'Desbloqueado':a.copy}</small></article>`}).join('')}
-  function renderPillarProgress(){$('pillarProgress').innerHTML=Object.entries(categories).map(([key,c])=>{let due=0,done=0;weekDates().forEach(d=>{const ms=state.missions.filter(m=>m.category===key&&dueToday(m,d));due+=ms.length;done+=ms.filter(m=>doneIds(d).includes(m.id)).length});const pct=due?Math.round(done/due*100):0;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><div class="pillar-bar"><i style="width:${pct}%"></i></div></div><span class="pillar-value">${pct}%</span></div>`}).join('')}
+  function renderPillarProgress(){$('pillarProgress').innerHTML=Object.entries(categories).map(([key,c])=>{let due=0,done=0;weekDates().forEach(d=>{const ms=state.missions.filter(m=>!m.archived&&m.category===key&&dueToday(m,d));due+=ms.length;done+=ms.filter(m=>doneIds(d).includes(m.id)).length});const pct=due?Math.round(done/due*100):0;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><div class="pillar-bar"><i style="width:${pct}%"></i></div></div><span class="pillar-value">${pct}%</span></div>`}).join('')}
   function renderJournal(){if(document.activeElement!==$('journalInput'))$('journalInput').value=state.journal[isoToday()]||'';selectedMood=state.mood[isoToday()]||null;document.querySelectorAll('#moodRow button').forEach(b=>b.classList.toggle('active',Number(b.dataset.mood)===selectedMood))}
   $('missionFilters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b){activeFilter=b.dataset.filter;renderMissions()}});
-  $('missionList').addEventListener('click',e=>{const t=e.target.closest('[data-toggle]');if(t){const id=t.dataset.toggle,arr=doneIds(),m=state.missions.find(x=>x.id===id),was=arr.includes(id);state.completions[isoToday()]=was?arr.filter(x=>x!==id):[...arr,id];state.xp=Math.max(0,state.xp+(was?-(m?.xp||0):(m?.xp||0)));save();showToast(was?'Misión desmarcada':'Misión completada · +'+(m?.xp||0)+' XP');return}const del=e.target.closest('[data-delete]');if(del&&confirm('¿Eliminar esta misión personalizada?')){const id=del.dataset.delete;state.missions=state.missions.filter(m=>m.id!==id);Object.keys(state.completions).forEach(d=>state.completions[d]=state.completions[d].filter(x=>x!==id));save();showToast('Misión eliminada')}});
+  $('missionList').addEventListener('click',e=>{const t=e.target.closest('[data-toggle]');if(t){const id=t.dataset.toggle,arr=doneIds(),m=dueMissions().find(x=>x.id===id);if(!m)return;const was=arr.includes(id);state.completions[isoToday()]=was?arr.filter(x=>x!==id):[...arr,id];state.xp=Math.max(0,state.xp+(was?-(m?.xp||0):(m?.xp||0)));save();showToast(was?'Misión desmarcada':'Misión completada · +'+(m?.xp||0)+' XP');return}const del=e.target.closest('[data-delete]');if(del&&confirm('¿Archivar esta misión? Ya no aparecerá, pero conservarás tus XP y tu historial.')){const m=state.missions.find(m=>m.id===del.dataset.delete);if(m&&m.custom){m.archived=true;save();showToast('Misión archivada; historial conservado')}}});
   function openModal(id){$(id).classList.add('open');$(id).setAttribute('aria-hidden','false')} function closeModal(id){$(id).classList.remove('open');$(id).setAttribute('aria-hidden','true')}
   document.querySelectorAll('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m&&m.id!=='onboardingModal')closeModal(m.id)}));
   $('addMissionBtn').addEventListener('click',()=>{openModal('missionModal');setTimeout(()=>$('newMissionName').focus(),100)});
@@ -107,9 +117,26 @@
   $('restartProgram').addEventListener('click',()=>{if(confirm('¿Reiniciar el contador? Tu historial y XP se conservan.')){state.startDate=isoToday();state.mode='66';save();showToast('Nuevo ciclo iniciado')}});
   $('installHelp').addEventListener('click',()=>openModal('helpModal'));
   $('exportData').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='zunareborn-backup-'+isoToday()+'.json';a.click();URL.revokeObjectURL(url);showToast('Copia exportada')});
-  $('importData').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.missions)||!imported.completions)throw Error();state={...fresh(),...imported,version:2,onboarded:true};save();showToast('Copia restaurada')}catch{showToast('Archivo inválido')}e.target.value=''});
+  function validateBackup(obj){
+    if(!obj || typeof obj!=='object' || Array.isArray(obj) || !Array.isArray(obj.missions) || !obj.completions || typeof obj.completions!=='object' || Array.isArray(obj.completions))throw Error('Formato inválido');
+    if(obj.missions.length>5000 || Object.keys(obj.completions).length>20000)throw Error('Copia excesiva');
+    if(!obj.missions.every(m=>m&&typeof m.id==='string'&&m.id.length<120&&typeof m.name==='string'&&m.name.length<=100&&Number.isInteger(Number(m.xp))&&Number(m.xp)>=0&&Number(m.xp)<=500))throw Error('Misiones inválidas');
+    if(!Object.entries(obj.completions).every(([d,ids])=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&Array.isArray(ids)&&ids.length<=5000&&ids.every(id=>typeof id==='string')))throw Error('Historial inválido');
+    if(typeof obj.xp!=='number'||!Number.isFinite(obj.xp)||obj.xp<0||obj.xp>100000000)throw Error('XP inválido');
+    const clean={...fresh(),...obj,version:2,onboarded:true};
+    clean.missions=obj.missions.map(m=>({...m,frequency:['daily','weekdays','weekends','3x'].includes(m.frequency)?m.frequency:'daily',archived:!!m.archived,custom:!!m.custom,xp:Number(m.xp)}));
+    clean.name=String(clean.name||'Usuario').slice(0,24);
+    clean.journal=(clean.journal&&typeof clean.journal==='object'&&!Array.isArray(clean.journal))?clean.journal:{};
+    clean.mood=(clean.mood&&typeof clean.mood==='object'&&!Array.isArray(clean.mood))?clean.mood:{};
+    clean.weeklyRewards=(clean.weeklyRewards&&typeof clean.weeklyRewards==='object'&&!Array.isArray(clean.weeklyRewards))?clean.weeklyRewards:{};
+    return clean;
+  }
+  $('importData').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.missions)||!imported.completions)throw Error();state=validateBackup(imported);save();showToast('Copia restaurada')}catch{showToast('Archivo inválido')}e.target.value=''});
   $('resetData').addEventListener('click',()=>{if(confirm('¿Borrar todo tu progreso?')&&confirm('Esta acción no se puede deshacer. ¿Continuar?')){state=fresh();saveRaw();render();openModal('onboardingModal')}});
   $('finishOnboarding').addEventListener('click',()=>{state.name=$('onboardingName').value.trim()||'Usuario';state.onboarded=true;save();closeModal('onboardingModal');showToast('Bienvenido a ZUNAREBORN')});
   if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  // Si la app permanece abierta durante la medianoche, actualizamos el estado al volver a ella.
+  let lastVisibleDay=isoToday();
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){const now=isoToday();if(lastVisibleDay!==now){lastVisibleDay=now;render()}}});
   saveRaw();render();if(!state.onboarded)openModal('onboardingModal');
 })();
