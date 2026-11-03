@@ -54,6 +54,9 @@
           <article class="stat-card"><span>✓</span><strong id="homeDone">0/0</strong><small>HOY</small></article>
         </div>
 
+
+        <div class="section-heading"><div><p class="eyebrow">TU ACTIVIDAD</p><h2>Movimiento y deporte</h2></div><button class="text-button" data-view="movement">Abrir ↗</button></div>
+        <article class="sport-teaser"><div><span class="sport-emoji">🏃</span><div><b id="homeSport">Elegí tu deporte</b><small id="homeSportSummary">Registrá tus entrenamientos y avanzá a tu ritmo.</small></div></div><button class="outline-button full" data-view="movement">VER MI ACTIVIDAD ↗</button></article>
         <div class="section-heading"><div><p class="eyebrow">METAS PERSONALES</p><h2>Objetivos en marcha</h2></div><button class="text-button" data-view="goals">Ver todos ↗</button></div>
         <div id="homeGoals" class="goal-home-list"></div>
         <div class="section-heading"><div><p class="eyebrow">DESAFÍO SEMANAL</p><h2 id="weeklyTitle">Semana en construcción</h2></div><button class="text-button" data-view="progress">Detalles ↗</button></div>
@@ -121,12 +124,33 @@
         <article class="journal-card"><textarea id="journalInput" placeholder="¿Qué hice bien hoy? ¿Qué puedo mejorar mañana?"></textarea><div class="mood-row" id="moodRow"><button data-mood="1">😣</button><button data-mood="2">😕</button><button data-mood="3">😐</button><button data-mood="4">🙂</button><button data-mood="5">🔥</button></div><button class="gold-button full" id="saveJournal">GUARDAR REFLEXIÓN <span>↗</span></button><small id="journalSaved" class="saved-note"></small></article>
       </section>
 
+
+      <section id="view-movement" class="view">
+        <div class="page-heading"><p class="eyebrow">ZUNAREBORN SPORT</p><h1>Tu <em>movimiento.</em></h1><p class="muted">Entrená con intención. Registrá sesiones reales y encontrá ideas para mejorar tu disciplina.</p></div>
+        <article class="sport-summary-card">
+          <p class="eyebrow">TU DISCIPLINA</p>
+          <div class="sport-title-row"><span id="sportIcon" class="sport-big-icon">🏃</span><div><h2 id="sportName">Running</h2><small id="sportDescription">Elegí tu disciplina principal</small></div></div>
+          <label class="field-label">Deporte principal<select id="sportChoice"><option value="running">Running</option><option value="football">Fútbol</option><option value="gym">Gimnasio / fuerza</option><option value="cycling">Ciclismo</option><option value="basketball">Básquet</option><option value="swimming">Natación</option><option value="other">Otro deporte</option></select></label>
+          <label class="field-label">Objetivo de sesiones por semana<select id="sportWeeklyTarget"><option value="1">1 sesión</option><option value="2">2 sesiones</option><option value="3">3 sesiones</option><option value="4">4 sesiones</option><option value="5">5 sesiones</option><option value="6">6 sesiones</option><option value="7">7 sesiones</option></select></label>
+          <button class="outline-button full" id="saveSportPreferences">GUARDAR DISCIPLINA</button>
+        </article>
+        <div class="section-heading"><div><p class="eyebrow">ESTA SEMANA</p><h2>Registro deportivo</h2></div></div>
+        <div class="stat-grid"><article class="stat-card"><span>🏅</span><strong id="sportSessions">0</strong><small>SESIONES</small></article><article class="stat-card"><span>⏱</span><strong id="sportMinutes">0</strong><small>MINUTOS</small></article><article class="stat-card"><span>◎</span><strong id="sportTargetProgress">0/3</strong><small>META SEMANAL</small></article></div>
+        <button class="gold-button full" id="openTrainingEditor">＋ REGISTRAR ENTRENAMIENTO <span>↗</span></button>
+        <div class="section-heading"><div><p class="eyebrow">ÚLTIMOS REGISTROS</p><h2>Mis entrenamientos</h2></div></div>
+        <div id="trainingList" class="training-list"></div>
+        <div class="section-heading"><div><p class="eyebrow">GUÍA INICIAL</p><h2>Mejorá tu práctica</h2></div></div>
+        <article class="sport-guide"><p id="sportGuideIntro"></p><div id="sportDrills" class="sport-drills"></div><p class="micro-note">Ideas generales para comenzar; no sustituyen entrenamiento profesional ni asesoramiento médico. Adaptá intensidad y técnica a tu experiencia.</p></article>
+        <article class="sport-future"><b>🚶 Pasos automáticos — próxima integración</b><p>Esta web todavía no puede consultar Apple Health o Health Connect en segundo plano. No mostramos pasos ficticios. Cuando construyamos el puente móvil, pediremos permiso para leer los datos reales.</p></article>
+      </section>
+
       <section id="view-profile" class="view">
         <div class="page-heading"><p class="eyebrow">TU CAMINO, TUS REGLAS</p><h1>Tu <em>perfil.</em></h1><p class="muted">Personalizá la experiencia y protegé tu progreso.</p></div>
         <article class="profile-banner"><div class="profile-avatar" id="profileAvatar">Z</div><div><h2 id="profileName">Usuario</h2><p id="profileSince">Miembro desde hoy</p></div><span class="tag">LVL <b id="profileLevel">1</b></span></article>
 
         <section class="settings-group"><h3>DATOS PERSONALES</h3><label class="field-label">¿Cómo querés que te llamemos?<input id="nameInput" maxlength="24"></label><label class="field-label">Objetivo principal<select id="goalInput"><option value="balance">Equilibrar todas mis áreas</option><option value="fitness">Mejorar mi físico</option><option value="discipline">Construir disciplina</option><option value="mind">Fortalecer mente y enfoque</option><option value="productivity">Mejorar productividad</option></select></label><button class="outline-button full" id="saveProfile">GUARDAR PERFIL</button></section>
 
+        <section class="settings-group"><h3>MOVIMIENTO Y DEPORTE</h3><p class="setting-description">Elegí una disciplina, guardá entrenamientos y seguí una meta semanal.</p><button class="outline-button full" data-view="movement">ABRIR ACTIVIDAD DEPORTIVA</button></section>
         <section class="settings-group"><h3>PROGRAMA</h3><div class="setting-row"><div><b>Modo de transformación</b><small id="modeDescription">66 días de enfoque</small></div><span id="modeSetting" class="setting-value">66 DÍAS</span></div><button class="outline-button full" id="toggleMode">CAMBIAR A MODO PERMANENTE</button><button class="outline-button full" id="restartProgram">REINICIAR CICLO DE 66 DÍAS</button></section>
 
         <section class="settings-group" id="reminderSettings"><h3>RECORDATORIOS Y AVISOS</h3>
@@ -150,7 +174,7 @@
 
         <section class="settings-group"><h3>DATOS Y PRIVACIDAD</h3><p class="setting-description">Esta versión guarda todo localmente. No hay cuenta ni servidor: tus datos no salen del dispositivo.</p><button class="outline-button full" id="exportData">↓ EXPORTAR COPIA DE SEGURIDAD</button><label class="outline-button full import-label">↑ IMPORTAR COPIA<input type="file" id="importData" accept="application/json"></label><button class="danger-button full" id="resetData">BORRAR TODOS MIS DATOS</button></section>
 
-        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.5</small></footer>
+        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.6</small></footer>
       </section>
     </main>
 
@@ -188,6 +212,7 @@
 
   <div class="modal-backdrop" id="helpModal" aria-hidden="true"><div class="modal"><button class="modal-close" data-close="helpModal">×</button><p class="eyebrow">INSTALACIÓN</p><h2>Usala como una app.</h2><ol class="help-list"><li>Abrí ZUNAREBORN en Safari.</li><li>Tocá el botón <b>Compartir</b>.</li><li>Elegí <b>Añadir a pantalla de inicio</b>.</li><li>Confirmá el nombre ZUNAREBORN y tocá <b>Añadir</b>.</li></ol></div></div>
 
+  <div class="modal-backdrop" id="trainingModal" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="trainingModalTitle"><button class="modal-close" data-close="trainingModal" aria-label="Cerrar">×</button><p class="eyebrow">TU SESIÓN CUENTA</p><h2 id="trainingModalTitle">Registrar entrenamiento</h2><label class="field-label">Fecha<input type="date" id="trainingDate"></label><label class="field-label">Deporte<select id="trainingSport"><option value="running">Running</option><option value="football">Fútbol</option><option value="gym">Gimnasio / fuerza</option><option value="cycling">Ciclismo</option><option value="basketball">Básquet</option><option value="swimming">Natación</option><option value="other">Otro deporte</option></select></label><label class="field-label">Duración (minutos)<input type="number" id="trainingDuration" min="1" max="720" step="1" value="30"></label><label class="field-label">Esfuerzo percibido<select id="trainingEffort"><option value="1">Suave</option><option value="2" selected>Moderado</option><option value="3">Intenso</option></select></label><label class="field-label">¿Qué trabajaste?<textarea id="trainingNotes" maxlength="280" placeholder="Ej. técnica, resistencia, movilidad, coordinación..."></textarea></label><button class="gold-button full" id="saveTraining">GUARDAR ENTRENAMIENTO <span>↗</span></button></div></div>
   <div class="modal-backdrop" id="reminderModal" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="reminderModalTitle">
     <button class="modal-close" data-close="reminderModal" aria-label="Cerrar">×</button><p class="eyebrow">TU CENTRO DE AVISOS</p><h2 id="reminderModalTitle">Recordatorios</h2>
     <p class="modal-copy">Los avisos aparecen cuando usás ZUNAREBORN. No son notificaciones push del teléfono.</p>

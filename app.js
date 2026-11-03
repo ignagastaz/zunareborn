@@ -38,7 +38,7 @@
     {id:'xp1000',icon:'◆',name:'Mil puntos',copy:'Acumulá 1.000 XP.',test:s=>s.xp>=1000},
     {id:'day30',icon:'◌',name:'30 días',copy:'Llegá al día 30 del programa.',test:s=>programDay(s)>=30}
   ];
-  function fresh(){return {version:2,onboarded:false,name:'',goal:'balance',mode:'66',startDate:isoToday(),xp:0,streak:0,bestStreak:0,lastActive:null,missions:defaults.map(x=>({...x})),completions:{},journal:{},mood:{},createdAt:isoToday(),weeklyRewards:{},goals:[]}}
+  function fresh(){return {version:2,onboarded:false,name:'',goal:'balance',mode:'66',startDate:isoToday(),xp:0,streak:0,bestStreak:0,lastActive:null,missions:defaults.map(x=>({...x})),completions:{},journal:{},mood:{},createdAt:isoToday(),weeklyRewards:{},goals:[],sport:{primary:'running',weeklyTarget:3,sessions:[]}}}
   function load(){
     try{
       const raw=localStorage.getItem(KEY); if(raw) return {...fresh(),...JSON.parse(raw)};
@@ -78,6 +78,38 @@
     state.reminders.inbox=state.reminders.inbox.filter(x=>x&&typeof x.id==='string'&&typeof x.title==='string'&&typeof x.message==='string').slice(0,80);
   }
   migrateReminders();
+  // Módulo deportivo: datos independientes de misiones/XP para evitar recompensas duplicadas.
+  const sports={
+    running:{name:'Running',icon:'🏃',intro:'Enfoque: progresión gradual, postura relajada y constancia.',drills:['Calentá 5–10 minutos antes de aumentar el ritmo.','Practicá pasos cómodos y mantené hombros relajados.','Alterná sesiones suaves y recuperación.']},
+    football:{name:'Fútbol',icon:'⚽',intro:'Enfoque: control de balón, lectura del juego y coordinación.',drills:['Trabajá recepción y pases con ambos perfiles.','Practicá orientación corporal antes de recibir.','En defensa, priorizá posicionamiento y distancia antes de intentar recuperar.']},
+    gym:{name:'Gimnasio / fuerza',icon:'🏋️',intro:'Enfoque: técnica, control del movimiento y progresión sostenible.',drills:['Comenzá con cargas que te permitan controlar cada repetición.','Registrá series y sensaciones para progresar de forma gradual.','Dale importancia al descanso y a la movilidad.']},
+    cycling:{name:'Ciclismo',icon:'🚴',intro:'Enfoque: constancia, cadencia cómoda y seguridad.',drills:['Revisá frenos, casco y estado de la bicicleta.','Mantené una intensidad que puedas sostener.','Practicá cambios de ritmo breves según tu experiencia.']},
+    basketball:{name:'Básquet',icon:'🏀',intro:'Enfoque: manejo de balón, desplazamientos y lectura del espacio.',drills:['Practicá bote controlado con ambas manos.','Trabajá posición defensiva y desplazamientos laterales.','Entrená pases y recepciones en movimiento.']},
+    swimming:{name:'Natación',icon:'🏊',intro:'Enfoque: respiración, técnica y control del ritmo.',drills:['Priorizá una respiración cómoda y regular.','Practicá deslizamiento y alineación corporal.','Entrená con supervisión adecuada y respetá la seguridad acuática.']},
+    other:{name:'Otro deporte',icon:'🎯',intro:'Elegí una habilidad concreta y registrá tu evolución.',drills:['Definí una habilidad técnica por sesión.','Anotá qué salió bien y qué querés mejorar.','Intercalá trabajo y recuperación para entrenar de forma sostenible.']}
+  };
+  function migrateSport(){
+    const existing=state.sport&&typeof state.sport==='object'&&!Array.isArray(state.sport)?state.sport:{};
+    state.sport={primary:sports[existing.primary]?existing.primary:'running',weeklyTarget:Number.isInteger(existing.weeklyTarget)&&existing.weeklyTarget>=1&&existing.weeklyTarget<=7?existing.weeklyTarget:3,sessions:Array.isArray(existing.sessions)?existing.sessions.filter(s=>s&&typeof s.id==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s.date)&&sports[s.sport]&&Number.isInteger(s.minutes)&&s.minutes>=1&&s.minutes<=720).slice(-2000):[]};
+  }
+  migrateSport();
+  function weeklySportSessions(){const w=weekDates();return state.sport.sessions.filter(s=>w.includes(s.date));}
+  function renderSport(){
+    const chosen=sports[state.sport.primary],sessions=weeklySportSessions(),minutes=sessions.reduce((n,s)=>n+s.minutes,0);
+    $('sportChoice').value=state.sport.primary;$('sportWeeklyTarget').value=String(state.sport.weeklyTarget);
+    $('sportIcon').textContent=chosen.icon;$('sportName').textContent=chosen.name;$('sportDescription').textContent='Tu disciplina principal';
+    $('sportSessions').textContent=sessions.length;$('sportMinutes').textContent=minutes;$('sportTargetProgress').textContent=sessions.length+'/'+state.sport.weeklyTarget;
+    $('homeSport').textContent=chosen.icon+' '+chosen.name;
+    $('homeSportSummary').textContent=sessions.length+' '+(sessions.length===1?'sesión registrada':'sesiones registradas')+' esta semana · '+minutes+' min';
+    $('sportGuideIntro').textContent=chosen.intro;
+    $('sportDrills').innerHTML=chosen.drills.map((t,i)=>`<div class="sport-drill"><span>${String(i+1).padStart(2,'0')}</span><p>${esc(t)}</p></div>`).join('');
+    const sorted=[...state.sport.sessions].sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id)).slice(0,20);
+    $('trainingList').innerHTML=sorted.length?sorted.map(s=>`<article class="training-entry"><span class="training-entry-icon">${sports[s.sport].icon}</span><div><b>${esc(sports[s.sport].name)} · ${s.minutes} min</b><small>${esc(s.date)} · ${['','Suave','Moderado','Intenso'][s.effort]||'Moderado'}</small>${s.notes?`<p>${esc(s.notes)}</p>`:''}</div><button data-training-delete="${esc(s.id)}" class="training-delete" aria-label="Borrar sesión">×</button></article>`).join(''):'<div class="empty-state"><b>Tu próximo entrenamiento empieza acá.</b>Registrá una sesión para ver tu historial deportivo.</div>';
+  }
+  $('saveSportPreferences').addEventListener('click',()=>{const id=$('sportChoice').value,target=Number($('sportWeeklyTarget').value);if(!sports[id]||!Number.isInteger(target)||target<1||target>7)return;state.sport.primary=id;state.sport.weeklyTarget=target;save();showToast('Disciplina guardada');});
+  $('openTrainingEditor').addEventListener('click',()=>{$('trainingDate').value=isoToday();$('trainingDate').max=isoToday();$('trainingSport').value=state.sport.primary;$('trainingDuration').value='30';$('trainingEffort').value='2';$('trainingNotes').value='';openModal('trainingModal')});
+  $('saveTraining').addEventListener('click',()=>{const date=$('trainingDate').value,sport=$('trainingSport').value,minutes=Number($('trainingDuration').value),effort=Number($('trainingEffort').value),notes=$('trainingNotes').value.trim();if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||date>isoToday()||date<'2000-01-01'||!sports[sport]||!Number.isInteger(minutes)||minutes<1||minutes>720||![1,2,3].includes(effort)||notes.length>280){showToast('Revisá la sesión y su fecha');return}state.sport.sessions.push({id:'session-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),date,sport,minutes,effort,notes});closeModal('trainingModal');save();showToast('Entrenamiento guardado');});
+  $('trainingList').addEventListener('click',e=>{const b=e.target.closest('[data-training-delete]');if(!b)return;if(!confirm('¿Eliminar este registro de entrenamiento?'))return;state.sport.sessions=state.sport.sessions.filter(x=>x.id!==b.dataset.trainingDelete);save();showToast('Registro eliminado')});
   function currentClock(){const d=new Date();return [String(d.getHours()).padStart(2,'0'),String(d.getMinutes()).padStart(2,'0')].join(':')}
   function createReminder(id,title,message,now){
     const r=state.reminders;
@@ -187,7 +219,7 @@
     $('modeSetting').textContent=state.mode==='66'?'66 DÍAS':'PERMANENTE';$('modeDescription').textContent=state.mode==='66'?'66 días de enfoque y progreso':'Sin fecha de finalización';$('toggleMode').textContent=state.mode==='66'?'CAMBIAR A MODO PERMANENTE':'VOLVER AL PROGRAMA DE 66 DÍAS';
     $('todayLabel').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();$('greeting').textContent=(state.name?state.name+', ':'')+'un día a la vez. Sin excusas, sin perfección.';$('dailyQuote').textContent=quotes[new Date().getDate()%quotes.length];
     const wc=weeklyCount();$('weeklyProgressText').textContent=Math.min(wc,20)+' / 20';$('weeklyProgress').style.width=Math.min(100,wc/20*100)+'%';$('weeklyReward').textContent=state.weeklyRewards[weekKey()]?'RECOMPENSA OBTENIDA':'+150 XP';
-    renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();
+    renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();
   }
   function renderPillars(){const due=dueMissions(),done=doneIds();$('pillarList').innerHTML=Object.entries(categories).map(([key,c])=>{const ms=due.filter(m=>m.category===key),count=ms.filter(m=>done.includes(m.id)).length;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><small>${c.desc}</small></div><span class="pillar-value">${count}/${ms.length}</span></div>`}).join('')}
   function weeklyMissionCount(id){return weekDates().filter(d=>doneIds(d).includes(id)).length}
@@ -210,7 +242,7 @@
     $('archivedCount').textContent=inactive.length;
     $('archivedList').innerHTML=inactive.length?inactive.map(m=>`<article class="archived-habit"><span>${esc(m.name)}</span><button class="text-button" data-restore="${esc(m.id)}">Restaurar</button></article>`).join(''):'<p class="micro-note">No tenés hábitos archivados.</p>';
   }
-  function renderActivity(){const cells=[];for(let i=29;i>=0;i--){const d=addDays(isoToday(),-i),due=state.missions.filter(m=>!m.archived&&!m.paused&&dueToday(m,d)).length,count=doneIds(d).length,level=count===0?'':count>=Math.max(1,due)?'high':'mid';cells.push(`<div class="activity-cell ${level}" title="${d}: ${count}"><span>${localDate(d).getDate()}</span></div>`)}$('activityGrid').innerHTML=cells.join('')}
+  function renderActivity(){const cells=[];for(let i=29;i>=0;i--){const d=addDays(isoToday(),-i),due=d===isoToday()?dueMissions().length:0,count=doneIds(d).length,level=count===0?'':(d===isoToday()&&due>0&&count>=due?'high':'mid');cells.push(`<div class="activity-cell ${level}" title="${d}: ${count} misiones registradas"><span>${localDate(d).getDate()}</span></div>`)}$('activityGrid').innerHTML=cells.join('')}
   // Estadísticas descriptivas: no reconstruimos metas pasadas a partir de hábitos modificados.
   function monthShift(n){
     const [y,m]=viewedMonth.split('-').map(Number);const d=new Date(y,m-1+n,1,12);
@@ -394,6 +426,7 @@
   $('installHelp').addEventListener('click',()=>openModal('helpModal'));
   $('exportData').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='zunareborn-backup-'+isoToday()+'.json';a.click();URL.revokeObjectURL(url);showToast('Copia exportada')});
   function validateBackup(obj){
+    if(JSON.stringify(obj).length>5000000)throw Error('Copia demasiado grande');
     if(!obj || typeof obj!=='object' || Array.isArray(obj) || !Array.isArray(obj.missions) || !obj.completions || typeof obj.completions!=='object' || Array.isArray(obj.completions))throw Error('Formato inválido');
     if(obj.missions.length>5000 || Object.keys(obj.completions).length>20000)throw Error('Copia excesiva');
     if(!obj.missions.every(m=>m&&typeof m.id==='string'&&m.id.length<120&&typeof m.name==='string'&&m.name.length<=100&&Number.isInteger(Number(m.xp))&&Number(m.xp)>=0&&Number(m.xp)<=500&&(!m.days||(Array.isArray(m.days)&&m.days.length<=7&&m.days.every(d=>Number.isInteger(d)&&d>=0&&d<=6)))))throw Error('Misiones inválidas');
@@ -410,14 +443,15 @@
       if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||!entries||typeof entries!=='object'||Array.isArray(entries))throw Error('Historial de XP inválido');
       for(const [id,xp] of Object.entries(entries))if(id.length>120||!Number.isFinite(xp)||xp<0||xp>500)throw Error('XP histórico inválido');
     }
+    clean.sport=clean.sport&&typeof clean.sport==='object'&&!Array.isArray(clean.sport)?clean.sport:{primary:'running',weeklyTarget:3,sessions:[]};
     clean.goals=Array.isArray(clean.goals)?clean.goals:[];
     if(clean.goals.length>500||!clean.goals.every(g=>g&&typeof g.id==='string'&&g.id.length<120&&typeof g.title==='string'&&g.title.length<=70&&Number.isSafeInteger(g.target)&&g.target>=1&&g.target<=10000&&['short','medium','long'].includes(g.horizon)&&/^\d{4}-\d{2}-\d{2}$/.test(g.startDate)&&Number.isSafeInteger(g.manualCount)&&g.manualCount>=0&&g.manualCount<=10000&&typeof g.awarded==='boolean'&&(!g.linkedMissionId||typeof g.linkedMissionId==='string')))throw Error('Objetivos inválidos');
     // El respaldo importado puede venir de v2.1, sin snapshots.
     clean.missions.forEach(m=>{m.days ||= []});
     return clean;
   }
-  $('importData').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.missions)||!imported.completions)throw Error();state=validateBackup(imported);migrateMissionData();migrateReminders();save();showToast('Copia restaurada')}catch{showToast('Archivo inválido')}e.target.value=''});
-  $('resetData').addEventListener('click',()=>{if(confirm('¿Borrar todo tu progreso?')&&confirm('Esta acción no se puede deshacer. ¿Continuar?')){state=fresh();migrateMissionData();migrateReminders();saveRaw();render();openModal('onboardingModal')}});
+  $('importData').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.missions)||!imported.completions)throw Error();state=validateBackup(imported);migrateMissionData();migrateReminders();migrateSport();save();showToast('Copia restaurada')}catch{showToast('Archivo inválido')}e.target.value=''});
+  $('resetData').addEventListener('click',()=>{if(confirm('¿Borrar todo tu progreso?')&&confirm('Esta acción no se puede deshacer. ¿Continuar?')){state=fresh();migrateMissionData();migrateReminders();migrateSport();saveRaw();render();openModal('onboardingModal')}});
   $('finishOnboarding').addEventListener('click',()=>{state.name=$('onboardingName').value.trim()||'Usuario';state.onboarded=true;save();closeModal('onboardingModal');showToast('Bienvenido a ZUNAREBORN')});
   if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
   // Si la app permanece abierta durante la medianoche, actualizamos el estado al volver a ella.

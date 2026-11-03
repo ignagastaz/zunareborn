@@ -1,23 +1,39 @@
-# ZUNAREBORN Web 2.5 — Recordatorios dentro de la aplicación
+# ZUNAREBORN Web 2.6 — Movimiento y auditoría
 
-Actualización incremental de la versión 2.4, con la misma clave de almacenamiento `zunareborn.v2`.
+Basada en la versión 2.5 enviada y validada por el usuario. Todos los archivos se colocan **en la raíz del repositorio** para GitHub Pages.
 
-## Novedades
-- Configuración de avisos en Perfil: activar/desactivar, apertura y cierre del día, avisos de objetivos, horario individual de cada hábito.
-- Campana con contador y bandeja de avisos.
-- Alertas de hábitos pendientes según los días programados.
-- Deduplicación diaria de avisos y límite de historial.
-- Los ajustes y la bandeja se incluyen en el respaldo JSON.
-- Revisión de avisos al abrir, volver a la app o mientras permanece activa.
+## Funciones nuevas
+- Apartado Movimiento accesible desde Inicio y Perfil.
+- Elección de deporte: running, fútbol, gimnasio, ciclismo, básquet, natación y otro.
+- Objetivo semanal de sesiones.
+- Registro de entrenamientos por fecha, deporte, minutos, intensidad y notas.
+- Historial de sesiones, eliminación confirmada y resumen semanal.
+- Consejos generales de técnica por disciplina (orientativos, no personalizados por IA).
+- Exportación e importación de sesiones como parte del respaldo existente.
+- PWA cache versionado 2.6.
 
-## Límites **muy importantes**
-Estos son **avisos dentro de la aplicación**, no notificaciones push del sistema. **No llegan con la app cerrada**; para que aparezcan hay que abrir ZUNAREBORN o mantenerla activa. No se utilizan permisos del sistema ni servicios externos. Para push verdaderas en iOS/Android necesitaremos infraestructura (servicio de envío, suscripciones push y pruebas en dispositivos).
+## Limitaciones
+- NO cuenta pasos automáticamente ni sincroniza Apple Health / Health Connect: la PWA no dispone de esos permisos de sensor en segundo plano. Esa integración exige una capa móvil nativa y autorizaciones.
+- NO envía push con la app cerrada. Los recordatorios anteriores siguen funcionando solo dentro de la aplicación.
+- Entrenamientos no generan XP todavía, para no duplicar recompensas con las misiones.
+- Los datos siguen siendo locales; exportar respaldo antes de actualizar.
 
-## Actualización desde GitHub Pages
-1. En la versión 2.4, Perfil → Exportar copia de seguridad.
-2. Descomprimí este ZIP y subí el contenido de la carpeta a la raíz del repositorio, sustituyendo los archivos del mismo nombre.
-3. Confirmá el commit en `main` y abrí la PWA. La información existente debería permanecer en el mismo navegador/origen.
-4. Probá activando los avisos y configurando un horario previo a la hora actual para un hábito pendiente. Revisá la campana.
-5. Verificá que sigan presentes hábitos, XP, objetivos, rachas y diario.
+## Revisión técnica
+- Fechas locales previamente corregidas en 2.1.
+- XP histórico por misión presente desde 2.2.
+- Recompensas por objetivos con bandera `awarded`, se entregan una sola vez.
+- Datos deportivos separados de `completions` y `xp`.
+- Validaciones y escape de notas de entrenamiento al renderizar.
 
-No se toca la web publicada automáticamente.
+## Pendientes para versión futura
+- Snapshots históricos de planificación de hábitos (hoy una frecuencia editada puede afectar estadísticas retrospectivas).
+- Notificaciones push reales con servicio backend.
+- Autenticación y sincronización cifrada entre dispositivos.
+- Exportación de archivos de historial de entrenamiento en formatos abiertos.
+- App nativa para acceso autorizado a Apple Health y Health Connect.
+
+## Actualización
+1. Exportar una copia desde Perfil.
+2. Descomprimir ZUNAREBORN26.zip.
+3. Subir los archivos individuales en la raíz de GitHub (`main`).
+4. Esperar el despliegue de Pages y comprobar XP, hábitos, objetivos y sesiones.
