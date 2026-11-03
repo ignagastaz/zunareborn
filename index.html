@@ -11,7 +11,28 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=2.12.1">
+
+  <style>
+  /* Reparación crítica visible incluso si Safari conserva el CSS anterior */
+  .skip-link{position:fixed!important;left:12px!important;top:-150px!important;z-index:100!important;background:#f0d18e!important;color:#111!important;padding:11px 16px!important;border-radius:8px!important;font-size:13px!important;text-decoration:none!important}
+  .skip-link:focus,.skip-link:focus-visible{top:calc(10px + env(safe-area-inset-top))!important}
+  .quick-section{margin:24px 0 15px!important}
+  .quick-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;align-items:stretch!important}
+  .quick-grid .quick-tile{box-sizing:border-box!important;display:flex!important;align-items:center!important;gap:9px!important;width:100%!important;min-width:0!important;min-height:78px!important;border:1px solid #66502b!important;border-radius:13px!important;padding:12px!important;margin:0!important;background:linear-gradient(145deg,#241e14,#141414)!important;color:#f4f0e8!important;text-align:left!important;white-space:normal!important;box-shadow:none!important;line-height:1.3!important}
+  .quick-grid .quick-tile .quick-icon{display:grid!important;place-items:center!important;flex:0 0 31px!important;height:32px!important;border-radius:9px!important;background:#372a17!important;color:#f0d18e!important;font-size:19px!important}
+  .quick-grid .quick-tile>span:nth-child(2){display:block!important;flex:1!important;min-width:0!important}
+  .quick-grid .quick-tile strong{display:block!important;color:#f4f0e8!important;font-size:12px!important;font-weight:700!important;overflow-wrap:anywhere!important}
+  .quick-grid .quick-tile small{display:block!important;color:#b8ad9b!important;font-size:10px!important;margin-top:4px!important;line-height:1.35!important;overflow-wrap:anywhere!important}
+  .quick-grid .quick-tile>span:last-child{color:#d4aa5c!important;flex-shrink:0!important;font-size:13px!important}
+  .next-mission-card{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;margin:14px 0 8px!important;padding:15px!important;background:linear-gradient(120deg,#191713,#121212)!important;border:1px solid #62502f!important;border-radius:13px!important;color:#f4f0e8!important}
+  .next-mission-card>div{min-width:0!important;flex:1!important}
+  .next-mission-card small{display:block!important;color:#d4aa5c!important;font-size:9px!important;letter-spacing:1.1px!important}
+  .next-mission-card strong{display:block!important;font-size:13px!important;line-height:1.5!important;margin-top:5px!important;overflow-wrap:anywhere!important}
+  .next-mission-card span{display:block!important;color:#99958d!important;font-size:11px!important;line-height:1.5!important;margin-top:5px!important}
+  .next-mission-card button{flex-shrink:0!important;background:#302511!important;color:#f0d18e!important;border:1px solid #806638!important;border-radius:9px!important;padding:11px 13px!important;min-height:42px!important}
+  @media(max-width:390px){.quick-grid .quick-tile{padding:10px!important;gap:6px!important}.quick-grid .quick-tile .quick-icon{flex-basis:27px!important;height:28px!important}.quick-grid .quick-tile strong{font-size:11px!important}.quick-grid .quick-tile small{font-size:9px!important}}
+  </style>
   <title>ZUNAREBORN</title>
 </head>
 <body>
