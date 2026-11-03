@@ -87,6 +87,19 @@
         <div class="section-heading"><div><p class="eyebrow">CONSISTENCIA</p><h2>Últimos 30 días</h2></div></div>
         <article class="calendar-card"><div id="activityGrid" class="activity-grid"></div><div class="legend"><span><i></i>Sin actividad</span><span><i class="mid"></i>En marcha</span><span><i class="high"></i>Día completo</span></div></article>
 
+        <div class="section-heading"><div><p class="eyebrow">CALENDARIO COMPLETO</p><h2>Mes a mes</h2></div></div>
+        <article class="insight-card">
+          <div class="month-header"><button id="monthPrev" aria-label="Mes anterior">‹</button><strong id="monthLabel">Mes</strong><button id="monthNext" aria-label="Mes siguiente">›</button></div>
+          <div class="month-weekdays"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+          <div class="month-grid" id="monthlyGrid"></div>
+          <p class="insight-note" id="monthDetail">Elegí un día para ver tus registros.</p>
+        </article>
+        <div class="section-heading"><div><p class="eyebrow">TU CONSTANCIA</p><h2>Resumen semanal</h2></div></div>
+        <article class="insight-card"><div class="insight-kpis"><div><strong id="weekCompleted">0</strong><small>MISIONES CUMPLIDAS</small></div><div><strong id="weekDays">0</strong><small>DÍAS ACTIVOS</small></div><div><strong id="weekEarnedXP">0</strong><small>XP EN MISIONES</small></div></div><div class="seven-bars" id="weekBars"></div><p id="weekNarrative" class="insight-note"></p></article>
+        <div class="section-heading"><div><p class="eyebrow">HISTORIAL INDIVIDUAL</p><h2>Cada hábito cuenta</h2></div></div>
+        <article class="insight-card"><label class="field-label">Seleccioná un hábito<select id="historyHabit"></select></label><div class="insight-kpis two"><div><strong id="habit7">0</strong><small>ÚLTIMOS 7 DÍAS</small></div><div><strong id="habit30">0</strong><small>ÚLTIMOS 30 DÍAS</small></div></div><div class="habit-timeline" id="habitHistoryGrid"></div><p class="insight-note">Los cumplimientos anteriores se conservan aunque edites o archives el hábito.</p></article>
+        <p class="accuracy-note">Los cumplimientos y XP son registros reales. Las metas históricas anteriores a esta versión no siempre pueden reconstruirse: al modificar frecuencias, sus porcentajes podrían ser inexactos. Por eso mostramos cantidades efectivamente registradas.</p>
+
         <div class="section-heading"><div><p class="eyebrow">LOGROS</p><h2>Insignias</h2></div></div>
         <div id="achievementGrid" class="achievement-grid"></div>
 
@@ -109,7 +122,7 @@
 
         <section class="settings-group"><h3>DATOS Y PRIVACIDAD</h3><p class="setting-description">Esta versión guarda todo localmente. No hay cuenta ni servidor: tus datos no salen del dispositivo.</p><button class="outline-button full" id="exportData">↓ EXPORTAR COPIA DE SEGURIDAD</button><label class="outline-button full import-label">↑ IMPORTAR COPIA<input type="file" id="importData" accept="application/json"></label><button class="danger-button full" id="resetData">BORRAR TODOS MIS DATOS</button></section>
 
-        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.2</small></footer>
+        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.3</small></footer>
       </section>
     </main>
 

@@ -46,7 +46,7 @@
     }catch(e){}
     return fresh();
   }
-  let state=load(), activeFilter='all', selectedMood=null, toastTimer, editingMissionId=null;
+  let state=load(), activeFilter='all', selectedMood=null, toastTimer, editingMissionId=null, viewedMonth=isoToday().slice(0,7), viewedDate=isoToday(), viewedHabitId=null;
   const $=id=>document.getElementById(id);
   const saveRaw=()=>localStorage.setItem(KEY,JSON.stringify(state));
   // Registrar XP por evento para que editar la dificultad no reescriba el pasado.
@@ -110,7 +110,7 @@
     $('modeSetting').textContent=state.mode==='66'?'66 DÍAS':'PERMANENTE';$('modeDescription').textContent=state.mode==='66'?'66 días de enfoque y progreso':'Sin fecha de finalización';$('toggleMode').textContent=state.mode==='66'?'CAMBIAR A MODO PERMANENTE':'VOLVER AL PROGRAMA DE 66 DÍAS';
     $('todayLabel').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();$('greeting').textContent=(state.name?state.name+', ':'')+'un día a la vez. Sin excusas, sin perfección.';$('dailyQuote').textContent=quotes[new Date().getDate()%quotes.length];
     const wc=weeklyCount();$('weeklyProgressText').textContent=Math.min(wc,20)+' / 20';$('weeklyProgress').style.width=Math.min(100,wc/20*100)+'%';$('weeklyReward').textContent=state.weeklyRewards[weekKey()]?'RECOMPENSA OBTENIDA':'+150 XP';
-    renderPillars();renderMissions();renderManageMissions();renderActivity();renderAchievements();renderPillarProgress();renderJournal();
+    renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();
   }
   function renderPillars(){const due=dueMissions(),done=doneIds();$('pillarList').innerHTML=Object.entries(categories).map(([key,c])=>{const ms=due.filter(m=>m.category===key),count=ms.filter(m=>done.includes(m.id)).length;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><small>${c.desc}</small></div><span class="pillar-value">${count}/${ms.length}</span></div>`}).join('')}
   function weeklyMissionCount(id){return weekDates().filter(d=>doneIds(d).includes(id)).length}
@@ -134,6 +134,48 @@
     $('archivedList').innerHTML=inactive.length?inactive.map(m=>`<article class="archived-habit"><span>${esc(m.name)}</span><button class="text-button" data-restore="${esc(m.id)}">Restaurar</button></article>`).join(''):'<p class="micro-note">No tenés hábitos archivados.</p>';
   }
   function renderActivity(){const cells=[];for(let i=29;i>=0;i--){const d=addDays(isoToday(),-i),due=state.missions.filter(m=>!m.archived&&!m.paused&&dueToday(m,d)).length,count=doneIds(d).length,level=count===0?'':count>=Math.max(1,due)?'high':'mid';cells.push(`<div class="activity-cell ${level}" title="${d}: ${count}"><span>${localDate(d).getDate()}</span></div>`)}$('activityGrid').innerHTML=cells.join('')}
+  // Estadísticas descriptivas: no reconstruimos metas pasadas a partir de hábitos modificados.
+  function monthShift(n){
+    const [y,m]=viewedMonth.split('-').map(Number);const d=new Date(y,m-1+n,1,12);
+    const target=dateKey(d).slice(0,7), now=isoToday().slice(0,7);
+    if(target>now)return;viewedMonth=target;viewedDate=target===now?isoToday():target+'-01';renderMonthlyCalendar();
+  }
+  function renderMonthlyCalendar(){
+    const [year,month]=viewedMonth.split('-').map(Number), first=new Date(year,month-1,1,12), total=new Date(year,month,0,12).getDate();
+    const pad=(first.getDay()+6)%7, now=isoToday(), names=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    $('monthLabel').textContent=names[month-1].toUpperCase()+' '+year;$('monthNext').disabled=viewedMonth>=now.slice(0,7);
+    const cells=Array.from({length:pad},()=>'<span class="month-blank"></span>');
+    for(let day=1;day<=total;day++){
+      const d=`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      const count=doneIds(d).length, future=d>now, selected=d===viewedDate, stateClass=count>=3?'high':count>0?'mid':'';
+      cells.push(`<button class="month-day ${stateClass} ${selected?'selected':''}" data-date="${d}" ${future?'disabled':''} aria-label="${day}: ${count} misiones completadas" aria-pressed="${selected}">${day}${count?'<i></i>':''}</button>`);
+    }
+    $('monthlyGrid').innerHTML=cells.join('');
+    const count=doneIds(viewedDate).length, xp=dayXP(viewedDate);
+    const text=localDate(viewedDate).toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'});
+    $('monthDetail').textContent=`${text}: ${count} ${count===1?'misión registrada':'misiones registradas'} · ${xp} XP en misiones.`;
+  }
+  function renderWeeklyInsights(){
+    const dates=weekDates().filter(d=>d<=isoToday()),counts=dates.map(d=>doneIds(d).length);
+    const sum=counts.reduce((a,b)=>a+b,0), days=counts.filter(n=>n>0).length, xp=dates.reduce((n,d)=>n+dayXP(d),0), max=Math.max(1,...counts);
+    $('weekCompleted').textContent=sum;$('weekDays').textContent=days;$('weekEarnedXP').textContent=xp;
+    const labels=['L','M','M','J','V','S','D'];
+    $('weekBars').innerHTML=dates.map((d,i)=>`<div class="week-col" title="${d}: ${counts[i]} misiones"><span>${counts[i]}</span><div class="week-track"><i style="height:${counts[i]?Math.max(12,Math.round(counts[i]/max*100)):0}%"></i></div><small>${labels[i]}</small></div>`).join('');
+    const msg=days===0?'Todavía no hay registros esta semana. Podés empezar con una misión pequeña.':days>=5?'¡Gran constancia! Registraste actividad en al menos cinco días esta semana.':`Registraste actividad ${days} ${days===1?'día':'días'} esta semana. Cada avance cuenta.`;
+    $('weekNarrative').textContent=msg;
+  }
+  function renderHabitHistory(){
+    const select=$('historyHabit'), ids=state.missions;
+    if(!ids.length){select.innerHTML='<option>No hay hábitos</option>';$('habit7').textContent='0';$('habit30').textContent='0';$('habitHistoryGrid').innerHTML='';return}
+    if(!ids.some(m=>m.id===viewedHabitId))viewedHabitId=ids[0].id;
+    select.innerHTML=ids.map(m=>`<option value="${esc(m.id)}" ${m.id===viewedHabitId?'selected':''}>${esc(m.name)}${m.archived?' (archivado)':''}</option>`).join('');
+    const dates=Array.from({length:30},(_,i)=>addDays(isoToday(),i-29)), marked=dates.map(d=>doneIds(d).includes(viewedHabitId));
+    $('habit7').textContent=marked.slice(-7).filter(Boolean).length;$('habit30').textContent=marked.filter(Boolean).length;
+    $('habitHistoryGrid').innerHTML=dates.map((d,i)=>`<span class="habit-day ${marked[i]?'complete':''}" title="${d}: ${marked[i]?'completado':'sin registro'}" aria-label="${d}: ${marked[i]?'completado':'sin registro'}"></span>`).join('');
+  }
+  $('monthPrev').addEventListener('click',()=>monthShift(-1));$('monthNext').addEventListener('click',()=>monthShift(1));
+  $('monthlyGrid').addEventListener('click',e=>{const b=e.target.closest('[data-date]');if(!b)return;viewedDate=b.dataset.date;renderMonthlyCalendar()});
+  $('historyHabit').addEventListener('change',e=>{viewedHabitId=e.target.value;renderHabitHistory()});
   function renderAchievements(){$('achievementGrid').innerHTML=achievements.map(a=>{const ok=a.test(state);return `<article class="achievement ${ok?'':'locked'}"><span>${a.icon}</span><b>${a.name}</b><small>${ok?'Desbloqueado':a.copy}</small></article>`}).join('')}
   function renderPillarProgress(){$('pillarProgress').innerHTML=Object.entries(categories).map(([key,c])=>{let due=0,done=0;weekDates().forEach(d=>{const ms=state.missions.filter(m=>!m.archived&&!m.paused&&m.category===key&&dueToday(m,d));due+=ms.length;done+=ms.filter(m=>doneIds(d).includes(m.id)).length});const pct=due?Math.round(done/due*100):0;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><div class="pillar-bar"><i style="width:${pct}%"></i></div></div><span class="pillar-value">${pct}%</span></div>`}).join('')}
   function renderJournal(){if(document.activeElement!==$('journalInput'))$('journalInput').value=state.journal[isoToday()]||'';selectedMood=state.mood[isoToday()]||null;document.querySelectorAll('#moodRow button').forEach(b=>b.classList.toggle('active',Number(b.dataset.mood)===selectedMood))}
