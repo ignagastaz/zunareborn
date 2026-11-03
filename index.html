@@ -134,6 +134,21 @@
           <label class="field-label">Objetivo de sesiones por semana<select id="sportWeeklyTarget"><option value="1">1 sesión</option><option value="2">2 sesiones</option><option value="3">3 sesiones</option><option value="4">4 sesiones</option><option value="5">5 sesiones</option><option value="6">6 sesiones</option><option value="7">7 sesiones</option></select></label>
           <button class="outline-button full" id="saveSportPreferences">GUARDAR DISCIPLINA</button>
         </article>
+        <section class="training-program">
+          <div class="section-heading"><div><p class="eyebrow">ZUNAREBORN SPORT · NUEVO</p><h2>Mi plan semanal</h2></div></div>
+          <p class="sport-subcopy">Organizá prácticas de tu deporte y registrá qué días las hiciste. Es una guía orientativa; adaptá descansos, esfuerzo y técnica a tu situación.</p>
+          <div class="training-plan-card">
+            <div class="plan-config">
+              <label class="field-label">Nivel actual<select id="planLevel"><option value="beginner">Inicial</option><option value="intermediate">Intermedio</option></select></label>
+              <label class="field-label">Sesiones por semana<select id="planFrequency"><option value="2">2 sesiones</option><option value="3" selected>3 sesiones</option><option value="4">4 sesiones</option><option value="5">5 sesiones</option></select></label>
+            </div>
+            <p class="plan-muted">Deporte seleccionado: <strong id="planSportName">Running</strong></p>
+            <button id="createTrainingPlan" class="gold-button full">CREAR / ACTUALIZAR PLAN <span>↗</span></button>
+            <p class="micro-note">Al actualizar el plan, tus registros anteriores se conservan. Las sesiones del plan no suman XP ni crean entrenamientos automáticamente.</p>
+          </div>
+          <div id="trainingPlanContent" class="training-plan-content"></div>
+          <div class="plan-history" id="trainingPlanHistory"></div>
+        </section>
         <section class="sport-learning">
           <div class="section-heading"><div><p class="eyebrow">ENTRENAMIENTO PERSONALIZADO</p><h2>Tu especialidad</h2></div></div>
           <p class="sport-subcopy">Elegí qué querés mejorar en tu disciplina. Podés registrar una autoevaluación y repetir la práctica cuando quieras.</p>

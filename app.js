@@ -90,9 +90,63 @@
   };
   function migrateSport(){
     const existing=state.sport&&typeof state.sport==='object'&&!Array.isArray(state.sport)?state.sport:{};
-    state.sport={primary:sports[existing.primary]?existing.primary:'running',weeklyTarget:Number.isInteger(existing.weeklyTarget)&&existing.weeklyTarget>=1&&existing.weeklyTarget<=7?existing.weeklyTarget:3,sessions:Array.isArray(existing.sessions)?existing.sessions.filter(s=>s&&typeof s.id==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s.date)&&sports[s.sport]&&Number.isInteger(s.minutes)&&s.minutes>=1&&s.minutes<=720).slice(-2000):[],position:['defender','midfielder','forward','goalkeeper'].includes(existing.position)?existing.position:'defender',focus:existing.focus&&typeof existing.focus==='object'&&!Array.isArray(existing.focus)?existing.focus:{},skillHistory:Array.isArray(existing.skillHistory)?existing.skillHistory.filter(x=>x&&typeof x.sport==='string'&&typeof x.skill==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&Number.isInteger(x.rating)&&x.rating>=1&&x.rating<=5).slice(-1000):[]};
+    state.sport={primary:sports[existing.primary]?existing.primary:'running',weeklyTarget:Number.isInteger(existing.weeklyTarget)&&existing.weeklyTarget>=1&&existing.weeklyTarget<=7?existing.weeklyTarget:3,sessions:Array.isArray(existing.sessions)?existing.sessions.filter(s=>s&&typeof s.id==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s.date)&&sports[s.sport]&&Number.isInteger(s.minutes)&&s.minutes>=1&&s.minutes<=720).slice(-2000):[],position:['defender','midfielder','forward','goalkeeper'].includes(existing.position)?existing.position:'defender',focus:existing.focus&&typeof existing.focus==='object'&&!Array.isArray(existing.focus)?existing.focus:{},skillHistory:Array.isArray(existing.skillHistory)?existing.skillHistory.filter(x=>x&&typeof x.sport==='string'&&typeof x.skill==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&Number.isInteger(x.rating)&&x.rating>=1&&x.rating<=5).slice(-1000):[],plan:existing.plan||null};
   }
   migrateSport();
+  // Planes semanales orientativos; son independientes del historial de sesiones y XP.
+  const planThemes={
+    running:[['Técnica y ritmo','Caminata de entrada en calor, trote suave y control de respiración.'],['Resistencia progresiva','Alterná caminata y trote sin buscar velocidad; terminá con vuelta a la calma.'],['Movilidad y constancia','Movilidad suave y sesión cómoda en superficie segura.']],
+    football:[['Control y pase','Entrada en calor, pases controlados y recepción orientada.'],['Lectura del juego','Practicá posicionamiento, orientación corporal y decisiones sin oposición intensa.'],['Coordinación con pelota','Conducción, cambios de dirección suaves y vuelta a la calma.']],
+    gym:[['Técnica general','Movilidad y práctica de patrones básicos con carga liviana o sin carga.'],['Tren inferior y estabilidad','Sentarse y levantarse con control, bisagra de cadera y estabilidad.'],['Tren superior y postura','Movimientos de empuje, tracción suaves y control postural.']],
+    cycling:[['Control y seguridad','Revisión de bicicleta, desplazamiento cómodo y manejo seguro.'],['Cadencia cómoda','Rodaje controlado en entorno seguro, sin exigir velocidad.'],['Constancia aeróbica','Salida suave de duración adaptable y vuelta a la calma.']],
+    basketball:[['Control de balón','Entrada en calor y bote con ambas manos.'],['Defensa y desplazamiento','Posición defensiva y desplazamientos laterales de baja intensidad.'],['Pases y lectura','Pases en movimiento, recepción y espacios libres.']],
+    swimming:[['Respiración segura','Técnica respiratoria y flotación con supervisión adecuada.'],['Alineación corporal','Deslizamientos controlados en zona segura y práctica técnica suave.'],['Ritmo y coordinación','Series cómodas y recuperación; no entrenes solo/a.']],
+    other:[['Técnica básica','Elegí una habilidad y practicá a intensidad cómoda.'],['Coordinación y control','Repetí movimientos controlados y registrá sensaciones.'],['Constancia y revisión','Práctica liviana, revisión de lo aprendido y recuperación.']]
+  };
+  const planDays={2:[1,4],3:[1,3,5],4:[1,2,4,6],5:[1,2,3,5,6]};
+  function migrateTrainingPlan(){
+    const p=state.sport.plan;
+    if(!p||typeof p!=='object'||Array.isArray(p)){state.sport.plan=null;return;}
+    const good=sports[p.sport]&&['beginner','intermediate'].includes(p.level)&&[2,3,4,5].includes(p.frequency)&&typeof p.id==='string';
+    if(!good){state.sport.plan=null;return;}
+    p.completed=p.completed&&typeof p.completed==='object'&&!Array.isArray(p.completed)?p.completed:{};
+    p.completed=Object.fromEntries(Object.entries(p.completed).filter(([key,val])=>/^\d{4}-\d{2}-\d{2}$/.test(key)&&val===true).slice(-365));
+    state.sport.plan=p;
+  }
+  migrateTrainingPlan();
+  function planSessions(){
+    const p=state.sport.plan;if(!p)return [];
+    const monday=weekKey();
+    return planDays[p.frequency].map((dow,i)=>{
+      const date=addDays(monday,dow-1),theme=planThemes[p.sport][i%3];
+      return {date,title:theme[0],description:theme[1],completed:!!p.completed[date]};
+    });
+  }
+  function renderTrainingPlan(){
+    const p=state.sport.plan;
+    $('planSportName').textContent=sports[state.sport.primary].name;
+    if(!p){$('trainingPlanContent').innerHTML='<div class="empty-state"><b>Tu plan empieza acá.</b>Elegí nivel y frecuencia para crear una semana de prácticas.</div>';$('trainingPlanHistory').innerHTML='';return;}
+    $('planLevel').value=p.level;$('planFrequency').value=String(p.frequency);
+    const s=planSessions(),count=s.filter(x=>x.completed).length;
+    $('trainingPlanContent').innerHTML=`<div class="plan-progress"><div><b>Plan: ${esc(sports[p.sport].name)} · ${p.level==='beginner'?'Inicial':'Intermedio'}</b><small>${count} de ${s.length} prácticas marcadas esta semana</small></div><span>${Math.round(count/s.length*100)}%</span></div><div class="progress-track"><div class="progress-fill" style="width:${count/s.length*100}%"></div></div><div class="plan-session-list">${s.map((item,i)=>{const future=item.date>isoToday();return `<article class="plan-session"><button class="plan-session-check" data-plan-day="${item.date}" ${future?'disabled':''} aria-label="${item.completed?'Desmarcar':'Marcar'} práctica del ${item.date}">${item.completed?'✓':i+1}</button><div><b>${esc(item.title)}</b><small>${esc(localDate(item.date).toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'short'}))}${future?' · Próximamente':''}</small><p>${esc(item.description)}</p></div></article>`}).join('')}</div><p class="micro-note">Si registrás un entrenamiento en el apartado de actividad, la práctica del plan no se marca sola. Podés marcarla cuando realmente la hayas realizado.</p>`;
+    const countAll=Object.values(p.completed).filter(Boolean).length;
+    $('trainingPlanHistory').innerHTML=`<div class="plan-history-box"><span>Prácticas marcadas en este plan</span><b>${countAll}</b></div>`;
+  }
+  $('createTrainingPlan').addEventListener('click',()=>{
+    const level=$('planLevel').value, frequency=Number($('planFrequency').value), sport=state.sport.primary;
+    if(!['beginner','intermediate'].includes(level)||!planDays[frequency])return;
+    if(state.sport.plan&&!confirm('¿Actualizar el plan? Se borrarán las marcas del plan anterior. Tus entrenamientos, XP y hábitos se conservarán.'))return;
+    state.sport.plan={id:'plan-'+Date.now(),sport,level,frequency,created:isoToday(),completed:{}};
+    save();showToast('Plan semanal creado');
+  });
+  $('trainingPlanContent').addEventListener('click',e=>{
+    const button=e.target.closest('[data-plan-day]');if(!button||!state.sport.plan)return;
+    const day=button.dataset.planDay;
+    if(day>isoToday()||!planSessions().some(s=>s.date===day))return;
+    if(state.sport.plan.completed[day])delete state.sport.plan.completed[day];else state.sport.plan.completed[day]=true;
+    save();showToast('Práctica actualizada');
+  });
+
   // Biblioteca introductoria de habilidades. No analiza vídeos ni diagnostica técnica deportiva.
   const skillLibrary={
     running:[['posture','Postura y zancada',['Caminar unos minutos para entrar en calor.','Trotar a ritmo cómodo, hombros sueltos y mirada hacia adelante.','Observar si mantenés una respiración natural sin forzar el ritmo.']],['pacing','Control del ritmo',['Empezar suave y aumentar sólo si podés hablar con comodidad.','Observar sensaciones al cambiar ligeramente el ritmo.','Terminar con una vuelta a la calma.']],['endurance','Constancia aeróbica',['Elegir un trayecto seguro y conocido.','Alternar caminata y trote según tu experiencia.','Anotar cómo te sentiste y ajustar la próxima sesión.']]],
@@ -139,7 +193,7 @@
     $('homeSportSummary').textContent=sessions.length+' '+(sessions.length===1?'sesión registrada':'sesiones registradas')+' esta semana · '+minutes+' min';
     $('sportGuideIntro').textContent=chosen.intro;
     $('sportDrills').innerHTML=chosen.drills.map((t,i)=>`<div class="sport-drill"><span>${String(i+1).padStart(2,'0')}</span><p>${esc(t)}</p></div>`).join('');
-    renderSportSkills();
+    renderSportSkills();renderTrainingPlan();
     const sorted=[...state.sport.sessions].sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id)).slice(0,20);
     $('trainingList').innerHTML=sorted.length?sorted.map(s=>`<article class="training-entry"><span class="training-entry-icon">${sports[s.sport].icon}</span><div><b>${esc(sports[s.sport].name)} · ${s.minutes} min</b><small>${esc(s.date)} · ${['','Suave','Moderado','Intenso'][s.effort]||'Moderado'}</small>${s.notes?`<p>${esc(s.notes)}</p>`:''}</div><button data-training-delete="${esc(s.id)}" class="training-delete" aria-label="Borrar sesión">×</button></article>`).join(''):'<div class="empty-state"><b>Tu próximo entrenamiento empieza acá.</b>Registrá una sesión para ver tu historial deportivo.</div>';
   }
@@ -487,8 +541,8 @@
     clean.missions.forEach(m=>{m.days ||= []});
     return clean;
   }
-  $('importData').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.missions)||!imported.completions)throw Error();state=validateBackup(imported);migrateMissionData();migrateReminders();migrateSport();save();showToast('Copia restaurada')}catch{showToast('Archivo inválido')}e.target.value=''});
-  $('resetData').addEventListener('click',()=>{if(confirm('¿Borrar todo tu progreso?')&&confirm('Esta acción no se puede deshacer. ¿Continuar?')){state=fresh();migrateMissionData();migrateReminders();migrateSport();saveRaw();render();openModal('onboardingModal')}});
+  $('importData').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.missions)||!imported.completions)throw Error();state=validateBackup(imported);migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();save();showToast('Copia restaurada')}catch{showToast('Archivo inválido')}e.target.value=''});
+  $('resetData').addEventListener('click',()=>{if(confirm('¿Borrar todo tu progreso?')&&confirm('Esta acción no se puede deshacer. ¿Continuar?')){state=fresh();migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();saveRaw();render();openModal('onboardingModal')}});
   $('finishOnboarding').addEventListener('click',()=>{state.name=$('onboardingName').value.trim()||'Usuario';state.onboarded=true;save();closeModal('onboardingModal');showToast('Bienvenido a ZUNAREBORN')});
   if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
   // Si la app permanece abierta durante la medianoche, actualizamos el estado al volver a ella.
