@@ -396,8 +396,22 @@
   }
   function save(){updateStreak();grantWeeklyReward();saveRaw();render()}
   function showToast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2300)}
-  function navigate(view){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+view));document.querySelectorAll('.nav-item').forEach(v=>v.classList.toggle('active',v.dataset.view===view));window.scrollTo({top:0,behavior:'smooth'});if(view==='missions')renderMissions()}
-  document.addEventListener('click',e=>{const nav=e.target.closest('[data-view]');if(nav){navigate(nav.dataset.view);return}const close=e.target.closest('[data-close]');if(close) closeModal(close.dataset.close)});
+  function renderNextMission(){
+    const due=dueMissions(), done=new Set(doneIds()), pending=due.find(m=>!done.has(m.id));
+    const name=$('nextMissionTitle'), detail=$('nextMissionDetail');
+    if(!name||!detail)return;
+    if(!due.length){name.textContent='Un día para recuperar energía';detail.textContent='Hoy no hay misiones programadas.';return;}
+    if(!pending){name.textContent='¡Todas tus misiones completadas!';detail.textContent='Disfrutá tu progreso y descansá.';return;}
+    name.textContent=pending.name;detail.textContent='+'+pending.xp+' XP · '+(categories[pending.category]?.name||'Hábito');
+  }
+  function jumpToSection(spec){
+    const [view,id]=spec.split(':');
+    if(!['movement','home','missions','goals','progress','profile'].includes(view))return;
+    navigate(view);
+    if(id){const target=$(id);if(target){requestAnimationFrame(()=>target.scrollIntoView({block:'start',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}));}}
+  }
+  function navigate(view){if(!document.getElementById('view-'+view))return;document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+view));document.querySelectorAll('.nav-item').forEach(v=>{const active=v.dataset.view===view;v.classList.toggle('active',active);if(active)v.setAttribute('aria-current','page');else v.removeAttribute('aria-current')});window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});if(view==='missions')renderMissions()}
+  document.addEventListener('click',e=>{const shortcut=e.target.closest('[data-jump]');if(shortcut){jumpToSection(shortcut.dataset.jump);return}const nav=e.target.closest('[data-view]');if(nav){navigate(nav.dataset.view);return}const close=e.target.closest('[data-close]');if(close) closeModal(close.dataset.close)});
   function render(){
     updateStreak(); const day=programDay(), li=levelInfo(), due=dueMissions(), done=doneIds().filter(id=>due.some(m=>m.id===id)), pct=state.mode==='66'?Math.min(100,Math.round((Math.min(day-1,66)/66)*100)):Math.min(100,Math.round((done.length/Math.max(1,due.length))*100));
     $('topStreak').textContent=state.streak; const initial=(state.name||'Z').trim().charAt(0).toUpperCase();$('avatarInitial').textContent=initial;$('profileAvatar').textContent=initial;$('profileName').textContent=state.name||'Tu perfil';$('profileSince').textContent='Miembro desde '+localDate(state.createdAt).toLocaleDateString('es-AR',{day:'numeric',month:'short'});$('profileLevel').textContent=li.level;$('nameInput').value=state.name||'';$('goalInput').value=state.goal||'balance';
@@ -407,7 +421,7 @@
     $('modeSetting').textContent=state.mode==='66'?'66 DÍAS':'PERMANENTE';$('modeDescription').textContent=state.mode==='66'?'66 días de enfoque y progreso':'Sin fecha de finalización';$('toggleMode').textContent=state.mode==='66'?'CAMBIAR A MODO PERMANENTE':'VOLVER AL PROGRAMA DE 66 DÍAS';
     $('todayLabel').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();$('greeting').textContent=(state.name?state.name+', ':'')+'un día a la vez. Sin excusas, sin perfección.';$('dailyQuote').textContent=quotes[new Date().getDate()%quotes.length];
     const wc=weeklyCount();$('weeklyProgressText').textContent=Math.min(wc,20)+' / 20';$('weeklyProgress').style.width=Math.min(100,wc/20*100)+'%';$('weeklyReward').textContent=state.weeklyRewards[weekKey()]?'RECOMPENSA OBTENIDA':'+150 XP';
-    renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();
+    renderNextMission();renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();
   }
   function renderPillars(){const due=dueMissions(),done=doneIds();$('pillarList').innerHTML=Object.entries(categories).map(([key,c])=>{const ms=due.filter(m=>m.category===key),count=ms.filter(m=>done.includes(m.id)).length;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><small>${c.desc}</small></div><span class="pillar-value">${count}/${ms.length}</span></div>`}).join('')}
   function weeklyMissionCount(id){return weekDates().filter(d=>doneIds(d).includes(id)).length}

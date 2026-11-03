@@ -15,6 +15,7 @@
   <title>ZUNAREBORN</title>
 </head>
 <body>
+  <a class="skip-link" href="#mainContent">Saltar al contenido</a>
   <div id="app" class="app-shell">
     <header class="topbar">
       <button class="brand" data-view="home" aria-label="Inicio">
@@ -27,7 +28,7 @@
       </div>
     </header>
 
-    <main>
+    <main id="mainContent">
       <section id="view-home" class="view active">
         <div class="welcome-row">
           <div>
@@ -47,6 +48,16 @@
           <button class="gold-button" data-view="missions">VER MISIONES DEL DÍA <span>↗</span></button>
         </article>
 
+        <section class="quick-section" aria-labelledby="quickTitle">
+          <div class="section-heading compact-heading"><div><p class="eyebrow">A UN TOQUE</p><h2 id="quickTitle">¿Qué querés hacer?</h2></div></div>
+          <div class="quick-grid" aria-label="Accesos rápidos">
+            <button class="quick-tile" data-view="missions"><span class="quick-icon" aria-hidden="true">✓</span><span><strong>Misiones</strong><small>Mis hábitos de hoy</small></span><span aria-hidden="true">↗</span></button>
+            <button class="quick-tile" data-jump="movement:openTrainingEditor"><span class="quick-icon" aria-hidden="true">◉</span><span><strong>Entrenar</strong><small>Registrar sesión</small></span><span aria-hidden="true">↗</span></button>
+            <button class="quick-tile" data-jump="movement:nutritionTitle"><span class="quick-icon" aria-hidden="true">◈</span><span><strong>Nutrición</strong><small>Organizar comidas</small></span><span aria-hidden="true">↗</span></button>
+            <button class="quick-tile" data-view="goals"><span class="quick-icon" aria-hidden="true">◎</span><span><strong>Objetivos</strong><small>Mis metas</small></span><span aria-hidden="true">↗</span></button>
+          </div>
+        </section>
+        <article class="next-mission-card" aria-live="polite"><div><small>PRÓXIMA VICTORIA</small><strong id="nextMissionTitle">Preparando tu día...</strong><span id="nextMissionDetail">Una tarea a la vez.</span></div><button id="nextMissionGo" data-view="missions" aria-label="Ir a misiones">Ver ↗</button></article>
         <div class="section-heading"><div><p class="eyebrow">TU RENDIMIENTO</p><h2>Hoy, en números</h2></div><button class="text-button" data-view="progress">Ver progreso ↗</button></div>
         <div class="stat-grid">
           <article class="stat-card"><span>⚡</span><strong id="homeXP">0</strong><small>XP TOTAL</small></article>
@@ -127,6 +138,12 @@
 
       <section id="view-movement" class="view">
         <div class="page-heading"><p class="eyebrow">ZUNAREBORN SPORT</p><h1>Tu <em>movimiento.</em></h1><p class="muted">Entrená con intención. Registrá sesiones reales y encontrá ideas para mejorar tu disciplina.</p></div>
+        <nav class="movement-shortcuts" aria-label="Secciones de Movimiento">
+          <button data-jump="movement:createTrainingPlan">Plan semanal</button>
+          <button data-jump="movement:openTrainingEditor">Sesiones</button>
+          <button data-jump="movement:evidenceTitle">Biblioteca</button>
+          <button data-jump="movement:nutritionTitle">Nutrición</button>
+        </nav>
         <article class="sport-summary-card">
           <p class="eyebrow">TU DISCIPLINA</p>
           <div class="sport-title-row"><span id="sportIcon" class="sport-big-icon">🏃</span><div><h2 id="sportName">Running</h2><small id="sportDescription">Elegí tu disciplina principal</small></div></div>
@@ -256,11 +273,11 @@
 
         <section class="settings-group"><h3>DATOS Y PRIVACIDAD</h3><p class="setting-description">Esta versión guarda todo localmente. No hay cuenta ni servidor: tus datos no salen del dispositivo.</p><button class="outline-button full" id="exportData">↓ EXPORTAR COPIA DE SEGURIDAD</button><label class="outline-button full import-label">↑ IMPORTAR COPIA<input type="file" id="importData" accept="application/json"></label><button class="danger-button full" id="resetData">BORRAR TODOS MIS DATOS</button></section>
 
-        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.11</small></footer>
+        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.12</small></footer>
       </section>
     </main>
 
-    <nav class="bottom-nav" aria-label="Navegación"><button class="nav-item active" data-view="home"><span>⌂</span><small>Inicio</small></button><button class="nav-item" data-view="missions"><span>◇</span><small>Misiones</small></button><button class="nav-item" data-view="goals"><span>◎</span><small>Objetivos</small></button><button class="nav-item" data-view="progress"><span>▥</span><small>Progreso</small></button><button class="nav-item" data-view="profile"><span>♙</span><small>Perfil</small></button></nav>
+    <nav class="bottom-nav" aria-label="Navegación principal"><button class="nav-item active" aria-current="page" data-view="home"><span>⌂</span><small>Inicio</small></button><button class="nav-item" data-view="missions"><span>◇</span><small>Misiones</small></button><button class="nav-item" data-view="goals"><span>◎</span><small>Objetivos</small></button><button class="nav-item" data-view="progress"><span>▥</span><small>Progreso</small></button><button class="nav-item" data-view="profile"><span>♙</span><small>Perfil</small></button></nav>
   </div>
 
   <div class="modal-backdrop" id="missionModal" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="missionModalTitle">
@@ -302,7 +319,7 @@
     <button class="outline-button full" id="markRemindersRead">MARCAR TODOS COMO LEÍDOS</button>
     <button class="outline-button full" id="goReminderSettings">CONFIGURAR HORARIOS</button>
   </div></div>
-  <div id="toast" class="toast" role="status"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="app.js"></script>
 </body>
 </html>
