@@ -72,6 +72,9 @@
         <div class="mission-summary"><div><small>PROGRESO DE HOY</small><strong id="missionCount">0 / 0</strong></div><div class="mini-progress"><i id="missionProgress"></i></div><div class="summary-xp"><b id="missionXP">+0 XP</b><small>GANADOS HOY</small></div></div>
         <div id="missionFilters" class="filter-row"><button class="filter active" data-filter="all">Todas</button><button class="filter" data-filter="open">Pendientes</button><button class="filter" data-filter="done">Completadas</button></div>
         <div id="missionList" class="mission-list"></div>
+        <div class="section-heading"><div><p class="eyebrow">PERSONALIZACIÓN</p><h2>Gestionar hábitos</h2></div></div>
+        <div id="habitManagerList" class="manage-list"></div>
+        <details class="archive-details"><summary>Hábitos archivados (<span id="archivedCount">0</span>)</summary><div id="archivedList"></div></details>
         <button class="outline-button full" id="addMissionBtn">＋ CREAR HÁBITO / MISIÓN</button>
         <p class="micro-note">El historial, XP y rachas quedan guardados en este dispositivo.</p>
       </section>
@@ -106,14 +109,25 @@
 
         <section class="settings-group"><h3>DATOS Y PRIVACIDAD</h3><p class="setting-description">Esta versión guarda todo localmente. No hay cuenta ni servidor: tus datos no salen del dispositivo.</p><button class="outline-button full" id="exportData">↓ EXPORTAR COPIA DE SEGURIDAD</button><label class="outline-button full import-label">↑ IMPORTAR COPIA<input type="file" id="importData" accept="application/json"></label><button class="danger-button full" id="resetData">BORRAR TODOS MIS DATOS</button></section>
 
-        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.1</small></footer>
+        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.2</small></footer>
       </section>
     </main>
 
     <nav class="bottom-nav" aria-label="Navegación"><button class="nav-item active" data-view="home"><span>⌂</span><small>Inicio</small></button><button class="nav-item" data-view="missions"><span>◇</span><small>Misiones</small></button><button class="nav-item" data-view="progress"><span>▥</span><small>Progreso</small></button><button class="nav-item" data-view="profile"><span>◎</span><small>Perfil</small></button></nav>
   </div>
 
-  <div class="modal-backdrop" id="missionModal" aria-hidden="true"><div class="modal"><button class="modal-close" data-close="missionModal">×</button><p class="eyebrow">HACÉ QUE CUENTE</p><h2>Nueva misión</h2><label class="field-label">Nombre<input id="newMissionName" maxlength="48" placeholder="Ej. Leer 20 minutos"></label><label class="field-label">Área<select id="newMissionCategory"><option value="fitness">Físico</option><option value="mind">Mentalidad</option><option value="discipline">Disciplina</option><option value="productivity">Productividad</option><option value="energy">Energía</option></select></label><label class="field-label">Frecuencia<select id="newMissionFrequency"><option value="daily">Todos los días</option><option value="weekdays">Lunes a viernes</option><option value="weekends">Fines de semana</option><option value="3x">3 veces por semana</option></select></label><label class="field-label">Dificultad<select id="newMissionXP"><option value="10">Fácil · 10 XP</option><option value="20" selected>Media · 20 XP</option><option value="30">Desafío · 30 XP</option></select></label><button class="gold-button full" id="saveNewMission">CREAR MISIÓN <span>↗</span></button></div></div>
+  <div class="modal-backdrop" id="missionModal" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="missionModalTitle">
+    <button class="modal-close" data-close="missionModal" aria-label="Cerrar">×</button><p class="eyebrow">HACÉ QUE CUENTE</p><h2 id="missionModalTitle">Nuevo hábito</h2>
+    <label class="field-label">Nombre<input id="newMissionName" maxlength="48" placeholder="Ej. Leer 20 minutos"></label>
+    <label class="field-label">Área<select id="newMissionCategory"><option value="fitness">Físico</option><option value="mind">Mentalidad</option><option value="discipline">Disciplina</option><option value="productivity">Productividad</option><option value="energy">Energía</option></select></label>
+    <label class="field-label">Frecuencia<select id="newMissionFrequency"><option value="daily">Todos los días</option><option value="weekdays">Lunes a viernes</option><option value="weekends">Fines de semana</option><option value="3x">Lun / Mié / Vie</option><option value="custom">Elegir días específicos</option></select></label>
+    <div id="customDaysWrap" hidden><p class="field-label">Días de la semana</p><div class="weekday-picker"><button type="button" data-weekday="1">L</button><button type="button" data-weekday="2">M</button><button type="button" data-weekday="3">X</button><button type="button" data-weekday="4">J</button><button type="button" data-weekday="5">V</button><button type="button" data-weekday="6">S</button><button type="button" data-weekday="0">D</button></div></div>
+    <label class="field-label">Objetivo semanal<select id="newMissionGoal"><option value="1">1 día</option><option value="2">2 días</option><option value="3" selected>3 días</option><option value="4">4 días</option><option value="5">5 días</option><option value="6">6 días</option><option value="7">7 días</option></select></label>
+    <label class="field-label">Dificultad<select id="newMissionXP"><option value="10">Fácil · 10 XP</option><option value="20" selected>Media · 20 XP</option><option value="30">Desafío · 30 XP</option></select></label>
+    <p class="micro-note">La dificultad nueva afecta las futuras completaciones, no los XP ya obtenidos.</p>
+    <button class="gold-button full" id="saveNewMission">CREAR HÁBITO ↗</button>
+    <div id="missionEditorActions" class="editor-actions" hidden><button class="outline-button" id="pauseMissionBtn">PAUSAR HÁBITO</button><button class="danger-button" id="archiveMissionBtn">ARCHIVAR</button></div>
+  </div></div>
 
   <div class="modal-backdrop" id="onboardingModal" aria-hidden="true"><div class="modal onboarding"><p class="eyebrow">BIENVENIDO A ZUNAREBORN</p><h2>Tu reinicio empieza acá.</h2><p class="modal-copy">No buscamos una racha perfecta. Buscamos un sistema al que puedas volver.</p><div class="onboarding-steps"><div><b>01</b><span>Elegí tus misiones.</span></div><div><b>02</b><span>Ganás XP al cumplirlas.</span></div><div><b>03</b><span>Construí 66 días y seguí en modo permanente.</span></div></div><label class="field-label">Tu nombre<input id="onboardingName" maxlength="24" placeholder="Tu nombre"></label><button class="gold-button full" id="finishOnboarding">EMPEZAR MI REINICIO <span>↗</span></button></div></div>
 
