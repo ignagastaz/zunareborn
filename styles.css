@@ -20,3 +20,20 @@
 
 /* ZUNAREBORN 2.8 · plan semanal */
 .training-program{margin-top:23px}.training-plan-card{padding:16px;border:1px solid #806638;background:linear-gradient(120deg,#211b11,#121212);border-radius:15px}.plan-config{display:grid;grid-template-columns:1fr 1fr;gap:12px}.plan-muted{color:var(--muted);font-size:11px}.plan-muted strong{color:var(--gold2)}.training-plan-content{margin-top:13px}.training-plan-content>.progress-track{margin:12px 0 16px}.plan-progress{display:flex;justify-content:space-between;align-items:center;gap:8px}.plan-progress b{font-size:12px}.plan-progress small{display:block;color:var(--muted);margin-top:6px;font-size:9px}.plan-progress>span{color:var(--gold2);font:normal 23px Georgia,serif}.plan-session-list{display:grid;gap:9px}.plan-session{display:flex;align-items:flex-start;gap:12px;border-radius:12px;border:1px solid #ffffff1b;background:var(--panel);padding:13px}.plan-session-check{width:30px;height:30px;flex-shrink:0;border-radius:8px;border:1px solid #947545;color:var(--gold2);background:#251e13}.plan-session-check:disabled{opacity:.35}.plan-session>div{flex:1}.plan-session b{font-size:12px}.plan-session small{display:block;color:var(--gold2);font-size:9px;margin-top:5px;text-transform:capitalize}.plan-session p{color:#bcb6aa;font-size:11px;line-height:1.6;margin:9px 0 0}.plan-history-box{display:flex;justify-content:space-between;align-items:center;border:1px solid #ffffff18;border-radius:11px;padding:12px;margin-top:13px;color:var(--muted);font-size:11px}.plan-history-box b{color:var(--gold2);font:normal 22px Georgia,serif}@media(max-width:370px){.plan-config{grid-template-columns:1fr}}
+
+/* ZUNAREBORN 2.9 — evolución deportiva */
+.sport-insights{margin:22px 0 8px;padding:16px;border:1px solid #ffffff17;border-radius:15px;background:linear-gradient(150deg,#17140f,#101010)}
+.sport-insights .section-heading{margin-top:3px}
+.training-trend{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;align-items:end;height:168px;margin-top:20px;border-bottom:1px solid #534428;padding:0 0 9px}
+.trend-week{height:100%;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:end;gap:5px;color:var(--muted)}
+.trend-week .trend-minutes{font-size:11px;color:var(--gold2);font-variant-numeric:tabular-nums}
+.trend-week .trend-bar-wrap{height:113px;width:100%;display:flex;align-items:end;justify-content:center}
+.trend-week .trend-bar{width:min(40px,80%);min-height:4px;border:1px solid #877042;background:linear-gradient(to top,#745a2b,var(--gold2));border-radius:7px 7px 2px 2px;transition:height .25s}
+.trend-week small{font-size:9px;line-height:1.1;white-space:nowrap}
+.sport-trend-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}
+.sport-trend-cards>div{padding:10px;border:1px solid #ffffff13;border-radius:10px;background:#111}
+.sport-trend-cards small{display:block;color:var(--muted);font-size:8px;min-height:27px;letter-spacing:.5px}
+.sport-trend-cards strong{display:block;color:var(--gold2);font-family:Georgia,serif;font-size:21px;font-weight:400;margin-top:7px}
+.sport-insight-message{border-left:2px solid var(--gold);padding:9px 11px;background:#211b10;color:#c4bdac;border-radius:0 8px 8px 0;font-size:11px;line-height:1.55}
+.training-edit{border:1px solid #70592f;background:transparent;color:var(--gold2);border-radius:9px;padding:6px 9px;font-size:10px;margin-left:auto}
+@media(max-width:360px){.sport-insights{padding:12px}.sport-trend-cards{gap:5px}.sport-trend-cards>div{padding:7px}.sport-trend-cards strong{font-size:18px}}

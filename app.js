@@ -128,7 +128,7 @@
     if(!p){$('trainingPlanContent').innerHTML='<div class="empty-state"><b>Tu plan empieza acá.</b>Elegí nivel y frecuencia para crear una semana de prácticas.</div>';$('trainingPlanHistory').innerHTML='';return;}
     $('planLevel').value=p.level;$('planFrequency').value=String(p.frequency);
     const s=planSessions(),count=s.filter(x=>x.completed).length;
-    $('trainingPlanContent').innerHTML=`<div class="plan-progress"><div><b>Plan: ${esc(sports[p.sport].name)} · ${p.level==='beginner'?'Inicial':'Intermedio'}</b><small>${count} de ${s.length} prácticas marcadas esta semana</small></div><span>${Math.round(count/s.length*100)}%</span></div><div class="progress-track"><div class="progress-fill" style="width:${count/s.length*100}%"></div></div><div class="plan-session-list">${s.map((item,i)=>{const future=item.date>isoToday();return `<article class="plan-session"><button class="plan-session-check" data-plan-day="${item.date}" ${future?'disabled':''} aria-label="${item.completed?'Desmarcar':'Marcar'} práctica del ${item.date}">${item.completed?'✓':i+1}</button><div><b>${esc(item.title)}</b><small>${esc(localDate(item.date).toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'short'}))}${future?' · Próximamente':''}</small><p>${esc(item.description)}</p></div></article>`}).join('')}</div><p class="micro-note">Si registrás un entrenamiento en el apartado de actividad, la práctica del plan no se marca sola. Podés marcarla cuando realmente la hayas realizado.</p>`;
+    $('trainingPlanContent').innerHTML=`<div class="plan-progress"><div><b>Plan: ${esc(sports[p.sport].name)} · ${p.level==='beginner'?'Inicial':'Intermedio'}</b><small>${count} de ${s.length} prácticas marcadas esta semana</small></div><span>${Math.round(count/s.length*100)}%</span></div><div class="progress-track"><div class="progress-fill" style="width:${count/s.length*100}%"></div></div><div class="plan-session-list">${s.map((item,i)=>{const future=item.date>isoToday()||item.date<p.created;return `<article class="plan-session"><button class="plan-session-check" data-plan-day="${item.date}" ${future?'disabled':''} aria-label="${item.completed?'Desmarcar':'Marcar'} práctica del ${item.date}">${item.completed?'✓':i+1}</button><div><b>${esc(item.title)}</b><small>${esc(localDate(item.date).toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'short'}))}${future?' · Próximamente':''}</small><p>${esc(item.description)}</p></div></article>`}).join('')}</div><p class="micro-note">Si registrás un entrenamiento en el apartado de actividad, la práctica del plan no se marca sola. Podés marcarla cuando realmente la hayas realizado.</p>`;
     const countAll=Object.values(p.completed).filter(Boolean).length;
     $('trainingPlanHistory').innerHTML=`<div class="plan-history-box"><span>Prácticas marcadas en este plan</span><b>${countAll}</b></div>`;
   }
@@ -142,7 +142,7 @@
   $('trainingPlanContent').addEventListener('click',e=>{
     const button=e.target.closest('[data-plan-day]');if(!button||!state.sport.plan)return;
     const day=button.dataset.planDay;
-    if(day>isoToday()||!planSessions().some(s=>s.date===day))return;
+    if(day>isoToday()||day<state.sport.plan.created||!planSessions().some(s=>s.date===day))return;
     if(state.sport.plan.completed[day])delete state.sport.plan.completed[day];else state.sport.plan.completed[day]=true;
     save();showToast('Práctica actualizada');
   });
@@ -184,6 +184,30 @@
     state.sport.skillHistory=state.sport.skillHistory.slice(-1000);$('sportSkillNote').value='';save();showToast('Evolución registrada');
   });
   function weeklySportSessions(){const w=weekDates();return state.sport.sessions.filter(s=>w.includes(s.date));}
+  // Análisis deportivo basado sólo en sesiones reales y semanas calendario locales.
+  function sportWeekStats(){
+    const currentWeek=weekKey();
+    return [3,2,1,0].map(offset=>{
+      const start=addDays(currentWeek,-7*offset),end=addDays(start,6);
+      const entries=state.sport.sessions.filter(s=>s.date>=start&&s.date<=end);
+      return {start,end,minutes:entries.reduce((n,s)=>n+s.minutes,0),sessions:entries.length};
+    });
+  }
+  function renderSportInsights(){
+    const weeks=sportWeekStats(),max=Math.max(1,...weeks.map(w=>w.minutes));
+    $('trainingTrend').innerHTML=weeks.map((w,i)=>{
+      const label=i===3?'Esta semana':i===2?'Anterior':`${i===0?'Hace 3':'Hace 2'} sem.`;
+      const pct=Math.round(w.minutes/max*100);
+      return `<div class="trend-week" title="${w.start} a ${w.end}: ${w.sessions} sesiones, ${w.minutes} minutos"><span class="trend-minutes">${w.minutes} min</span><div class="trend-bar-wrap"><div class="trend-bar" style="height:${Math.max(4,pct)}%"></div></div><small>${label}</small></div>`;
+    }).join('');
+    const totalMinutes=weeks.reduce((n,w)=>n+w.minutes,0),totalSessions=weeks.reduce((n,w)=>n+w.sessions,0);
+    $('sportMonthMinutes').textContent=totalMinutes.toLocaleString('es-AR');
+    $('sportMonthSessions').textContent=totalSessions;
+    const current=weeks[3],previous=weeks[2];
+    $('sportWeekChange').textContent=previous.minutes>0?`${current.minutes>=previous.minutes?'+':''}${Math.round((current.minutes-previous.minutes)/previous.minutes*100)}%`:'—';
+    const note=totalSessions===0?'Todavía no hay entrenamientos registrados en estas cuatro semanas. Empezá con una sesión que se adapte a tu nivel.':current.sessions===0?'Esta semana todavía no registraste sesiones. Una pausa también puede formar parte del plan.':previous.minutes===0?'Ya hay actividad registrada esta semana. A medida que acumules semanas, podrás comparar tus avances.':current.minutes>previous.minutes*1.5?'Esta semana llevás más minutos que la anterior. No aumentes la intensidad sólo por mejorar el número: priorizá recuperación y técnica.': 'Vas construyendo un historial útil. Compará tus sesiones con tus sensaciones, no sólo con los minutos.';
+    $('sportInsightMessage').textContent=note;
+  }
   function renderSport(){
     const chosen=sports[state.sport.primary],sessions=weeklySportSessions(),minutes=sessions.reduce((n,s)=>n+s.minutes,0);
     $('sportChoice').value=state.sport.primary;$('sportWeeklyTarget').value=String(state.sport.weeklyTarget);
@@ -193,14 +217,19 @@
     $('homeSportSummary').textContent=sessions.length+' '+(sessions.length===1?'sesión registrada':'sesiones registradas')+' esta semana · '+minutes+' min';
     $('sportGuideIntro').textContent=chosen.intro;
     $('sportDrills').innerHTML=chosen.drills.map((t,i)=>`<div class="sport-drill"><span>${String(i+1).padStart(2,'0')}</span><p>${esc(t)}</p></div>`).join('');
-    renderSportSkills();renderTrainingPlan();
+    renderSportSkills();renderTrainingPlan();renderSportInsights();
     const sorted=[...state.sport.sessions].sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id)).slice(0,20);
-    $('trainingList').innerHTML=sorted.length?sorted.map(s=>`<article class="training-entry"><span class="training-entry-icon">${sports[s.sport].icon}</span><div><b>${esc(sports[s.sport].name)} · ${s.minutes} min</b><small>${esc(s.date)} · ${['','Suave','Moderado','Intenso'][s.effort]||'Moderado'}</small>${s.notes?`<p>${esc(s.notes)}</p>`:''}</div><button data-training-delete="${esc(s.id)}" class="training-delete" aria-label="Borrar sesión">×</button></article>`).join(''):'<div class="empty-state"><b>Tu próximo entrenamiento empieza acá.</b>Registrá una sesión para ver tu historial deportivo.</div>';
+    $('trainingList').innerHTML=sorted.length?sorted.map(s=>`<article class="training-entry"><span class="training-entry-icon">${sports[s.sport].icon}</span><div><b>${esc(sports[s.sport].name)} · ${s.minutes} min</b><small>${esc(s.date)} · ${['','Suave','Moderado','Intenso'][s.effort]||'Moderado'}</small>${s.notes?`<p>${esc(s.notes)}</p>`:''}</div><button data-training-edit="${esc(s.id)}" class="training-edit" aria-label="Editar sesión">Editar</button><button data-training-delete="${esc(s.id)}" class="training-delete" aria-label="Borrar sesión">×</button></article>`).join(''):'<div class="empty-state"><b>Tu próximo entrenamiento empieza acá.</b>Registrá una sesión para ver tu historial deportivo.</div>';
   }
   $('saveSportPreferences').addEventListener('click',()=>{const id=$('sportChoice').value,target=Number($('sportWeeklyTarget').value);if(!sports[id]||!Number.isInteger(target)||target<1||target>7)return;state.sport.primary=id;state.sport.weeklyTarget=target;save();showToast('Disciplina guardada');});
-  $('openTrainingEditor').addEventListener('click',()=>{$('trainingDate').value=isoToday();$('trainingDate').max=isoToday();$('trainingSport').value=state.sport.primary;$('trainingDuration').value='30';$('trainingEffort').value='2';$('trainingNotes').value='';openModal('trainingModal')});
-  $('saveTraining').addEventListener('click',()=>{const date=$('trainingDate').value,sport=$('trainingSport').value,minutes=Number($('trainingDuration').value),effort=Number($('trainingEffort').value),notes=$('trainingNotes').value.trim();if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||date>isoToday()||date<'2000-01-01'||!sports[sport]||!Number.isInteger(minutes)||minutes<1||minutes>720||![1,2,3].includes(effort)||notes.length>280){showToast('Revisá la sesión y su fecha');return}state.sport.sessions.push({id:'session-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),date,sport,minutes,effort,notes});closeModal('trainingModal');save();showToast('Entrenamiento guardado');});
-  $('trainingList').addEventListener('click',e=>{const b=e.target.closest('[data-training-delete]');if(!b)return;if(!confirm('¿Eliminar este registro de entrenamiento?'))return;state.sport.sessions=state.sport.sessions.filter(x=>x.id!==b.dataset.trainingDelete);save();showToast('Registro eliminado')});
+  let editingTrainingId=null;
+  $('openTrainingEditor').addEventListener('click',()=>{editingTrainingId=null;$('trainingModalTitle').textContent='Registrar entrenamiento';$('saveTraining').textContent='GUARDAR ENTRENAMIENTO ↗';$('trainingDate').value=isoToday();$('trainingDate').max=isoToday();$('trainingSport').value=state.sport.primary;$('trainingDuration').value='30';$('trainingEffort').value='2';$('trainingNotes').value='';openModal('trainingModal')});
+  $('saveTraining').addEventListener('click',()=>{const date=$('trainingDate').value,sport=$('trainingSport').value,minutes=Number($('trainingDuration').value),effort=Number($('trainingEffort').value),notes=$('trainingNotes').value.trim();if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||date>isoToday()||date<'2000-01-01'||!sports[sport]||!Number.isInteger(minutes)||minutes<1||minutes>720||![1,2,3].includes(effort)||notes.length>280){showToast('Revisá la sesión y su fecha');return}if(editingTrainingId){const item=state.sport.sessions.find(s=>s.id===editingTrainingId);if(!item){showToast('No se encontró la sesión');return;}Object.assign(item,{date,sport,minutes,effort,notes});}else{state.sport.sessions.push({id:'session-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),date,sport,minutes,effort,notes});}editingTrainingId=null;closeModal('trainingModal');save();showToast('Entrenamiento guardado');});
+  $('trainingList').addEventListener('click',e=>{
+    const edit=e.target.closest('[data-training-edit]');
+    if(edit){const s=state.sport.sessions.find(x=>x.id===edit.dataset.trainingEdit);if(!s)return;editingTrainingId=s.id;$('trainingModalTitle').textContent='Editar entrenamiento';$('saveTraining').textContent='GUARDAR CAMBIOS ↗';$('trainingDate').value=s.date;$('trainingDate').max=isoToday();$('trainingSport').value=s.sport;$('trainingDuration').value=String(s.minutes);$('trainingEffort').value=String(s.effort||2);$('trainingNotes').value=s.notes||'';openModal('trainingModal');return;}
+    const b=e.target.closest('[data-training-delete]');if(!b)return;if(!confirm('¿Eliminar este registro de entrenamiento?'))return;state.sport.sessions=state.sport.sessions.filter(x=>x.id!==b.dataset.trainingDelete);save();showToast('Registro eliminado');
+  });
   function currentClock(){const d=new Date();return [String(d.getHours()).padStart(2,'0'),String(d.getMinutes()).padStart(2,'0')].join(':')}
   function createReminder(id,title,message,now){
     const r=state.reminders;
