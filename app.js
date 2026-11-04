@@ -38,7 +38,7 @@
     {id:'xp1000',icon:'◆',name:'Mil puntos',copy:'Acumulá 1.000 XP.',test:s=>s.xp>=1000},
     {id:'day30',icon:'◌',name:'30 días',copy:'Llegá al día 30 del programa.',test:s=>programDay(s)>=30}
   ];
-  function fresh(){return {version:2,onboarded:false,name:'',goal:'balance',mode:'66',startDate:isoToday(),xp:0,streak:0,bestStreak:0,lastActive:null,missions:defaults.map(x=>({...x})),completions:{},journal:{},mood:{},createdAt:isoToday(),weeklyRewards:{},goals:[],nutrition:{pattern:'mixed',weeks:{},notes:'',profile:{},bodyHistory:[]},sport:{primary:'running',weeklyTarget:3,sessions:[]},cognitive:{sessions:[],rewardedDates:[],memorySessions:[],memoryRewardedDates:[]}}}
+  function fresh(){return {version:2,onboarded:false,name:'',goal:'balance',mode:'66',startDate:isoToday(),xp:0,streak:0,bestStreak:0,lastActive:null,missions:defaults.map(x=>({...x})),completions:{},journal:{},mood:{},createdAt:isoToday(),weeklyRewards:{},goals:[],nutrition:{pattern:'mixed',weeks:{},notes:'',profile:{},bodyHistory:[]},sport:{primary:'running',weeklyTarget:3,sessions:[]},cognitive:{sessions:[],rewardedDates:[],memorySessions:[],memoryRewardedDates:[],challengeClaimedDates:[]}}}
   function load(){
     try{
       const raw=localStorage.getItem(KEY); if(raw) return {...fresh(),...JSON.parse(raw)};
@@ -470,7 +470,7 @@
     $('modeSetting').textContent=state.mode==='66'?'66 DÍAS':'PERMANENTE';$('modeDescription').textContent=state.mode==='66'?'66 días de enfoque y progreso':'Sin fecha de finalización';$('toggleMode').textContent=state.mode==='66'?'CAMBIAR A MODO PERMANENTE':'VOLVER AL PROGRAMA DE 66 DÍAS';
     $('todayLabel').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();$('greeting').textContent=(state.name?state.name+', ':'')+'un día a la vez. Sin excusas, sin perfección.';$('dailyQuote').textContent=quotes[new Date().getDate()%quotes.length];
     const wc=weeklyCount();$('weeklyProgressText').textContent=Math.min(wc,20)+' / 20';$('weeklyProgress').style.width=Math.min(100,wc/20*100)+'%';$('weeklyReward').textContent=state.weeklyRewards[weekKey()]?'RECOMPENSA OBTENIDA':'+150 XP';
-    renderNextMission();renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();renderMemory();
+    renderNextMission();renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();renderMemory();renderChallenge();
   }
   function renderPillars(){const due=dueMissions(),done=doneIds();$('pillarList').innerHTML=Object.entries(categories).map(([key,c])=>{const ms=due.filter(m=>m.category===key),count=ms.filter(m=>done.includes(m.id)).length;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><small>${c.desc}</small></div><span class="pillar-value">${count}/${ms.length}</span></div>`}).join('')}
   function weeklyMissionCount(id){return weekDates().filter(d=>doneIds(d).includes(id)).length}
@@ -718,7 +718,8 @@
       sessions:(Array.isArray(c.sessions)?c.sessions:[]).filter(s=>s&&validDate(s.date)&&Array.isArray(s.times)&&s.times.length===5&&s.times.every(n=>Number.isInteger(n)&&n>=50&&n<=10000)).slice(-100).map(s=>({date:s.date,times:s.times.slice(),best:Math.min(...s.times),average:Math.round(s.times.reduce((a,b)=>a+b,0)/5)})),
       rewardedDates:[...new Set((Array.isArray(c.rewardedDates)?c.rewardedDates:[]).filter(validDate))].slice(-400),
       memorySessions:(Array.isArray(c.memorySessions)?c.memorySessions:[]).filter(s=>s&&validDate(s.date)&&Number.isInteger(s.rounds)&&s.rounds>=0&&s.rounds<=3).slice(-100).map(s=>({date:s.date,rounds:s.rounds})),
-      memoryRewardedDates:[...new Set((Array.isArray(c.memoryRewardedDates)?c.memoryRewardedDates:[]).filter(validDate))].slice(-400)
+      memoryRewardedDates:[...new Set((Array.isArray(c.memoryRewardedDates)?c.memoryRewardedDates:[]).filter(validDate))].slice(-400),
+      challengeClaimedDates:[...new Set((Array.isArray(c.challengeClaimedDates)?c.challengeClaimedDates:[]).filter(validDate))].slice(-400)
     };
   }
   migrateCognitive();
@@ -787,6 +788,33 @@
   $('labRestart').addEventListener('click',labReset);
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&labPhase==='waiting'){clearTimeout(labTimer);labTimer=null;labPhase='early';labPaint(labPhase);}});
 
+
+  // Desafío diario: recompensa explícita y única, basada en sesiones realmente completadas.
+  function renderChallenge(){
+    if(!$('challengeClaim'))return;
+    const date=isoToday(),c=state.cognitive;
+    const reflex=c.sessions.some(s=>s.date===date);
+    const memory=c.memorySessions.some(s=>s.date===date&&s.rounds===3);
+    const claimed=c.challengeClaimedDates.includes(date);
+    const count=Number(reflex)+Number(memory);
+    $('challengeDate').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'});
+    for(const [id,done] of [['challengeReflex',reflex],['challengeMemory',memory]]){
+      const el=$(id);el.classList.toggle('done',done);
+      el.querySelector('small').textContent=done?'✓ Completado':'Pendiente';
+    }
+    $('challengeProgress').setAttribute('aria-valuenow',String(count));
+    $('challengeProgressFill').style.width=(count*50)+'%';
+    $('challengeMedal').classList.toggle('earned',claimed);
+    $('challengeStatus').textContent=claimed?'¡Insignia del día desbloqueada! +20 XP obtenidos.':count===2?'¡Lo lograste! Reclamá tu recompensa.':count===1?'¡Vas por la mitad! Te falta un desafío.':'Completá los dos juegos para desbloquear la insignia.';
+    $('challengeClaim').disabled=claimed||count!==2;
+    $('challengeClaim').textContent=claimed?'✓ RECOMPENSA RECLAMADA':count===2?'RECLAMAR +20 XP':'DESBLOQUEÁ +20 XP';
+  }
+  $('challengeClaim').addEventListener('click',()=>{
+    const date=isoToday(),c=state.cognitive;
+    if(c.challengeClaimedDates.includes(date)||!c.sessions.some(s=>s.date===date)||!c.memorySessions.some(s=>s.date===date&&s.rounds===3))return;
+    c.challengeClaimedDates.push(date);c.challengeClaimedDates=c.challengeClaimedDates.slice(-400);
+    state.xp+=20;save();showToast('¡Desafío diario completado! +20 XP');
+  });
 
   // ZUNA LAB 02 — Memoria visual: 3 rondas de dificultad creciente.
   let memoryPhase='idle',memorySequence=[],memoryIndex=0,memoryRound=0,memoryTimers=[];

@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=2.16.0">
+  <link rel="stylesheet" href="styles.css?v=2.17.0">
 
   <style>
   /* Reparación crítica visible incluso si Safari conserva el CSS anterior */
@@ -107,6 +107,15 @@
 
       <section id="view-lab" class="view" aria-labelledby="labTitle">
         <div class="page-heading"><p class="eyebrow">MENTE EN MOVIMIENTO</p><h1 id="labTitle">ZUNA <em>LAB.</em></h1><p class="muted">Desafíos cortos para poner a prueba tu atención y tus reflejos.</p></div>
+        <article class="lab-challenge" aria-labelledby="dailyChallengeTitle">
+          <div class="lab-challenge-top"><span class="lab-challenge-medal" id="challengeMedal" aria-hidden="true">✦</span><div><p class="eyebrow">DESAFÍO DIARIO</p><h2 id="dailyChallengeTitle">Doble enfoque</h2><p id="challengeDate" class="muted"></p></div></div>
+          <p class="lab-challenge-intro">Completá una sesión de reflejos y las tres rondas de memoria en el mismo día.</p>
+          <div class="lab-challenge-tasks"><div id="challengeReflex" class="lab-challenge-task"><span aria-hidden="true">⚡</span><strong>Reflejos</strong><small>Pendiente</small></div><div id="challengeMemory" class="lab-challenge-task"><span aria-hidden="true">🧠</span><strong>Memoria</strong><small>Pendiente</small></div></div>
+          <div class="lab-challenge-progress" role="progressbar" aria-label="Progreso del desafío diario" aria-valuemin="0" aria-valuemax="2" aria-valuenow="0" id="challengeProgress"><span id="challengeProgressFill"></span></div>
+          <p id="challengeStatus" class="lab-feedback" role="status" aria-live="polite"></p>
+          <button type="button" id="challengeClaim" class="gold-button full" disabled>DESBLOQUEÁ +20 XP</button>
+          <p class="micro-note">La recompensa se puede reclamar una sola vez por día. Tus logros quedan en el dispositivo.</p>
+        </article>
         <article class="lab-panel">
           <div class="lab-heading"><span class="lab-symbol" aria-hidden="true">⚡</span><div><p class="eyebrow">DESAFÍO 01</p><h2>Reflejos</h2><p class="muted">Esperá el verde y tocá tan rápido como puedas. Son 5 intentos válidos.</p></div></div>
           <button type="button" id="labTarget" class="lab-target" aria-describedby="labInstructions"><span id="labTargetIcon" aria-hidden="true">⚡</span><strong id="labTargetTitle">¿Listo para reaccionar?</strong><small id="labTargetSubtitle">Tocá para empezar</small></button>
@@ -397,6 +406,6 @@
     <button class="outline-button full" id="goReminderSettings">CONFIGURAR HORARIOS</button>
   </div></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=2.16.0"></script>
+  <script src="app.js?v=2.17.0"></script>
 </body>
 </html>
