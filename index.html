@@ -130,6 +130,19 @@
         <article class="level-card"><div class="level-ring"><div><small>NIVEL</small><strong id="levelNumber">1</strong></div></div><div class="level-info"><span class="tag">RANGO <b id="rankName">INICIANTE</b></span><h2 id="levelTitle">El despertar</h2><p id="levelNext">0 / 500 XP</p><div class="progress-track"><div class="progress-fill" id="levelProgress"></div></div></div></article>
         <div class="stat-grid progress-stats"><article class="stat-card"><span>🏆</span><strong id="totalCompleted">0</strong><small>MISIONES</small></article><article class="stat-card"><span>📅</span><strong id="daysActive">0</strong><small>DÍAS ACTIVOS</small></article><article class="stat-card"><span>🔥</span><strong id="bestStreak">0</strong><small>MEJOR RACHA</small></article></div>
 
+        <section class="body-trend" aria-labelledby="bodyTrendTitle">
+          <div class="section-heading"><div><p class="eyebrow">REGISTRO OPCIONAL</p><h2 id="bodyTrendTitle">Evolución física</h2></div></div>
+          <p class="sport-subcopy">Para personas adultas que quieran registrar su peso a lo largo del tiempo. El peso no define tu salud ni tu progreso personal. No modifica XP ni misiones.</p>
+          <form id="bodyEntryForm" class="body-entry-form">
+            <label class="field-label">Fecha<input id="bodyEntryDate" type="date" required></label>
+            <label class="field-label">Peso (kg)<input id="bodyEntryWeight" type="number" inputmode="decimal" min="25" max="350" step="0.1" placeholder="Ej. 70,5" required></label>
+            <button type="submit" class="gold-button">GUARDAR REGISTRO</button>
+          </form>
+          <p class="insight-note" id="bodyTrendNotice"></p>
+          <div class="body-trend-chart" id="bodyTrendChart" role="img" aria-label="Registros de peso recientes"></div>
+          <div id="bodyTrendHistory" class="body-trend-history"></div>
+          <p class="micro-note">Los datos quedan guardados en este dispositivo y en las copias de seguridad. Podés eliminar cada registro. No se calculan metas de peso ni recomendaciones de adelgazamiento.</p>
+        </section>
         <div class="section-heading"><div><p class="eyebrow">CONSISTENCIA</p><h2>Últimos 30 días</h2></div></div>
         <article class="calendar-card"><div id="activityGrid" class="activity-grid"></div><div class="legend"><span><i></i>Sin actividad</span><span><i class="mid"></i>En marcha</span><span><i class="high"></i>Día completo</span></div></article>
 
@@ -307,7 +320,7 @@
 
         <section class="settings-group"><h3>DATOS Y PRIVACIDAD</h3><p class="setting-description">Esta versión guarda todo localmente. No hay cuenta ni servidor: tus datos no salen del dispositivo.</p><button class="outline-button full" id="exportData">↓ EXPORTAR COPIA DE SEGURIDAD</button><label class="outline-button full import-label">↑ IMPORTAR COPIA<input type="file" id="importData" accept="application/json"></label><button class="danger-button full" id="resetData">BORRAR TODOS MIS DATOS</button></section>
 
-        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.12</small></footer>
+        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.14</small></footer>
       </section>
     </main>
 

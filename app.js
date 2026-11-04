@@ -38,7 +38,7 @@
     {id:'xp1000',icon:'◆',name:'Mil puntos',copy:'Acumulá 1.000 XP.',test:s=>s.xp>=1000},
     {id:'day30',icon:'◌',name:'30 días',copy:'Llegá al día 30 del programa.',test:s=>programDay(s)>=30}
   ];
-  function fresh(){return {version:2,onboarded:false,name:'',goal:'balance',mode:'66',startDate:isoToday(),xp:0,streak:0,bestStreak:0,lastActive:null,missions:defaults.map(x=>({...x})),completions:{},journal:{},mood:{},createdAt:isoToday(),weeklyRewards:{},goals:[],nutrition:{pattern:'mixed',weeks:{},notes:'',profile:{}},sport:{primary:'running',weeklyTarget:3,sessions:[]}}}
+  function fresh(){return {version:2,onboarded:false,name:'',goal:'balance',mode:'66',startDate:isoToday(),xp:0,streak:0,bestStreak:0,lastActive:null,missions:defaults.map(x=>({...x})),completions:{},journal:{},mood:{},createdAt:isoToday(),weeklyRewards:{},goals:[],nutrition:{pattern:'mixed',weeks:{},notes:'',profile:{},bodyHistory:[]},sport:{primary:'running',weeklyTarget:3,sessions:[]}}}
   function load(){
     try{
       const raw=localStorage.getItem(KEY); if(raw) return {...fresh(),...JSON.parse(raw)};
@@ -77,7 +77,7 @@
   }
   function migrateNutrition(){
     const n=state.nutrition&&typeof state.nutrition==='object'&&!Array.isArray(state.nutrition)?state.nutrition:{};
-    state.nutrition={pattern:n.pattern==='vegetarian'?'vegetarian':'mixed',weeks:n.weeks&&typeof n.weeks==='object'&&!Array.isArray(n.weeks)?n.weeks:{},notes:typeof n.notes==='string'?n.notes.slice(0,800):'',profile:validNutritionProfile(n.profile)};
+    state.nutrition={pattern:n.pattern==='vegetarian'?'vegetarian':'mixed',weeks:n.weeks&&typeof n.weeks==='object'&&!Array.isArray(n.weeks)?n.weeks:{},notes:typeof n.notes==='string'?n.notes.slice(0,800):'',profile:validNutritionProfile(n.profile),bodyHistory:Array.isArray(n.bodyHistory)?n.bodyHistory.filter(e=>e&&typeof e.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(e.date)&&Number.isFinite(e.weight)&&e.weight>=25&&e.weight<=350).slice(-365):[]};
   }
   migrateNutrition();
   function nutritionWeekId(){return weekKey()}
@@ -438,6 +438,29 @@
   }
   function navigate(view){if(!document.getElementById('view-'+view))return;document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+view));document.querySelectorAll('.nav-item').forEach(v=>{const active=v.dataset.view===view;v.classList.toggle('active',active);if(active)v.setAttribute('aria-current','page');else v.removeAttribute('aria-current')});window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});if(view==='missions')renderMissions()}
   document.addEventListener('click',e=>{const shortcut=e.target.closest('[data-jump]');if(shortcut){jumpToSection(shortcut.dataset.jump);return}const nav=e.target.closest('[data-view]');if(nav){navigate(nav.dataset.view);return}const close=e.target.closest('[data-close]');if(close) closeModal(close.dataset.close)});
+  function renderBodyTrend(){
+    const form=$('bodyEntryForm'), notice=$('bodyTrendNotice'), chart=$('bodyTrendChart'), history=$('bodyTrendHistory');
+    if(!form)return;
+    const age=state.nutrition.profile.age, allowed=age!==null&&age>=18;
+    form.hidden=!allowed;
+    $('bodyEntryDate').max=isoToday();
+    if(!$('bodyEntryDate').value)$('bodyEntryDate').value=isoToday();
+    if(!allowed){notice.textContent=age===null?'Para usar el registro opcional, primero indicá tu edad en Movimiento → Nutrición.':'Este registro de peso no está disponible para menores de 18 años.';chart.replaceChildren();history.replaceChildren();return;}
+    const entries=state.nutrition.bodyHistory.slice().sort((a,b)=>a.date.localeCompare(b.date));
+    notice.textContent=entries.length?'Mostramos tus registros, sin evaluar si un cambio de peso es bueno o malo.':'Todavía no registraste medidas. Es opcional.';
+    const last=entries.slice(-12);const min=Math.min(...last.map(x=>x.weight)),max=Math.max(...last.map(x=>x.weight));
+    chart.setAttribute('aria-label',last.length?last.map(x=>x.date+': '+x.weight+' kilogramos').join('; '):'Sin registros de peso');
+    chart.innerHTML=last.length?last.map(e=>{const pct=max===min?55:20+(e.weight-min)/(max-min)*65;return `<div class="body-bar"><span>${esc(e.weight.toLocaleString('es-AR'))}</span><div class="body-bar-track"><i style="height:${pct}%"></i></div><small>${esc(e.date.slice(5))}</small></div>`}).join(''):'<p class="insight-note">Sin registros para mostrar.</p>';
+    history.innerHTML=entries.slice(-8).reverse().map(e=>`<div class="body-history-row"><span>${esc(e.date)} · ${esc(e.weight.toLocaleString('es-AR'))} kg</span><button type="button" data-body-remove="${esc(e.date)}" aria-label="Eliminar registro del ${esc(e.date)}">Eliminar</button></div>`).join('');
+  }
+  $('bodyEntryForm').addEventListener('submit',e=>{
+    e.preventDefault();const age=state.nutrition.profile.age;if(age===null||age<18){showToast('Disponible solo para mayores de 18');return;}
+    const date=$('bodyEntryDate').value, weight=Number($('bodyEntryWeight').value);
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||date>isoToday()||!Number.isFinite(weight)||weight<25||weight>350){showToast('Revisá fecha y peso');return;}
+    const entries=state.nutrition.bodyHistory.filter(x=>x.date!==date);entries.push({date,weight:Math.round(weight*10)/10});state.nutrition.bodyHistory=entries.sort((a,b)=>a.date.localeCompare(b.date)).slice(-365);
+    $('bodyEntryWeight').value='';save();showToast('Registro guardado');
+  });
+  $('bodyTrendHistory').addEventListener('click',e=>{const b=e.target.closest('[data-body-remove]');if(!b)return;if(!confirm('¿Eliminar este registro de peso?'))return;state.nutrition.bodyHistory=state.nutrition.bodyHistory.filter(x=>x.date!==b.dataset.bodyRemove);save();showToast('Registro eliminado');});
   function render(){
     updateStreak(); const day=programDay(), li=levelInfo(), due=dueMissions(), done=doneIds().filter(id=>due.some(m=>m.id===id)), pct=state.mode==='66'?Math.min(100,Math.round((Math.min(day-1,66)/66)*100)):Math.min(100,Math.round((done.length/Math.max(1,due.length))*100));
     $('topStreak').textContent=state.streak; const initial=(state.name||'Z').trim().charAt(0).toUpperCase();$('avatarInitial').textContent=initial;$('profileAvatar').textContent=initial;$('profileName').textContent=state.name||'Tu perfil';$('profileSince').textContent='Miembro desde '+localDate(state.createdAt).toLocaleDateString('es-AR',{day:'numeric',month:'short'});$('profileLevel').textContent=li.level;$('nameInput').value=state.name||'';$('goalInput').value=state.goal||'balance';
@@ -447,7 +470,7 @@
     $('modeSetting').textContent=state.mode==='66'?'66 DÍAS':'PERMANENTE';$('modeDescription').textContent=state.mode==='66'?'66 días de enfoque y progreso':'Sin fecha de finalización';$('toggleMode').textContent=state.mode==='66'?'CAMBIAR A MODO PERMANENTE':'VOLVER AL PROGRAMA DE 66 DÍAS';
     $('todayLabel').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();$('greeting').textContent=(state.name?state.name+', ':'')+'un día a la vez. Sin excusas, sin perfección.';$('dailyQuote').textContent=quotes[new Date().getDate()%quotes.length];
     const wc=weeklyCount();$('weeklyProgressText').textContent=Math.min(wc,20)+' / 20';$('weeklyProgress').style.width=Math.min(100,wc/20*100)+'%';$('weeklyReward').textContent=state.weeklyRewards[weekKey()]?'RECOMPENSA OBTENIDA':'+150 XP';
-    renderNextMission();renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();
+    renderNextMission();renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();
   }
   function renderPillars(){const due=dueMissions(),done=doneIds();$('pillarList').innerHTML=Object.entries(categories).map(([key,c])=>{const ms=due.filter(m=>m.category===key),count=ms.filter(m=>done.includes(m.id)).length;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><small>${c.desc}</small></div><span class="pillar-value">${count}/${ms.length}</span></div>`}).join('')}
   function weeklyMissionCount(id){return weekDates().filter(d=>doneIds(d).includes(id)).length}
@@ -678,6 +701,7 @@
     if(nutrition.weeks!==undefined&&(!nutrition.weeks||typeof nutrition.weeks!=='object'||Array.isArray(nutrition.weeks)||Object.keys(nutrition.weeks).length>500))throw Error('Plan de comidas inválido');
     if(nutrition.weeks&&Object.entries(nutrition.weeks).some(([key,w])=>!/^\d{4}-\d{2}-\d{2}$/.test(key)||!w||typeof w!=='object'||!['mixed','vegetarian'].includes(w.pattern)||!Array.isArray(w.indexes)||w.indexes.length!==7||!w.indexes.every(i=>Number.isInteger(i)&&i>=0&&i<=6)))throw Error('Semana alimentaria inválida');
     if(nutrition.profile!==undefined){if(!nutrition.profile||typeof nutrition.profile!=='object'||Array.isArray(nutrition.profile))throw Error('Perfil nutricional inválido');for(const [key,min,max] of [['age',13,110],['height',100,250],['weight',25,350]]){const v=nutrition.profile[key];if(v!==undefined&&v!==null&&(!Number.isFinite(v)||v<min||v>max))throw Error('Medidas inválidas')}}
+    if(nutrition.bodyHistory!==undefined){if(!Array.isArray(nutrition.bodyHistory)||nutrition.bodyHistory.length>365||nutrition.bodyHistory.some(e=>!e||typeof e!=='object'||typeof e.date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(e.date)||!Number.isFinite(e.weight)||e.weight<25||e.weight>350))throw Error('Historial de medidas inválido');}
     clean.nutrition=nutrition;
     if(clean.goals.length>500||!clean.goals.every(g=>g&&typeof g.id==='string'&&g.id.length<120&&typeof g.title==='string'&&g.title.length<=70&&Number.isSafeInteger(g.target)&&g.target>=1&&g.target<=10000&&['short','medium','long'].includes(g.horizon)&&/^\d{4}-\d{2}-\d{2}$/.test(g.startDate)&&Number.isSafeInteger(g.manualCount)&&g.manualCount>=0&&g.manualCount<=10000&&typeof g.awarded==='boolean'&&(!g.linkedMissionId||typeof g.linkedMissionId==='string')))throw Error('Objetivos inválidos');
     // El respaldo importado puede venir de v2.1, sin snapshots.
