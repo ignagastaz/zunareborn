@@ -906,32 +906,49 @@
     state.core={gender:raw.gender==='female'?'female':'male'};
   }
   migrateCore();
+  let corePreviewStage=null;
   function renderCore(){
     const figure=$('coreFigure');if(!figure)return;
     const xp=Math.max(0,Number(state.xp)||0);
     const stages=['Despertar','Enfoque','Constancia','Disciplina','Maestría'];
     const thresholds=[0,500,1500,3000,6000];
-    const stage=Math.max(0,thresholds.reduce((a,t,i)=>xp>=t?i:a,0));
+    const actual=thresholds.reduce((a,t,i)=>xp>=t?i+1:a,1);
+    const visible=corePreviewStage===null?actual:corePreviewStage;
     const daysSince=state.lastActive?Math.max(0,Math.floor((new Date(isoToday()+'T12:00:00')-new Date(state.lastActive+'T12:00:00'))/86400000)):99;
     const energy=daysSince<=1?100:daysSince===2?65:daysSince===3?40:20;
     const gender=state.core.gender;
-    figure.dataset.stage=String(stage+1);
+    const artStage=visible<=2?1:visible<=4?3:5;
+    figure.dataset.art=String(artStage);
+    figure.dataset.stage=String(visible);
     figure.dataset.energy=energy<=40?'low':energy<100?'mid':'high';
     figure.dataset.gender=gender;
-    figure.setAttribute('aria-label','ZUNA CORE '+(gender==='female'?'femenino':'masculino')+', etapa '+(stage+1)+' '+stages[stage]+', energía '+energy+' por ciento');
-    $('coreStageTag').textContent=stages[stage].toUpperCase();
-    $('coreStageName').textContent=String(stage+1).padStart(2,'0')+' · '+stages[stage];
+    figure.setAttribute('aria-label','ZUNA CORE '+(gender==='female'?'femenino':'masculino')+', vista de '+stages[visible-1]+(visible>actual?', etapa todavía bloqueada':'')+', energía '+energy+' por ciento');
+    $('coreStageTag').textContent=stages[actual-1].toUpperCase();
+    $('coreStageName').textContent=String(actual).padStart(2,'0')+' · '+stages[actual-1];
+    $('corePortraitLabel').textContent=String(visible).padStart(2,'0')+' · '+stages[visible-1].toUpperCase();
+    $('corePreviewTag').textContent=visible>actual?'VISTA PREVIA · BLOQUEADO':visible===actual?'TU ETAPA ACTUAL':'ETAPA DESBLOQUEADA';
     $('coreEnergyFill').style.width=energy+'%';
     $('coreEnergyText').textContent=energy===100?'Tu núcleo está brillando. Seguí construyendo.':energy>=65?'Tu núcleo mantiene su luz.':energy>=40?'Tu energía está más tranquila. Volvé a tu ritmo.':'Tu núcleo está en reposo. Podés retomarlo cuando quieras.';
-    $('coreNextStage').textContent=stage===4?'Alcanzaste Maestría. Tu evolución continúa.':'Siguiente etapa: '+stages[stage+1]+' · '+Math.max(0,thresholds[stage+1]-xp)+' XP restantes';
-    $('coreHair').setAttribute('d',gender==='female'
-      ?'M111 155 Q100 95 143 91 Q185 76 205 120 L215 237 L190 225 L194 148 Q185 115 159 123 Q128 113 121 149 L127 228 L104 239 Z'
-      :'M112 160 Q103 103 140 94 Q177 78 200 112 L209 162 L194 144 L188 121 L163 128 L135 119 L119 150 Z');
-    $('coreFace').setAttribute('rx',gender==='female'?'44':'48');
+    $('coreNextStage').textContent=actual===5?'Alcanzaste Maestría. Tu evolución continúa.':'Siguiente etapa: '+stages[actual]+' · '+Math.max(0,thresholds[actual]-xp)+' XP restantes';
+    $('corePreviewNote').textContent=visible>actual?'Vista previa de '+stages[visible-1]+'. Se desbloquea al llegar a '+thresholds[visible-1].toLocaleString('es-AR')+' XP. Tu progreso no cambia.':visible<actual?'Ya desbloqueaste esta etapa.':'Esta es tu etapa actual. Explorá las demás sin cambiar tu progreso.';
+    $('coreReturnStage').hidden=corePreviewStage===null||visible===actual;
+    document.querySelectorAll('[data-core-stage]').forEach(b=>{
+      const n=Number(b.dataset.coreStage);
+      b.classList.toggle('selected',n===visible);
+      b.classList.toggle('locked',n>actual);
+      b.setAttribute('aria-pressed',String(n===visible));
+      b.setAttribute('aria-label','Etapa '+n+', '+stages[n-1]+(n>actual?', bloqueada; mostrar vista previa':', desbloqueada'));
+    });
     document.querySelectorAll('[data-core-gender]').forEach(b=>{
       const chosen=b.dataset.coreGender===gender;b.classList.toggle('selected',chosen);b.setAttribute('aria-pressed',String(chosen));
     });
   }
+  document.querySelectorAll('[data-core-stage]').forEach(b=>b.addEventListener('click',()=>{
+    const stage=Number(b.dataset.coreStage);
+    if(!Number.isInteger(stage)||stage<1||stage>5)return;
+    corePreviewStage=stage;renderCore();
+  }));
+  $('coreReturnStage').addEventListener('click',()=>{corePreviewStage=null;renderCore();});
   document.querySelectorAll('[data-core-gender]').forEach(b=>b.addEventListener('click',()=>{
     if(!['male','female'].includes(b.dataset.coreGender))return;
     state.core.gender=b.dataset.coreGender;save();showToast('Personaje actualizado');

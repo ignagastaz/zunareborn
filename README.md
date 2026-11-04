@@ -1,18 +1,21 @@
-# ZUNAREBORN 2.18 — ZUNA CORE
+# ZUNAREBORN 2.19 — ZUNA CORE Cinematográfico
 
-Primera implementación funcional del avatar evolutivo. Se conserva toda la funcionalidad de 2.17.
+Actualización acumulativa de ZUNAREBORN 2.18.
 
-- Dos estilos iniciales de personaje: masculino y femenino, seleccionables desde Evolución.
-- Avatar SVG integrado en la app, con núcleo dorado animado.
-- Cinco etapas por XP acumulados: Despertar (0), Enfoque (500), Constancia (1500), Disciplina (3000), Maestría (6000).
-- El núcleo cambia de intensidad según los días desde la última actividad registrada. Nunca se restan XP ni se revocan etapas por inactividad.
-- Efectos de alas a partir de la etapa 3 y corona en etapa 5.
-- Selección guardada en `localStorage` bajo la misma clave `zunareborn.v2` e incluida en las exportaciones.
-- Migración segura de perfiles antiguos, con personaje masculino como valor inicial. Se puede cambiar libremente.
+## Novedades
+- Se reemplazó el avatar vectorial provisional por **retratos cinematográficos originales** masculinos y femeninos.
+- Previsualización interactiva de las cinco etapas, con etiquetas claras de etapas bloqueadas. **Previsualizar no desbloquea ni suma XP**.
+- Retratos distintos para las etapas 1, 3 y 5; las etapas 2 y 4 usan la imagen base anterior con un efecto luminoso adicional.
+- La evolución real sigue dependiendo de los XP actuales: 0, 500, 1500, 3000 y 6000 XP.
+- El estado de energía sigue reflejando la actividad reciente; no se pierden etapas ni XP por inactividad.
+- Los seis retratos están comprimidos y embebidos en CSS: el ZIP mantiene **los mismos 10 archivos** y funciona sin conexión después de cargar.
+- Conserva `localStorage` con clave `zunareborn.v2`, los datos existentes, respaldos y selección de personaje.
 
-## Actualización
-1. Exportá respaldo desde Perfil.
-2. Descomprimí el ZIP y subí los 10 archivos a la raíz del repositorio GitHub.
-3. Esperá la publicación y comprobá Evolución > ZUNA CORE. En iPhone puede tardar en refrescarse la PWA; no borres la app ni su almacenamiento.
+## Cómo actualizar en iPhone
+1. Exportá una copia de seguridad desde Perfil.
+2. Descomprimí el ZIP y subí los 10 archivos a la raíz de GitHub, reemplazando los anteriores.
+3. Esperá a que GitHub Pages publique los cambios.
+4. Si la PWA instalada no actualiza inmediatamente, abrí la web en Safari y luego volvé a abrir la app. No borres datos ni desinstales sin respaldo.
 
-**Nota:** este es un primer avatar vectorial animado, no todavía la ilustración cinematográfica final. La evolución es recreativa y motivacional.
+## Nota visual
+Este es el primer paso de la versión cinematográfica: ilustraciones estáticas con iluminación y efectos sutiles, no animación 3D. Las etapas 2 y 4 comparten retrato con la etapa anterior, diferenciándose mediante efectos. Próximas iteraciones podrán sumar ilustraciones exclusivas para cada nivel.
