@@ -1,14 +1,16 @@
-# ZUNAREBORN 2.15 — ZUNA LAB
+# ZUNAREBORN 2.16 — ZUNA LAB: Memoria visual
 
-Actualización acumulativa desde 2.14. Incluye el primer minijuego cognitivo: reflejos con cinco intentos, salidas anticipadas, promedio, récord e historial local (hasta 100 sesiones). Recompensa de +10 XP una vez por día al completar una sesión.
+Incluye todo lo anterior y agrega el segundo minijuego de ZUNA LAB.
 
-## Instalación
-1. Exportar una copia de seguridad desde Perfil antes de actualizar.
-2. Reemplazar los diez archivos del repositorio por los incluidos en el ZIP.
-3. Esperar la actualización de GitHub Pages y recargar la PWA.
+- **Reflejos:** se mantienen el juego, el récord y el historial.
+- **Memoria visual:** 3 rondas con secuencias de 3, 4 y 5 posiciones, historial de resultados y +10 XP una vez al día al completar las tres rondas.
+- **Privacidad:** todo el historial se guarda localmente en `zunareborn.v2` y viaja en el respaldo JSON.
+- **Compatibilidad:** se migran automáticamente los datos anteriores sin sobrescribirlos.
 
-## Compatibilidad
-Se conserva `localStorage` bajo `zunareborn.v2`. El campo nuevo `cognitive` se migra automáticamente desde instalaciones previas y se incluye en exportaciones JSON. No requiere internet para el juego una vez cargada la app.
+## Instalación en GitHub Pages
+1. Hacé una copia de seguridad desde Perfil.
+2. Descomprimí el ZIP y subí sus 10 archivos a la raíz del repositorio, reemplazando los anteriores.
+3. Confirmá el commit, esperá la publicación y recargá la app. Si la PWA instalada tarda en actualizarse, abrí primero la URL en Safari y luego cerrá y volvé a abrir la PWA.
 
-## Limitaciones
-Los tiempos son orientativos y dependen del dispositivo, pantalla y navegador. No son pruebas clínicas ni acreditan transferencia de rendimiento deportivo.
+## Alcance
+Los juegos son desafíos recreativos de memoria y reflejos, no evaluaciones clínicas ni una garantía de mejora deportiva.

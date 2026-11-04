@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=2.15.0">
+  <link rel="stylesheet" href="styles.css?v=2.16.0">
 
   <style>
   /* Reparación crítica visible incluso si Safari conserva el CSS anterior */
@@ -75,7 +75,7 @@
             <button class="quick-tile" data-view="missions"><span class="quick-icon" aria-hidden="true">✓</span><span><strong>Misiones</strong><small>Mis hábitos de hoy</small></span><span aria-hidden="true">↗</span></button>
             <button class="quick-tile" data-jump="movement:openTrainingEditor"><span class="quick-icon" aria-hidden="true">◉</span><span><strong>Entrenar</strong><small>Registrar sesión</small></span><span aria-hidden="true">↗</span></button>
             <button class="quick-tile" data-jump="movement:nutritionTitle"><span class="quick-icon" aria-hidden="true">◈</span><span><strong>Nutrición</strong><small>Organizar comidas</small></span><span aria-hidden="true">↗</span></button>
-            <button class="quick-tile" data-view="lab"><span class="quick-icon" aria-hidden="true">⚡</span><span><strong>ZUNA LAB</strong><small>Desafío de reflejos</small></span><span aria-hidden="true">↗</span></button>
+            <button class="quick-tile" data-view="lab"><span class="quick-icon" aria-hidden="true">⚡</span><span><strong>ZUNA LAB</strong><small>Reflejos y memoria</small></span><span aria-hidden="true">↗</span></button>
             <button class="quick-tile" data-view="goals"><span class="quick-icon" aria-hidden="true">◎</span><span><strong>Objetivos</strong><small>Mis metas</small></span><span aria-hidden="true">↗</span></button>
           </div>
         </section>
@@ -115,6 +115,20 @@
           <p id="labFeedback" class="lab-feedback" role="status" aria-live="polite">La señal aparece después de un tiempo aleatorio.</p>
           <button type="button" class="outline-button full" id="labRestart">REINICIAR PRUEBA</button>
         </article>
+        <article class="lab-panel">
+          <div class="lab-heading"><span class="lab-symbol" aria-hidden="true">🧠</span><div><p class="eyebrow">DESAFÍO 02</p><h2>Memoria visual</h2><p class="muted">Observá la secuencia de luces y repetila en el mismo orden. Superá 3 rondas.</p></div></div>
+          <div class="lab-metrics"><div><small>RONDA</small><strong id="memoryRound">0 / 3</strong></div><div><small>SECUENCIA</small><strong id="memoryLength">—</strong></div><div><small>MEJOR SESIÓN</small><strong id="memoryBest">—</strong></div></div>
+          <div id="memoryGrid" class="memory-grid" role="group" aria-label="Cuatro botones de memoria visual">
+            <button type="button" class="memory-pad" data-memory-pad="0" aria-label="Posición superior izquierda" disabled><span>◆</span></button>
+            <button type="button" class="memory-pad" data-memory-pad="1" aria-label="Posición superior derecha" disabled><span>●</span></button>
+            <button type="button" class="memory-pad" data-memory-pad="2" aria-label="Posición inferior izquierda" disabled><span>▲</span></button>
+            <button type="button" class="memory-pad" data-memory-pad="3" aria-label="Posición inferior derecha" disabled><span>■</span></button>
+          </div>
+          <p id="memoryFeedback" class="lab-feedback" role="status" aria-live="polite">Empezá cuando quieras. Mirá la secuencia antes de tocar.</p>
+          <button type="button" class="gold-button full" id="memoryStart">EMPEZAR DESAFÍO <span aria-hidden="true">↗</span></button>
+        </article>
+        <div class="section-heading"><div><p class="eyebrow">MEMORIA VISUAL</p><h2>Últimas sesiones</h2></div></div>
+        <div id="memoryHistory" class="lab-history"></div>
         <div class="section-heading"><div><p class="eyebrow">TU EVOLUCIÓN</p><h2>Historial cognitivo</h2></div></div>
         <div id="labHistory" class="lab-history"></div>
         <p class="micro-note">El resultado es orientativo, no una evaluación médica ni una garantía de mejora en el deporte. Una sesión completada puede dar +10 XP una sola vez por día.</p>
@@ -383,6 +397,6 @@
     <button class="outline-button full" id="goReminderSettings">CONFIGURAR HORARIOS</button>
   </div></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=2.15.0"></script>
+  <script src="app.js?v=2.16.0"></script>
 </body>
 </html>

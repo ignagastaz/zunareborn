@@ -89,3 +89,14 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .lab-history-item{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:13px;background:#171717;border:1px solid #443923;border-radius:12px}
 .lab-history-item span,.lab-history-item small{color:#bcb2a2;font-size:12px}.lab-history-item strong{color:#f0d18e;font-size:13px}
 @media(prefers-reduced-motion:reduce){.lab-target{transition:none}}
+
+/* ZUNA LAB 2.16 — Memoria visual */
+.memory-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:320px;margin:16px auto 20px}
+.memory-pad{aspect-ratio:1.15;border-radius:18px;border:2px solid #6b522e;background:#292116;color:#b99a5c;font-size:36px;display:grid;place-items:center;cursor:pointer;touch-action:manipulation;transition:background .12s,box-shadow .12s,transform .12s}
+.memory-pad:nth-child(2){border-color:#53726b;background:#1c2b29;color:#80c5b4}
+.memory-pad:nth-child(3){border-color:#655383;background:#29233a;color:#b29cda}
+.memory-pad:nth-child(4){border-color:#79514e;background:#332221;color:#e0a09a}
+.memory-pad.lit{background:#f0cf85!important;color:#15110a!important;box-shadow:0 0 24px #f0cf85a8;transform:scale(1.045)}
+.memory-pad:disabled{opacity:1;cursor:default}
+.memory-pad:focus-visible{outline:3px solid #f0cf85;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.memory-pad{transition:none}}

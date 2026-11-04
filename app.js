@@ -38,7 +38,7 @@
     {id:'xp1000',icon:'◆',name:'Mil puntos',copy:'Acumulá 1.000 XP.',test:s=>s.xp>=1000},
     {id:'day30',icon:'◌',name:'30 días',copy:'Llegá al día 30 del programa.',test:s=>programDay(s)>=30}
   ];
-  function fresh(){return {version:2,onboarded:false,name:'',goal:'balance',mode:'66',startDate:isoToday(),xp:0,streak:0,bestStreak:0,lastActive:null,missions:defaults.map(x=>({...x})),completions:{},journal:{},mood:{},createdAt:isoToday(),weeklyRewards:{},goals:[],nutrition:{pattern:'mixed',weeks:{},notes:'',profile:{},bodyHistory:[]},sport:{primary:'running',weeklyTarget:3,sessions:[]},cognitive:{sessions:[],rewardedDates:[]}}}
+  function fresh(){return {version:2,onboarded:false,name:'',goal:'balance',mode:'66',startDate:isoToday(),xp:0,streak:0,bestStreak:0,lastActive:null,missions:defaults.map(x=>({...x})),completions:{},journal:{},mood:{},createdAt:isoToday(),weeklyRewards:{},goals:[],nutrition:{pattern:'mixed',weeks:{},notes:'',profile:{},bodyHistory:[]},sport:{primary:'running',weeklyTarget:3,sessions:[]},cognitive:{sessions:[],rewardedDates:[],memorySessions:[],memoryRewardedDates:[]}}}
   function load(){
     try{
       const raw=localStorage.getItem(KEY); if(raw) return {...fresh(),...JSON.parse(raw)};
@@ -470,7 +470,7 @@
     $('modeSetting').textContent=state.mode==='66'?'66 DÍAS':'PERMANENTE';$('modeDescription').textContent=state.mode==='66'?'66 días de enfoque y progreso':'Sin fecha de finalización';$('toggleMode').textContent=state.mode==='66'?'CAMBIAR A MODO PERMANENTE':'VOLVER AL PROGRAMA DE 66 DÍAS';
     $('todayLabel').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();$('greeting').textContent=(state.name?state.name+', ':'')+'un día a la vez. Sin excusas, sin perfección.';$('dailyQuote').textContent=quotes[new Date().getDate()%quotes.length];
     const wc=weeklyCount();$('weeklyProgressText').textContent=Math.min(wc,20)+' / 20';$('weeklyProgress').style.width=Math.min(100,wc/20*100)+'%';$('weeklyReward').textContent=state.weeklyRewards[weekKey()]?'RECOMPENSA OBTENIDA':'+150 XP';
-    renderNextMission();renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();
+    renderNextMission();renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();renderMemory();
   }
   function renderPillars(){const due=dueMissions(),done=doneIds();$('pillarList').innerHTML=Object.entries(categories).map(([key,c])=>{const ms=due.filter(m=>m.category===key),count=ms.filter(m=>done.includes(m.id)).length;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><small>${c.desc}</small></div><span class="pillar-value">${count}/${ms.length}</span></div>`}).join('')}
   function weeklyMissionCount(id){return weekDates().filter(d=>doneIds(d).includes(id)).length}
@@ -708,7 +708,7 @@
     clean.missions.forEach(m=>{m.days ||= []});
     return clean;
   }
-  $('importData').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.missions)||!imported.completions)throw Error();state=validateBackup(imported);migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();migrateNutrition();migrateCognitive();labReset();save();showToast('Copia restaurada')}catch{showToast('Archivo inválido')}e.target.value=''});
+  $('importData').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.missions)||!imported.completions)throw Error();state=validateBackup(imported);migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();migrateNutrition();migrateCognitive();labReset();memoryReset();save();showToast('Copia restaurada')}catch{showToast('Archivo inválido')}e.target.value=''});
 
   // ZUNA LAB: minijuego local, sin servicios externos ni recompensas repetibles.
   function migrateCognitive(){
@@ -716,7 +716,9 @@
     const validDate=d=>typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d)&&d<='9999-12-31';
     state.cognitive={
       sessions:(Array.isArray(c.sessions)?c.sessions:[]).filter(s=>s&&validDate(s.date)&&Array.isArray(s.times)&&s.times.length===5&&s.times.every(n=>Number.isInteger(n)&&n>=50&&n<=10000)).slice(-100).map(s=>({date:s.date,times:s.times.slice(),best:Math.min(...s.times),average:Math.round(s.times.reduce((a,b)=>a+b,0)/5)})),
-      rewardedDates:[...new Set((Array.isArray(c.rewardedDates)?c.rewardedDates:[]).filter(validDate))].slice(-400)
+      rewardedDates:[...new Set((Array.isArray(c.rewardedDates)?c.rewardedDates:[]).filter(validDate))].slice(-400),
+      memorySessions:(Array.isArray(c.memorySessions)?c.memorySessions:[]).filter(s=>s&&validDate(s.date)&&Number.isInteger(s.rounds)&&s.rounds>=0&&s.rounds<=3).slice(-100).map(s=>({date:s.date,rounds:s.rounds})),
+      memoryRewardedDates:[...new Set((Array.isArray(c.memoryRewardedDates)?c.memoryRewardedDates:[]).filter(validDate))].slice(-400)
     };
   }
   migrateCognitive();
@@ -785,7 +787,91 @@
   $('labRestart').addEventListener('click',labReset);
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&labPhase==='waiting'){clearTimeout(labTimer);labTimer=null;labPhase='early';labPaint(labPhase);}});
 
-  $('resetData').addEventListener('click',()=>{if(confirm('¿Borrar todo tu progreso?')&&confirm('Esta acción no se puede deshacer. ¿Continuar?')){state=fresh();migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();migrateNutrition();migrateCognitive();labReset();saveRaw();render();openModal('onboardingModal')}});
+
+  // ZUNA LAB 02 — Memoria visual: 3 rondas de dificultad creciente.
+  let memoryPhase='idle',memorySequence=[],memoryIndex=0,memoryRound=0,memoryTimers=[];
+  const memoryPads=[...document.querySelectorAll('[data-memory-pad]')];
+  function memorySchedule(fn,delay){const id=setTimeout(()=>{memoryTimers=memoryTimers.filter(x=>x!==id);fn();},delay);memoryTimers.push(id);}
+  function memoryClear(){for(const id of memoryTimers)clearTimeout(id);memoryTimers=[];memoryPads.forEach(p=>p.classList.remove('lit'));}
+  function memorySetPads(enabled){memoryPads.forEach(p=>{p.disabled=!enabled;});}
+  function memoryReset(){
+    memoryClear();memoryPhase='idle';memorySequence=[];memoryIndex=0;memoryRound=0;
+    memorySetPads(false);$('memoryStart').disabled=false;$('memoryStart').textContent='EMPEZAR DESAFÍO ↗';
+    $('memoryFeedback').textContent='Empezá cuando quieras. Mirá la secuencia antes de tocar.';
+    renderMemory();
+  }
+  function renderMemory(){
+    if(!$('memoryHistory'))return;
+    const sessions=state.cognitive.memorySessions;
+    $('memoryRound').textContent=memoryRound+' / 3';
+    $('memoryLength').textContent=memoryRound?String(memoryRound+2):'—';
+    $('memoryBest').textContent=sessions.length?Math.max(...sessions.map(s=>s.rounds))+' / 3':'—';
+    const holder=$('memoryHistory');holder.replaceChildren();
+    if(!sessions.length){const p=document.createElement('p');p.className='muted';p.textContent='Todavía no hay sesiones de memoria.';holder.append(p);return;}
+    for(const s of sessions.slice(-5).reverse()){
+      const item=document.createElement('article');item.className='lab-history-item';
+      const date=document.createElement('span');date.textContent=s.date;
+      const result=document.createElement('strong');result.textContent=s.rounds+' / 3 rondas';
+      item.append(date,result);holder.append(item);
+    }
+  }
+  function memorySave(rounds){
+    const date=isoToday();
+    state.cognitive.memorySessions.push({date,rounds});
+    state.cognitive.memorySessions=state.cognitive.memorySessions.slice(-100);
+    let reward='';
+    if(rounds===3&&!state.cognitive.memoryRewardedDates.includes(date)){
+      state.cognitive.memoryRewardedDates.push(date);state.xp+=10;reward=' ¡+10 XP!';
+    }
+    memoryPhase='finished';memorySetPads(false);$('memoryStart').disabled=false;
+    $('memoryStart').textContent='VOLVER A JUGAR ↗';
+    $('memoryFeedback').textContent=(rounds===3?'¡Completaste las 3 rondas!':'Te equivocaste. Llegaste a '+rounds+' rondas.')+reward;
+    save();
+  }
+  function memoryShowSequence(){
+    memoryPhase='show';memorySetPads(false);
+    $('memoryFeedback').textContent='Observá las luces…';
+    memorySequence.forEach((n,i)=>{
+      memorySchedule(()=>memoryPads[n].classList.add('lit'),450+i*850);
+      memorySchedule(()=>memoryPads[n].classList.remove('lit'),1000+i*850);
+    });
+    memorySchedule(()=>{
+      memoryPhase='input';memoryIndex=0;memorySetPads(true);
+      $('memoryFeedback').textContent='Tu turno: repetí la secuencia ('+memorySequence.length+' posiciones).';
+    },550+memorySequence.length*850);
+  }
+  function memoryNextRound(){
+    memoryRound++;
+    memorySequence=Array.from({length:memoryRound+2},()=>Math.floor(Math.random()*4));
+    renderMemory();memoryShowSequence();
+  }
+  $('memoryStart').addEventListener('click',()=>{
+    memoryClear();memoryRound=0;memoryIndex=0;
+    $('memoryStart').disabled=true;
+    memoryNextRound();
+  });
+  memoryPads.forEach((pad,i)=>pad.addEventListener('click',()=>{
+    if(memoryPhase!=='input')return;
+    if(i!==memorySequence[memoryIndex]){memorySave(memoryRound-1);return;}
+    memoryIndex++;pad.classList.add('lit');memorySchedule(()=>pad.classList.remove('lit'),180);
+    if(memoryIndex===memorySequence.length){
+      memoryPhase='transition';memorySetPads(false);
+      if(memoryRound===3){memorySave(3);}
+      else{
+        $('memoryFeedback').textContent='¡Correcto! Preparando la siguiente ronda…';
+        memorySchedule(memoryNextRound,900);
+      }
+    }
+  }));
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden&&['show','input','transition'].includes(memoryPhase)){
+      memoryClear();memoryPhase='paused';memorySetPads(false);
+      $('memoryStart').disabled=false;$('memoryStart').textContent='REINICIAR DESAFÍO ↗';
+      $('memoryFeedback').textContent='Prueba interrumpida. Tocá para empezar de nuevo.';
+    }
+  });
+
+  $('resetData').addEventListener('click',()=>{if(confirm('¿Borrar todo tu progreso?')&&confirm('Esta acción no se puede deshacer. ¿Continuar?')){state=fresh();migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();migrateNutrition();migrateCognitive();labReset();memoryReset();saveRaw();render();openModal('onboardingModal')}});
   $('finishOnboarding').addEventListener('click',()=>{state.name=$('onboardingName').value.trim()||'Usuario';state.onboarded=true;save();closeModal('onboardingModal');showToast('Bienvenido a ZUNAREBORN')});
   if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
   // Si la app permanece abierta durante la medianoche, actualizamos el estado al volver a ella.
