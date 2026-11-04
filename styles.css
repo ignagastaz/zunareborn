@@ -68,3 +68,24 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 
 /* ZUNAREBORN 2.14 — historial físico opcional */
 .body-trend{margin:24px 0;padding:15px;border:1px solid #6b5430;border-radius:14px;background:#15130f}.body-entry-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}.body-entry-form .field-label{min-width:0}.body-entry-form input{width:100%;min-width:0;box-sizing:border-box}.body-entry-form button{grid-column:1/-1;min-height:44px}.body-entry-form[hidden]{display:none!important}.body-trend-chart{display:flex;gap:7px;align-items:end;min-height:150px;padding:12px 4px;border-bottom:1px solid #6b5430;margin:8px 0}.body-bar{min-width:0;flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:9px;color:#d7bf89}.body-bar span{font-variant-numeric:tabular-nums}.body-bar small{font-size:8px;color:#9d968c}.body-bar-track{height:100px;width:100%;display:flex;align-items:end;justify-content:center}.body-bar-track i{display:block;width:70%;max-width:30px;min-height:4px;background:linear-gradient(#e3bd73,#80602e);border-radius:5px 5px 0 0}.body-history-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #ffffff18;font-size:11px}.body-history-row button{color:#f0d18e;background:transparent;border:1px solid #66502b;border-radius:8px;padding:8px 10px}
+
+/* ZUNA LAB 2.15 */
+.lab-panel{border:1px solid #66502b;border-radius:18px;padding:18px;margin:20px 0;background:linear-gradient(145deg,#211b13,#111)}
+.lab-heading{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.lab-heading h2{margin:3px 0 6px}.lab-heading .muted{margin:0}
+.lab-symbol{display:grid;place-items:center;flex:0 0 50px;height:50px;background:#372a17;border-radius:15px;font-size:27px;color:#e6bf77}
+.lab-target{width:100%;min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#282014;color:#f4f0e8;border:2px solid #9e7b43;border-radius:18px;padding:20px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:background .16s,border-color .16s,transform .16s}
+.lab-target:active{transform:scale(.985)}
+.lab-target[data-phase="waiting"]{background:#302619;border-color:#b78947}
+.lab-target[data-phase="go"]{background:#153c2a;border-color:#5fe0a0}
+.lab-target[data-phase="early"]{background:#3b1e20;border-color:#db7979}
+.lab-target[data-phase="complete"]{background:#382c15;border-color:#e4bf73}
+.lab-target>span{font-size:50px;line-height:1}.lab-target>strong{font-size:clamp(18px,5vw,25px);text-align:center}.lab-target>small{font-size:13px;color:#e0d6c4}
+.lab-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:16px 0}
+.lab-metrics>div{background:#171717;border:1px solid #453922;border-radius:11px;padding:12px 7px;display:flex;flex-direction:column;gap:7px;text-align:center}
+.lab-metrics small{font-size:9px;letter-spacing:.06em;color:#c5b59a}.lab-metrics strong{font-size:clamp(14px,3.5vw,20px);color:#f0d18e}
+.lab-feedback{color:#f0d18e;min-height:40px;text-align:center;font-size:13px;line-height:1.5}
+.lab-history{display:grid;gap:9px;margin-bottom:18px}
+.lab-history-item{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:13px;background:#171717;border:1px solid #443923;border-radius:12px}
+.lab-history-item span,.lab-history-item small{color:#bcb2a2;font-size:12px}.lab-history-item strong{color:#f0d18e;font-size:13px}
+@media(prefers-reduced-motion:reduce){.lab-target{transition:none}}

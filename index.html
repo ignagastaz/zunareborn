@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=2.13.0">
+  <link rel="stylesheet" href="styles.css?v=2.15.0">
 
   <style>
   /* Reparación crítica visible incluso si Safari conserva el CSS anterior */
@@ -75,6 +75,7 @@
             <button class="quick-tile" data-view="missions"><span class="quick-icon" aria-hidden="true">✓</span><span><strong>Misiones</strong><small>Mis hábitos de hoy</small></span><span aria-hidden="true">↗</span></button>
             <button class="quick-tile" data-jump="movement:openTrainingEditor"><span class="quick-icon" aria-hidden="true">◉</span><span><strong>Entrenar</strong><small>Registrar sesión</small></span><span aria-hidden="true">↗</span></button>
             <button class="quick-tile" data-jump="movement:nutritionTitle"><span class="quick-icon" aria-hidden="true">◈</span><span><strong>Nutrición</strong><small>Organizar comidas</small></span><span aria-hidden="true">↗</span></button>
+            <button class="quick-tile" data-view="lab"><span class="quick-icon" aria-hidden="true">⚡</span><span><strong>ZUNA LAB</strong><small>Desafío de reflejos</small></span><span aria-hidden="true">↗</span></button>
             <button class="quick-tile" data-view="goals"><span class="quick-icon" aria-hidden="true">◎</span><span><strong>Objetivos</strong><small>Mis metas</small></span><span aria-hidden="true">↗</span></button>
           </div>
         </section>
@@ -102,6 +103,21 @@
         <div id="pillarList" class="pillar-list"></div>
 
         <article class="quote-card"><span>“</span><p id="dailyQuote"></p><small>— ZUNAREBORN</small></article>
+      </section>
+
+      <section id="view-lab" class="view" aria-labelledby="labTitle">
+        <div class="page-heading"><p class="eyebrow">MENTE EN MOVIMIENTO</p><h1 id="labTitle">ZUNA <em>LAB.</em></h1><p class="muted">Desafíos cortos para poner a prueba tu atención y tus reflejos.</p></div>
+        <article class="lab-panel">
+          <div class="lab-heading"><span class="lab-symbol" aria-hidden="true">⚡</span><div><p class="eyebrow">DESAFÍO 01</p><h2>Reflejos</h2><p class="muted">Esperá el verde y tocá tan rápido como puedas. Son 5 intentos válidos.</p></div></div>
+          <button type="button" id="labTarget" class="lab-target" aria-describedby="labInstructions"><span id="labTargetIcon" aria-hidden="true">⚡</span><strong id="labTargetTitle">¿Listo para reaccionar?</strong><small id="labTargetSubtitle">Tocá para empezar</small></button>
+          <p id="labInstructions" class="micro-note">No toques durante la espera: eso cuenta como salida anticipada. La velocidad depende también del dispositivo.</p>
+          <div class="lab-metrics"><div><small>INTENTOS</small><strong id="labAttempts">0 / 5</strong></div><div><small>ÚLTIMO</small><strong id="labLast">—</strong></div><div><small>MEJOR PERSONAL</small><strong id="labBest">—</strong></div></div>
+          <p id="labFeedback" class="lab-feedback" role="status" aria-live="polite">La señal aparece después de un tiempo aleatorio.</p>
+          <button type="button" class="outline-button full" id="labRestart">REINICIAR PRUEBA</button>
+        </article>
+        <div class="section-heading"><div><p class="eyebrow">TU EVOLUCIÓN</p><h2>Historial cognitivo</h2></div></div>
+        <div id="labHistory" class="lab-history"></div>
+        <p class="micro-note">El resultado es orientativo, no una evaluación médica ni una garantía de mejora en el deporte. Una sesión completada puede dar +10 XP una sola vez por día.</p>
       </section>
 
       <section id="view-missions" class="view">
@@ -320,7 +336,7 @@
 
         <section class="settings-group"><h3>DATOS Y PRIVACIDAD</h3><p class="setting-description">Esta versión guarda todo localmente. No hay cuenta ni servidor: tus datos no salen del dispositivo.</p><button class="outline-button full" id="exportData">↓ EXPORTAR COPIA DE SEGURIDAD</button><label class="outline-button full import-label">↑ IMPORTAR COPIA<input type="file" id="importData" accept="application/json"></label><button class="danger-button full" id="resetData">BORRAR TODOS MIS DATOS</button></section>
 
-        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.14</small></footer>
+        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.15</small></footer>
       </section>
     </main>
 
@@ -367,6 +383,6 @@
     <button class="outline-button full" id="goReminderSettings">CONFIGURAR HORARIOS</button>
   </div></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=2.13.0"></script>
+  <script src="app.js?v=2.15.0"></script>
 </body>
 </html>
