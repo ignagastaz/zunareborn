@@ -56,3 +56,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .page-heading h1,.welcome-row h1{overflow-wrap:normal}.stat-card strong,.mission-summary strong{font-variant-numeric:tabular-nums}
 @media(max-width:390px){.quick-tile{padding:10px 8px;gap:6px}.quick-tile .quick-icon{height:30px;width:30px}.quick-tile strong{font-size:11px}.quick-tile small{font-size:8px}.movement-shortcuts button{font-size:9px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ZUNAREBORN 2.13 · perfil nutricional */
+.nutrition-profile{padding:18px;margin:16px 0;border:1px solid #66502b;border-radius:14px;background:linear-gradient(135deg,#211b13,#111)}
+.nutrition-profile h3{margin:0 0 8px;color:#f0d18e}
+.nutrition-profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:15px 0}
+.nutrition-profile-grid input,.nutrition-profile-grid select{display:block;width:100%;box-sizing:border-box;min-width:0;margin-top:7px;padding:12px;border-radius:8px;border:1px solid #66502b;background:#141414;color:#f5f0e7;font-size:16px}
+.nutrition-guidance{margin-top:16px;line-height:1.6;color:#e3d9c8}
+.nutrition-guidance strong{color:#f0d18e}.nutrition-guidance ul{padding-left:20px;margin-bottom:0}
+@media(max-width:390px){.nutrition-profile-grid{grid-template-columns:1fr}}

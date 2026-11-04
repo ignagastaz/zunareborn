@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=2.12.1">
+  <link rel="stylesheet" href="styles.css?v=2.13.0">
 
   <style>
   /* Reparación crítica visible incluso si Safari conserva el CSS anterior */
@@ -246,6 +246,19 @@
         <section class="nutrition-planner" aria-labelledby="nutritionTitle">
           <div class="section-heading"><div><p class="eyebrow">ZUNAREBORN NUTRITION · NUEVO</p><h2 id="nutritionTitle">Organizá tus comidas</h2></div></div>
           <p class="sport-subcopy">Ideas para organizar una semana de comidas con alimentos comunes. No son una dieta calculada para tu peso ni un plan médico: adaptá porciones y elecciones a tus necesidades.</p>
+          <div class="nutrition-profile" aria-labelledby="nutritionProfileTitle">
+            <h3 id="nutritionProfileTitle">Tu perfil de alimentación</h3>
+            <p class="sport-subcopy">Datos opcionales para orientar consejos generales. No generan una dieta clínica ni una cantidad de calorías. Se guardan únicamente en este dispositivo y en tus respaldos.</p>
+            <div class="nutrition-profile-grid">
+              <label class="field-label">Edad <input id="nutritionAge" type="number" min="13" max="110" inputmode="numeric" placeholder="Años"></label>
+              <label class="field-label">Altura <input id="nutritionHeight" type="number" min="100" max="250" inputmode="decimal" placeholder="cm"></label>
+              <label class="field-label">Peso <input id="nutritionWeight" type="number" min="25" max="350" step="0.1" inputmode="decimal" placeholder="kg"></label>
+              <label class="field-label">Actividad <select id="nutritionActivity"><option value="unspecified">Elegir</option><option value="low">Baja</option><option value="moderate">Moderada</option><option value="high">Alta</option></select></label>
+              <label class="field-label">Objetivo <select id="nutritionGoal"><option value="balance">Comer de forma equilibrada</option><option value="performance">Rendimiento deportivo</option><option value="muscle">Ganar fuerza y músculo</option><option value="habits">Mejorar hábitos</option></select></label>
+            </div>
+            <button id="nutritionSaveProfile" class="outline-button">GUARDAR PERFIL</button>
+            <div id="nutritionGuidance" class="nutrition-guidance" aria-live="polite"></div>
+          </div>
           <div class="nutrition-toolbar">
             <label class="field-label">Ideas de comidas<select id="nutritionPattern"><option value="mixed">Variadas</option><option value="vegetarian">Vegetarianas</option></select></label>
             <button id="nutritionRefresh" class="outline-button">REORGANIZAR ESTA SEMANA ↻</button>
@@ -341,6 +354,6 @@
     <button class="outline-button full" id="goReminderSettings">CONFIGURAR HORARIOS</button>
   </div></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js"></script>
+  <script src="app.js?v=2.13.0"></script>
 </body>
 </html>

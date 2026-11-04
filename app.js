@@ -38,7 +38,7 @@
     {id:'xp1000',icon:'◆',name:'Mil puntos',copy:'Acumulá 1.000 XP.',test:s=>s.xp>=1000},
     {id:'day30',icon:'◌',name:'30 días',copy:'Llegá al día 30 del programa.',test:s=>programDay(s)>=30}
   ];
-  function fresh(){return {version:2,onboarded:false,name:'',goal:'balance',mode:'66',startDate:isoToday(),xp:0,streak:0,bestStreak:0,lastActive:null,missions:defaults.map(x=>({...x})),completions:{},journal:{},mood:{},createdAt:isoToday(),weeklyRewards:{},goals:[],nutrition:{pattern:'mixed',weeks:{},notes:''},sport:{primary:'running',weeklyTarget:3,sessions:[]}}}
+  function fresh(){return {version:2,onboarded:false,name:'',goal:'balance',mode:'66',startDate:isoToday(),xp:0,streak:0,bestStreak:0,lastActive:null,missions:defaults.map(x=>({...x})),completions:{},journal:{},mood:{},createdAt:isoToday(),weeklyRewards:{},goals:[],nutrition:{pattern:'mixed',weeks:{},notes:'',profile:{}},sport:{primary:'running',weeklyTarget:3,sessions:[]}}}
   function load(){
     try{
       const raw=localStorage.getItem(KEY); if(raw) return {...fresh(),...JSON.parse(raw)};
@@ -70,9 +70,14 @@
       {meals:['Yogur con frutos secos','Arroz con porotos y ensalada','Sandwich de queso y vegetales'],items:['yogur','frutos secos','arroz','porotos','hojas verdes','pan integral','queso','vegetales']}
     ]
   };
+  function validNutritionProfile(raw){
+    const p=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:{};
+    const num=(v,min,max)=>v===null||v===''||!Number.isFinite(Number(v))||Number(v)<min||Number(v)>max?null:Number(v);
+    return {age:num(p.age,13,110),height:num(p.height,100,250),weight:num(p.weight,25,350),activity:['low','moderate','high'].includes(p.activity)?p.activity:'unspecified',goal:['balance','performance','muscle','habits'].includes(p.goal)?p.goal:'balance'};
+  }
   function migrateNutrition(){
     const n=state.nutrition&&typeof state.nutrition==='object'&&!Array.isArray(state.nutrition)?state.nutrition:{};
-    state.nutrition={pattern:n.pattern==='vegetarian'?'vegetarian':'mixed',weeks:n.weeks&&typeof n.weeks==='object'&&!Array.isArray(n.weeks)?n.weeks:{},notes:typeof n.notes==='string'?n.notes.slice(0,800):''};
+    state.nutrition={pattern:n.pattern==='vegetarian'?'vegetarian':'mixed',weeks:n.weeks&&typeof n.weeks==='object'&&!Array.isArray(n.weeks)?n.weeks:{},notes:typeof n.notes==='string'?n.notes.slice(0,800):'',profile:validNutritionProfile(n.profile)};
   }
   migrateNutrition();
   function nutritionWeekId(){return weekKey()}
@@ -97,7 +102,28 @@
     const ingredients=[...new Set(plan.indexes.flatMap(i=>menu[i%menu.length].items))].sort((a,b)=>a.localeCompare(b,'es'));
     $('nutritionShopping').innerHTML=ingredients.map(item=>`<span>${esc(item)}</span>`).join('');
     if(document.activeElement!==$('nutritionNotes'))$('nutritionNotes').value=state.nutrition.notes;
+    renderNutritionProfile();
   }
+  function renderNutritionProfile(){
+    const p=state.nutrition.profile;
+    for(const [id,key] of [['nutritionAge','age'],['nutritionHeight','height'],['nutritionWeight','weight']])if(document.activeElement!==$(id))$(id).value=p[key]??'';
+    for(const [id,key] of [['nutritionActivity','activity'],['nutritionGoal','goal']])if(document.activeElement!==$(id))$(id).value=p[key];
+    const tips=['Priorizá variedad de alimentos, agua segura y comidas regulares.'];
+    if(p.goal==='performance')tips.push('Para entrenar, distribuí comidas y líquidos según el horario y la intensidad de tus sesiones.');
+    if(p.goal==='muscle')tips.push('Combiná entrenamiento progresivo, descanso suficiente y fuentes variadas de proteína.');
+    if(p.goal==='habits')tips.push('Elegí un hábito sostenible por semana y registrá cómo te sentís.');
+    if(p.activity==='high')tips.push('Con actividad alta, prestá atención a la recuperación y a comer suficiente; evitá restricciones improvisadas.');
+    if(p.age!==null&&p.age<18)tips.push('Por tu edad, no se generan objetivos de peso ni dietas restrictivas. Consultá con un profesional de nutrición pediátrica para un plan individual.');
+    else if(p.age!==null&&p.height!==null&&p.weight!==null)tips.push('Tus medidas están registradas. Por sí solas no permiten indicar calorías o porciones seguras: eso requiere una evaluación individual.');
+    $('nutritionGuidance').innerHTML='<strong>Orientación general</strong><ul>'+tips.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul>';
+  }
+  $('nutritionSaveProfile').addEventListener('click',()=>{
+    const read=(id,min,max)=>{const v=$(id).value.trim();if(!v)return null;const n=Number(v);if(!Number.isFinite(n)||n<min||n>max)throw Error('Revisá los valores de edad, altura y peso');return n};
+    try{
+      state.nutrition.profile=validNutritionProfile({age:read('nutritionAge',13,110),height:read('nutritionHeight',100,250),weight:read('nutritionWeight',25,350),activity:$('nutritionActivity').value,goal:$('nutritionGoal').value});
+      save();showToast('Perfil guardado');
+    }catch(e){showToast(e.message)}
+  });
   $('nutritionPattern').addEventListener('change',()=>{
     state.nutrition.pattern=$('nutritionPattern').value==='vegetarian'?'vegetarian':'mixed';
     ensureNutritionWeek();save();showToast('Ideas actualizadas');
@@ -651,6 +677,7 @@
     if(nutrition.notes!==undefined&&(typeof nutrition.notes!=='string'||nutrition.notes.length>800))throw Error('Notas de nutrición inválidas');
     if(nutrition.weeks!==undefined&&(!nutrition.weeks||typeof nutrition.weeks!=='object'||Array.isArray(nutrition.weeks)||Object.keys(nutrition.weeks).length>500))throw Error('Plan de comidas inválido');
     if(nutrition.weeks&&Object.entries(nutrition.weeks).some(([key,w])=>!/^\d{4}-\d{2}-\d{2}$/.test(key)||!w||typeof w!=='object'||!['mixed','vegetarian'].includes(w.pattern)||!Array.isArray(w.indexes)||w.indexes.length!==7||!w.indexes.every(i=>Number.isInteger(i)&&i>=0&&i<=6)))throw Error('Semana alimentaria inválida');
+    if(nutrition.profile!==undefined){if(!nutrition.profile||typeof nutrition.profile!=='object'||Array.isArray(nutrition.profile))throw Error('Perfil nutricional inválido');for(const [key,min,max] of [['age',13,110],['height',100,250],['weight',25,350]]){const v=nutrition.profile[key];if(v!==undefined&&v!==null&&(!Number.isFinite(v)||v<min||v>max))throw Error('Medidas inválidas')}}
     clean.nutrition=nutrition;
     if(clean.goals.length>500||!clean.goals.every(g=>g&&typeof g.id==='string'&&g.id.length<120&&typeof g.title==='string'&&g.title.length<=70&&Number.isSafeInteger(g.target)&&g.target>=1&&g.target<=10000&&['short','medium','long'].includes(g.horizon)&&/^\d{4}-\d{2}-\d{2}$/.test(g.startDate)&&Number.isSafeInteger(g.manualCount)&&g.manualCount>=0&&g.manualCount<=10000&&typeof g.awarded==='boolean'&&(!g.linkedMissionId||typeof g.linkedMissionId==='string')))throw Error('Objetivos inválidos');
     // El respaldo importado puede venir de v2.1, sin snapshots.

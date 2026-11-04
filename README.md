@@ -1,8 +1,18 @@
-# ZUNAREBORN 2.12.1 — Corrección visual
+# ZUNAREBORN 2.13.0 — Perfil nutricional orientativo
 
-Corrige los enlaces rápidos blancos, el texto superpuesto de «Próxima victoria» y el enlace de accesibilidad visible en condiciones normales. Fuerza una versión nueva de la hoja de estilos para evitar una mezcla de HTML nuevo y CSS antiguo en Safari. Incluye respaldo crítico de estilos dentro del HTML.
+Base: 2.12.1. Se conservan misiones, XP, entrenamiento, hábitos, historial y datos locales.
 
-**No cambia el almacenamiento, los XP, los hábitos ni los entrenamientos.**
+## Cambios
+- Perfil opcional: edad, altura, peso, nivel de actividad y objetivo.
+- Consejos generales adaptados al objetivo y actividad; protección adicional para menores.
+- Validación y migración de perfil en respaldos JSON.
+- Diseño adaptable a celulares y nueva caché de PWA.
 
 ## Instalación
-Exportá una copia de seguridad antes de actualizar. Subí los 10 archivos a la raíz del mismo repositorio de GitHub y confirmá los cambios en main. Después recargá Safari.
+1. Exportar un respaldo JSON desde la app actual.
+2. Reemplazar los diez archivos de la raíz del sitio con los de este ZIP.
+3. Actualizar la página en Safari; si se ve una versión anterior, cerrar y reabrir la app.
+4. Verificar que se mantengan los XP y las misiones antes de borrar el respaldo.
+
+## Límites
+No genera dietas clínicas, calorías, diagnósticos ni objetivos de peso. No envía información a servidores. No se ha probado en un iPhone real.
