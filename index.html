@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=2.19.0">
+  <link rel="stylesheet" href="styles.css?v=2.20.0">
 
   <style>
   /* Reparación crítica visible incluso si Safari conserva el CSS anterior */
@@ -144,7 +144,16 @@
       </section>
 
       <section id="view-missions" class="view">
-        <div class="page-heading"><p class="eyebrow">ACCIÓN SOBRE INTENCIÓN</p><h1>Misiones <em>diarias.</em></h1><p class="muted">Cumplí lo que importa. La app calcula qué toca hoy según la frecuencia.</p></div>
+        <div class="page-heading"><p class="eyebrow">ACCIÓN SOBRE INTENCIÓN</p><h1>ZUNA <em>QUEST.</em></h1><p class="muted">Cumplí lo que importa. La app calcula qué toca hoy según la frecuencia.</p></div>
+        <div class="quest-banner" aria-label="ZUNA QUEST: tus acciones construyen tu evolución">
+          <div class="quest-banner-art" aria-hidden="true"><span class="quest-sun"></span><span class="quest-mountain quest-mountain-back"></span><span class="quest-mountain quest-mountain-front"></span><span class="quest-traveler">◆</span></div>
+          <div class="quest-banner-copy"><p class="eyebrow">EL CAMINO SE CONSTRUYE</p><h2>Tu aventura empieza hoy.</h2><p>Cada misión completada es un paso hacia tu próxima versión.</p></div>
+        </div>
+        <article class="quest-weekly" aria-labelledby="questWeeklyTitle">
+          <div class="quest-weekly-top"><span class="quest-weekly-icon" aria-hidden="true">✦</span><div><p class="eyebrow">RETO DE CONSTANCIA</p><h3 id="questWeeklyTitle">Siete días, un camino</h3><small id="questWeeklyLabel">Preparando tu progreso…</small></div></div>
+          <div class="quest-weekly-track" id="questWeeklyTrack" aria-label="Actividad de los últimos siete días"></div>
+          <p class="quest-weekly-note" id="questWeeklyNote">Cada día que cumplís al menos una misión suma un paso.</p>
+        </article>
         <div class="mission-summary"><div><small>PROGRESO DE HOY</small><strong id="missionCount">0 / 0</strong></div><div class="mini-progress"><i id="missionProgress"></i></div><div class="summary-xp"><b id="missionXP">+0 XP</b><small>GANADOS HOY</small></div></div>
         <div id="missionFilters" class="filter-row"><button class="filter active" data-filter="all">Todas</button><button class="filter" data-filter="open">Pendientes</button><button class="filter" data-filter="done">Completadas</button></div>
         <div id="missionList" class="mission-list"></div>
@@ -430,6 +439,6 @@
     <button class="outline-button full" id="goReminderSettings">CONFIGURAR HORARIOS</button>
   </div></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=2.19.0"></script>
+  <script src="app.js?v=2.20.0"></script>
 </body>
 </html>

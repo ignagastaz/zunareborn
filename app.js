@@ -470,7 +470,7 @@
     $('modeSetting').textContent=state.mode==='66'?'66 DÍAS':'PERMANENTE';$('modeDescription').textContent=state.mode==='66'?'66 días de enfoque y progreso':'Sin fecha de finalización';$('toggleMode').textContent=state.mode==='66'?'CAMBIAR A MODO PERMANENTE':'VOLVER AL PROGRAMA DE 66 DÍAS';
     $('todayLabel').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();$('greeting').textContent=(state.name?state.name+', ':'')+'un día a la vez. Sin excusas, sin perfección.';$('dailyQuote').textContent=quotes[new Date().getDate()%quotes.length];
     const wc=weeklyCount();$('weeklyProgressText').textContent=Math.min(wc,20)+' / 20';$('weeklyProgress').style.width=Math.min(100,wc/20*100)+'%';$('weeklyReward').textContent=state.weeklyRewards[weekKey()]?'RECOMPENSA OBTENIDA':'+150 XP';
-    renderNextMission();renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();renderMemory();renderChallenge();renderCore();
+    renderNextMission();renderPillars();renderMissions();renderQuestWeekly();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();renderMemory();renderChallenge();renderCore();
   }
   function renderPillars(){const due=dueMissions(),done=doneIds();$('pillarList').innerHTML=Object.entries(categories).map(([key,c])=>{const ms=due.filter(m=>m.category===key),count=ms.filter(m=>done.includes(m.id)).length;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><small>${c.desc}</small></div><span class="pillar-value">${count}/${ms.length}</span></div>`}).join('')}
   function weeklyMissionCount(id){return weekDates().filter(d=>doneIds(d).includes(id)).length}
@@ -479,9 +479,32 @@
     const list=due.filter(m=>activeFilter==='all'||(activeFilter==='done'?done.includes(m.id):!done.includes(m.id)));
     $('missionList').innerHTML=list.length?list.map(m=>{
       const isDone=done.includes(m.id),c=categories[m.category]||categories.discipline;
-      return `<article class="mission-item ${isDone?'done':''}"><button class="mission-check" data-toggle="${esc(m.id)}" aria-label="${isDone?'Desmarcar':'Completar'}">${isDone?'✓':''}</button><div class="mission-copy"><b>${esc(m.name)}</b><small>${c.name} · ${frequencyLabel(m.frequency,m)} · ${isDone?'Completada':'Pendiente'}</small></div><span class="mission-xp">+${m.xp} XP</span><button class="mission-menu" data-edit="${esc(m.id)}" aria-label="Editar hábito">✎</button></article>`
+      const theme=({movement:'motion',sport:'motion',physical:'motion',fitness:'motion',nutrition:'balance',mind:'mind',mental:'mind',learning:'mind',discipline:'focus'})[m.category]||'focus';
+      const glyph=theme==='motion'?'▲':theme==='balance'?'✦':theme==='mind'?'◇':'◆';
+      const difficulty=Number(m.xp)>=30?'ÉPICA':Number(m.xp)>=20?'DESAFÍO':'MISIÓN';
+      return `<article class="mission-item quest-item ${isDone?'done':''}" data-quest-theme="${theme}">
+        <div class="quest-art" aria-hidden="true"><span class="quest-art-halo"></span><span class="quest-art-glyph">${glyph}</span><span class="quest-art-ground"></span></div>
+        <div class="quest-main"><span class="quest-type">${difficulty} · ${esc(c.name)}</span><b>${esc(m.name)}</b><small>${frequencyLabel(m.frequency,m)} · ${isDone?'✓ Completada':'Por completar'}</small><span class="quest-reward">✦ +${Number(m.xp)||0} XP</span></div>
+        <div class="quest-actions"><button class="mission-check quest-complete" data-toggle="${esc(m.id)}" aria-label="${isDone?'Desmarcar':'Completar'}: ${esc(m.name)}">${isDone?'✓':'○'}</button><button class="mission-menu" data-edit="${esc(m.id)}" aria-label="Editar hábito: ${esc(m.name)}">✎</button></div></article>`
     }).join(''):`<div class="empty-state"><b>Todo al día.</b>No hay misiones en esta categoría.</div>`;
     document.querySelectorAll('.filter').forEach(b=>b.classList.toggle('active',b.dataset.filter===activeFilter));
+  }
+  function renderQuestWeekly(){
+    const track=$('questWeeklyTrack');if(!track)return;
+    const days=Array.from({length:7},(_,i)=>addDays(isoToday(),i-6));
+    const completed=days.map(d=>doneIds(d).length>0);
+    const count=completed.filter(Boolean).length;
+    const names=['D','L','M','M','J','V','S'];
+    track.replaceChildren();
+    days.forEach((d,i)=>{
+      const item=document.createElement('div');item.className='quest-day'+(completed[i]?' achieved':'')+(i===6?' today':'');
+      const dot=document.createElement('span');dot.textContent=completed[i]?'✓':'·';
+      const label=document.createElement('small');label.textContent=names[new Date(d+'T12:00:00').getDay()];
+      item.append(dot,label);item.setAttribute('aria-label',d+': '+(completed[i]?'misión registrada':'sin misiones registradas'));
+      track.append(item);
+    });
+    $('questWeeklyLabel').textContent=count+' de 7 días con actividad';
+    $('questWeeklyNote').textContent=count===7?'¡Siete días con misiones registradas! Seguí a tu ritmo.':count===0?'Completá una misión para iluminar el primer día.':'Cada día con al menos una misión registrada ilumina un símbolo. No hay penalizaciones por descansar.';
   }
   function renderManageMissions(){
     const all=state.missions.filter(m=>!m.archived);

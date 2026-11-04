@@ -1,21 +1,18 @@
-# ZUNAREBORN 2.19 — ZUNA CORE Cinematográfico
+# ZUNAREBORN 2.20 — ZUNA QUEST
 
-Actualización acumulativa de ZUNAREBORN 2.18.
+Primera actualización de misiones con estética de aventura original, inspirada en la sensación de progreso de las apps gamificadas, sin copiar recursos ni interfaces de terceros.
 
-## Novedades
-- Se reemplazó el avatar vectorial provisional por **retratos cinematográficos originales** masculinos y femeninos.
-- Previsualización interactiva de las cinco etapas, con etiquetas claras de etapas bloqueadas. **Previsualizar no desbloquea ni suma XP**.
-- Retratos distintos para las etapas 1, 3 y 5; las etapas 2 y 4 usan la imagen base anterior con un efecto luminoso adicional.
-- La evolución real sigue dependiendo de los XP actuales: 0, 500, 1500, 3000 y 6000 XP.
-- El estado de energía sigue reflejando la actividad reciente; no se pierden etapas ni XP por inactividad.
-- Los seis retratos están comprimidos y embebidos en CSS: el ZIP mantiene **los mismos 10 archivos** y funciona sin conexión después de cargar.
-- Conserva `localStorage` con clave `zunareborn.v2`, los datos existentes, respaldos y selección de personaje.
+- Portada ilustrada con paisaje y luz dorada.
+- Tarjetas de misión con ilustración vectorial abstracta por categoría, dificultad orientativa, XP y estado.
+- Seguimiento visual de los últimos siete días con al menos una misión registrada.
+- Misiones existentes, creación, edición, filtros, XP, rachas y datos se conservan.
+- No se agrega XP por el panel semanal: solo muestra registros existentes, sin doble recompensa.
+- La app sigue usando `localStorage` bajo `zunareborn.v2`, sin migraciones destructivas.
+- PWA cache versionada 2.20.0.
 
-## Cómo actualizar en iPhone
+## Instalación
 1. Exportá una copia de seguridad desde Perfil.
-2. Descomprimí el ZIP y subí los 10 archivos a la raíz de GitHub, reemplazando los anteriores.
-3. Esperá a que GitHub Pages publique los cambios.
-4. Si la PWA instalada no actualiza inmediatamente, abrí la web en Safari y luego volvé a abrir la app. No borres datos ni desinstales sin respaldo.
+2. Descomprimí el ZIP y subí sus 10 archivos a la raíz de GitHub, reemplazando los anteriores.
+3. Esperá la publicación y probá la pestaña Misiones. En iPhone, puede ser necesario abrir la web en Safari antes de que se actualice la PWA instalada.
 
-## Nota visual
-Este es el primer paso de la versión cinematográfica: ilustraciones estáticas con iluminación y efectos sutiles, no animación 3D. Las etapas 2 y 4 comparten retrato con la etapa anterior, diferenciándose mediante efectos. Próximas iteraciones podrán sumar ilustraciones exclusivas para cada nivel.
+Esta versión prioriza funcionalidad y estabilidad. Las ilustraciones de misiones son originales y ligeras, sin dependencias externas.
