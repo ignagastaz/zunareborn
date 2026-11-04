@@ -38,7 +38,7 @@
     {id:'xp1000',icon:'◆',name:'Mil puntos',copy:'Acumulá 1.000 XP.',test:s=>s.xp>=1000},
     {id:'day30',icon:'◌',name:'30 días',copy:'Llegá al día 30 del programa.',test:s=>programDay(s)>=30}
   ];
-  function fresh(){return {version:2,onboarded:false,name:'',goal:'balance',mode:'66',startDate:isoToday(),xp:0,streak:0,bestStreak:0,lastActive:null,missions:defaults.map(x=>({...x})),completions:{},journal:{},mood:{},createdAt:isoToday(),weeklyRewards:{},goals:[],nutrition:{pattern:'mixed',weeks:{},notes:'',profile:{},bodyHistory:[]},sport:{primary:'running',weeklyTarget:3,sessions:[]},cognitive:{sessions:[],rewardedDates:[],memorySessions:[],memoryRewardedDates:[],challengeClaimedDates:[]}}}
+  function fresh(){return {version:2,onboarded:false,name:'',goal:'balance',mode:'66',startDate:isoToday(),xp:0,streak:0,bestStreak:0,lastActive:null,missions:defaults.map(x=>({...x})),completions:{},journal:{},mood:{},createdAt:isoToday(),weeklyRewards:{},goals:[],nutrition:{pattern:'mixed',weeks:{},notes:'',profile:{},bodyHistory:[]},sport:{primary:'running',weeklyTarget:3,sessions:[]},cognitive:{sessions:[],rewardedDates:[],memorySessions:[],memoryRewardedDates:[],challengeClaimedDates:[]},core:{gender:'male'}}}
   function load(){
     try{
       const raw=localStorage.getItem(KEY); if(raw) return {...fresh(),...JSON.parse(raw)};
@@ -470,7 +470,7 @@
     $('modeSetting').textContent=state.mode==='66'?'66 DÍAS':'PERMANENTE';$('modeDescription').textContent=state.mode==='66'?'66 días de enfoque y progreso':'Sin fecha de finalización';$('toggleMode').textContent=state.mode==='66'?'CAMBIAR A MODO PERMANENTE':'VOLVER AL PROGRAMA DE 66 DÍAS';
     $('todayLabel').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();$('greeting').textContent=(state.name?state.name+', ':'')+'un día a la vez. Sin excusas, sin perfección.';$('dailyQuote').textContent=quotes[new Date().getDate()%quotes.length];
     const wc=weeklyCount();$('weeklyProgressText').textContent=Math.min(wc,20)+' / 20';$('weeklyProgress').style.width=Math.min(100,wc/20*100)+'%';$('weeklyReward').textContent=state.weeklyRewards[weekKey()]?'RECOMPENSA OBTENIDA':'+150 XP';
-    renderNextMission();renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();renderMemory();renderChallenge();
+    renderNextMission();renderPillars();renderMissions();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();renderMemory();renderChallenge();renderCore();
   }
   function renderPillars(){const due=dueMissions(),done=doneIds();$('pillarList').innerHTML=Object.entries(categories).map(([key,c])=>{const ms=due.filter(m=>m.category===key),count=ms.filter(m=>done.includes(m.id)).length;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><small>${c.desc}</small></div><span class="pillar-value">${count}/${ms.length}</span></div>`}).join('')}
   function weeklyMissionCount(id){return weekDates().filter(d=>doneIds(d).includes(id)).length}
@@ -708,7 +708,7 @@
     clean.missions.forEach(m=>{m.days ||= []});
     return clean;
   }
-  $('importData').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.missions)||!imported.completions)throw Error();state=validateBackup(imported);migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();migrateNutrition();migrateCognitive();labReset();memoryReset();save();showToast('Copia restaurada')}catch{showToast('Archivo inválido')}e.target.value=''});
+  $('importData').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.missions)||!imported.completions)throw Error();state=validateBackup(imported);migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();migrateNutrition();migrateCognitive();migrateCore();labReset();memoryReset();save();showToast('Copia restaurada')}catch{showToast('Archivo inválido')}e.target.value=''});
 
   // ZUNA LAB: minijuego local, sin servicios externos ni recompensas repetibles.
   function migrateCognitive(){
@@ -899,7 +899,45 @@
     }
   });
 
-  $('resetData').addEventListener('click',()=>{if(confirm('¿Borrar todo tu progreso?')&&confirm('Esta acción no se puede deshacer. ¿Continuar?')){state=fresh();migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();migrateNutrition();migrateCognitive();labReset();memoryReset();saveRaw();render();openModal('onboardingModal')}});
+
+  // ZUNA CORE 2.18 — evolución visual y selección de personaje, sin penalizar XP.
+  function migrateCore(){
+    const raw=state.core&&typeof state.core==='object'&&!Array.isArray(state.core)?state.core:{};
+    state.core={gender:raw.gender==='female'?'female':'male'};
+  }
+  migrateCore();
+  function renderCore(){
+    const figure=$('coreFigure');if(!figure)return;
+    const xp=Math.max(0,Number(state.xp)||0);
+    const stages=['Despertar','Enfoque','Constancia','Disciplina','Maestría'];
+    const thresholds=[0,500,1500,3000,6000];
+    const stage=Math.max(0,thresholds.reduce((a,t,i)=>xp>=t?i:a,0));
+    const daysSince=state.lastActive?Math.max(0,Math.floor((new Date(isoToday()+'T12:00:00')-new Date(state.lastActive+'T12:00:00'))/86400000)):99;
+    const energy=daysSince<=1?100:daysSince===2?65:daysSince===3?40:20;
+    const gender=state.core.gender;
+    figure.dataset.stage=String(stage+1);
+    figure.dataset.energy=energy<=40?'low':energy<100?'mid':'high';
+    figure.dataset.gender=gender;
+    figure.setAttribute('aria-label','ZUNA CORE '+(gender==='female'?'femenino':'masculino')+', etapa '+(stage+1)+' '+stages[stage]+', energía '+energy+' por ciento');
+    $('coreStageTag').textContent=stages[stage].toUpperCase();
+    $('coreStageName').textContent=String(stage+1).padStart(2,'0')+' · '+stages[stage];
+    $('coreEnergyFill').style.width=energy+'%';
+    $('coreEnergyText').textContent=energy===100?'Tu núcleo está brillando. Seguí construyendo.':energy>=65?'Tu núcleo mantiene su luz.':energy>=40?'Tu energía está más tranquila. Volvé a tu ritmo.':'Tu núcleo está en reposo. Podés retomarlo cuando quieras.';
+    $('coreNextStage').textContent=stage===4?'Alcanzaste Maestría. Tu evolución continúa.':'Siguiente etapa: '+stages[stage+1]+' · '+Math.max(0,thresholds[stage+1]-xp)+' XP restantes';
+    $('coreHair').setAttribute('d',gender==='female'
+      ?'M111 155 Q100 95 143 91 Q185 76 205 120 L215 237 L190 225 L194 148 Q185 115 159 123 Q128 113 121 149 L127 228 L104 239 Z'
+      :'M112 160 Q103 103 140 94 Q177 78 200 112 L209 162 L194 144 L188 121 L163 128 L135 119 L119 150 Z');
+    $('coreFace').setAttribute('rx',gender==='female'?'44':'48');
+    document.querySelectorAll('[data-core-gender]').forEach(b=>{
+      const chosen=b.dataset.coreGender===gender;b.classList.toggle('selected',chosen);b.setAttribute('aria-pressed',String(chosen));
+    });
+  }
+  document.querySelectorAll('[data-core-gender]').forEach(b=>b.addEventListener('click',()=>{
+    if(!['male','female'].includes(b.dataset.coreGender))return;
+    state.core.gender=b.dataset.coreGender;save();showToast('Personaje actualizado');
+  }));
+
+  $('resetData').addEventListener('click',()=>{if(confirm('¿Borrar todo tu progreso?')&&confirm('Esta acción no se puede deshacer. ¿Continuar?')){state=fresh();migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();migrateNutrition();migrateCognitive();migrateCore();labReset();memoryReset();saveRaw();render();openModal('onboardingModal')}});
   $('finishOnboarding').addEventListener('click',()=>{state.name=$('onboardingName').value.trim()||'Usuario';state.onboarded=true;save();closeModal('onboardingModal');showToast('Bienvenido a ZUNAREBORN')});
   if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
   // Si la app permanece abierta durante la medianoche, actualizamos el estado al volver a ella.

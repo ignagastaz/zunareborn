@@ -116,3 +116,32 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .lab-challenge-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#9f762e,#f3d58c);border-radius:20px;transition:width .3s}
 .lab-challenge .gold-button:disabled{opacity:.5;cursor:not-allowed}
 @media(prefers-reduced-motion:reduce){.lab-challenge-medal.earned{animation:none}.lab-challenge-progress span{transition:none}}
+
+/* ZUNA CORE — evolución visual 2.18 */
+.core-panel{margin:18px 0 24px;padding:18px;border:1px solid #947039;border-radius:22px;background:radial-gradient(ellipse at 50% 32%,#302217 0%,#15120e 56%,#0c0c0c 100%);overflow:hidden}
+.core-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.core-head h2{font-family:Georgia,serif;font-size:27px;margin:4px 0;color:#f4e8d0}.core-head h2 em{color:#e5bd76}
+.core-rank{font-size:10px;letter-spacing:.06em;color:#e9c784;border:1px solid #846536;border-radius:20px;padding:8px}
+.core-figure{max-width:340px;margin:0 auto;position:relative}
+.core-figure svg{width:100%;height:auto;display:block;overflow:visible}
+.core-aura,.core-crystal{transform-origin:160px 260px;animation:core-breathe 3.8s ease-in-out infinite}
+.core-halo{transform-origin:160px 155px;animation:core-turn 28s linear infinite}
+.core-wings,.core-crown{opacity:0;transition:opacity .5s}
+.core-figure[data-stage="3"] .core-wings,.core-figure[data-stage="4"] .core-wings,.core-figure[data-stage="5"] .core-wings{opacity:1}
+.core-figure[data-stage="5"] .core-crown{opacity:1}
+.core-figure[data-energy="mid"] .core-aura,.core-figure[data-energy="mid"] .core-crystal{opacity:.65}
+.core-figure[data-energy="low"] .core-aura,.core-figure[data-energy="low"] .core-crystal{opacity:.3;animation:none}
+.core-figure[data-energy="low"] .core-halo{opacity:.35}
+.core-info{text-align:center}.core-info strong{font-size:19px;color:#f3d28d}
+.core-info p{font-size:13px;color:#c9bdab;line-height:1.5;margin:9px 0}
+.core-energy-bar{height:8px;border-radius:20px;background:#393126;overflow:hidden;margin:12px 0}
+.core-energy-bar span{display:block;height:100%;background:linear-gradient(90deg,#a77b36,#f1d58d);transition:width .4s}
+.core-info small{font-size:12px;color:#bfa77f}
+.core-selector{border:0;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:9px;padding:18px 0 10px;margin:0}
+.core-selector legend{font-size:12px;color:#d7c5a8;text-align:center;padding:0 0 9px}
+.core-choice{background:#1d1b18;border:1px solid #705632;color:#e8d8b9;border-radius:12px;padding:12px 18px;min-height:44px;cursor:pointer}
+.core-choice.selected{background:#d4aa5c;color:#17120b;border-color:#f4d48b;font-weight:700}
+.core-choice:focus-visible{outline:3px solid #fff0bb;outline-offset:3px}
+@keyframes core-breathe{50%{transform:scale(1.07);opacity:.8}}
+@keyframes core-turn{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.core-aura,.core-crystal,.core-halo{animation:none}.core-wings,.core-crown,.core-energy-bar span{transition:none}}

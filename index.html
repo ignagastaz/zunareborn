@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=2.17.0">
+  <link rel="stylesheet" href="styles.css?v=2.18.0">
 
   <style>
   /* Reparación crítica visible incluso si Safari conserva el CSS anterior */
@@ -166,6 +166,36 @@
 
       <section id="view-progress" class="view">
         <div class="page-heading"><p class="eyebrow">CADA DÍA CUENTA</p><h1>Tu <em>evolución.</em></h1><p class="muted">Mirá tendencias, no perfección.</p></div>
+        <section class="core-panel" aria-labelledby="coreHeading">
+          <div class="core-head"><div><p class="eyebrow">TU EVOLUCIÓN TOMA FORMA</p><h2 id="coreHeading">ZUNA <em>CORE.</em></h2></div><span class="core-rank" id="coreStageTag">DESPERTAR</span></div>
+          <div class="core-figure" id="coreFigure" role="img" aria-label="Tu personaje ZUNA CORE con un núcleo de energía dorado">
+            <svg id="coreAvatarSvg" viewBox="0 0 320 330" aria-hidden="true" focusable="false">
+              <defs>
+                <radialGradient id="coreAura"><stop offset="0" stop-color="#e8bd6c" stop-opacity=".45"/><stop offset="1" stop-color="#e8bd6c" stop-opacity="0"/></radialGradient>
+                <linearGradient id="coreJacket" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#35312c"/><stop offset=".5" stop-color="#101010"/><stop offset="1" stop-color="#30261b"/></linearGradient>
+                <linearGradient id="coreGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff2bc"/><stop offset=".45" stop-color="#d19b3b"/><stop offset="1" stop-color="#fff0b0"/></linearGradient>
+              </defs>
+              <circle class="core-aura" cx="160" cy="160" r="155" fill="url(#coreAura)"/>
+              <circle class="core-halo" cx="160" cy="155" r="115" fill="none" stroke="#a27c40" stroke-width="1.5" stroke-dasharray="4 10"/>
+              <path class="core-wings" d="M115 166 L65 128 L92 160 L33 153 L92 190 L55 213 L120 202 M205 166 L255 128 L228 160 L287 153 L228 190 L265 213 L200 202" fill="none" stroke="#e6b95f" stroke-width="5" stroke-linejoin="round"/>
+              <path d="M56 329 Q63 243 126 232 L194 232 Q260 243 264 329 Z" fill="url(#coreJacket)" stroke="#987239" stroke-width="2"/>
+              <path d="M126 232 L101 255 L130 286 L160 253 L190 286 L219 255 L194 232" fill="#171614" stroke="#a57e42" stroke-width="2"/>
+              <path d="M137 228 L137 209 L183 209 L183 228 L160 250 Z" fill="#a47b61"/>
+              <ellipse id="coreFace" cx="160" cy="157" rx="48" ry="62" fill="#c89a76"/>
+              <path id="coreHair" d="M112 160 Q103 103 140 94 Q177 78 200 112 L209 162 L194 144 L188 121 L163 128 L135 119 L119 150 Z" fill="#201915"/>
+              <path d="M139 160 L151 161 M169 161 L181 160" stroke="#39271f" stroke-width="3" stroke-linecap="round"/>
+              <path d="M157 164 L154 186 L165 187" fill="none" stroke="#8b5945" stroke-width="2"/>
+              <path d="M148 202 Q160 207 172 202" fill="none" stroke="#72473b" stroke-width="2" stroke-linecap="round"/>
+              <path d="M160 240 L189 261 L160 293 L131 261 Z" fill="#17120a" stroke="#a17b39" stroke-width="2"/>
+              <g class="core-crystal"><path d="M160 246 L177 266 L160 285 L143 266 Z" fill="url(#coreGold)"/><circle cx="160" cy="266" r="25" fill="none" stroke="#f2d58c" stroke-width="2"/></g>
+              <path class="core-crown" d="M128 97 L139 71 L160 87 L181 71 L192 97" fill="none" stroke="#ffdf88" stroke-width="4"/>
+              <text x="224" y="304" font-size="26" font-family="Georgia,serif" fill="#d4aa5c">Z</text>
+            </svg>
+          </div>
+          <div class="core-info"><strong id="coreStageName">01 · Despertar</strong><p id="coreEnergyText">Tu energía está despertando.</p><div class="core-energy-bar"><span id="coreEnergyFill"></span></div><small id="coreNextStage">Tu siguiente evolución está en camino.</small></div>
+          <fieldset class="core-selector"><legend>Elegí tu personaje</legend><button type="button" class="core-choice" data-core-gender="male" aria-pressed="true">Masculino</button><button type="button" class="core-choice" data-core-gender="female" aria-pressed="false">Femenino</button></fieldset>
+          <p class="micro-note">Las etapas dependen de tus XP acumulados. La energía refleja tu actividad reciente; si bajás el ritmo, nunca perdés las etapas desbloqueadas. Podés cambiar de personaje cuando quieras.</p>
+        </section>
         <article class="level-card"><div class="level-ring"><div><small>NIVEL</small><strong id="levelNumber">1</strong></div></div><div class="level-info"><span class="tag">RANGO <b id="rankName">INICIANTE</b></span><h2 id="levelTitle">El despertar</h2><p id="levelNext">0 / 500 XP</p><div class="progress-track"><div class="progress-fill" id="levelProgress"></div></div></div></article>
         <div class="stat-grid progress-stats"><article class="stat-card"><span>🏆</span><strong id="totalCompleted">0</strong><small>MISIONES</small></article><article class="stat-card"><span>📅</span><strong id="daysActive">0</strong><small>DÍAS ACTIVOS</small></article><article class="stat-card"><span>🔥</span><strong id="bestStreak">0</strong><small>MEJOR RACHA</small></article></div>
 
@@ -406,6 +436,6 @@
     <button class="outline-button full" id="goReminderSettings">CONFIGURAR HORARIOS</button>
   </div></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=2.17.0"></script>
+  <script src="app.js?v=2.18.0"></script>
 </body>
 </html>

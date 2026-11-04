@@ -1,19 +1,18 @@
-# ZUNAREBORN 2.17 — Desafío diario ZUNA LAB
+# ZUNAREBORN 2.18 — ZUNA CORE
 
-Actualización acumulativa de la versión 2.16.
+Primera implementación funcional del avatar evolutivo. Se conserva toda la funcionalidad de 2.17.
 
-## Novedades
-- Tarjeta interactiva **Doble enfoque** al principio de ZUNA LAB.
-- Progreso visual de dos pasos: completar una sesión de Reflejos y superar las tres rondas de Memoria visual en el mismo día.
-- Insignia dorada animada y recompensa reclamable de **+20 XP una sola vez por día**, además de las recompensas propias de cada juego.
-- Los días reclamados se guardan en `state.cognitive.challengeClaimedDates` y se incluyen en las copias de seguridad JSON.
-- Compatibilidad con datos anteriores: migración no destructiva, mismo localStorage `zunareborn.v2`.
-- Cache de la PWA versionada como 2.17.
+- Dos estilos iniciales de personaje: masculino y femenino, seleccionables desde Evolución.
+- Avatar SVG integrado en la app, con núcleo dorado animado.
+- Cinco etapas por XP acumulados: Despertar (0), Enfoque (500), Constancia (1500), Disciplina (3000), Maestría (6000).
+- El núcleo cambia de intensidad según los días desde la última actividad registrada. Nunca se restan XP ni se revocan etapas por inactividad.
+- Efectos de alas a partir de la etapa 3 y corona en etapa 5.
+- Selección guardada en `localStorage` bajo la misma clave `zunareborn.v2` e incluida en las exportaciones.
+- Migración segura de perfiles antiguos, con personaje masculino como valor inicial. Se puede cambiar libremente.
 
 ## Actualización
 1. Exportá respaldo desde Perfil.
-2. Descomprimí el ZIP y reemplazá los 10 archivos de la raíz del repositorio.
-3. Confirmá los cambios en GitHub y esperá la publicación.
-4. Si la app instalada tarda en mostrar cambios, visitá primero la URL en Safari y volvé a abrir la PWA.
+2. Descomprimí el ZIP y subí los 10 archivos a la raíz del repositorio GitHub.
+3. Esperá la publicación y comprobá Evolución > ZUNA CORE. En iPhone puede tardar en refrescarse la PWA; no borres la app ni su almacenamiento.
 
-Las pruebas cognitivas son recreativas, no médicas.
+**Nota:** este es un primer avatar vectorial animado, no todavía la ilustración cinematográfica final. La evolución es recreativa y motivacional.
