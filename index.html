@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=2.28.1">
+  <link rel="stylesheet" href="styles.css?v=2.29.0">
 
   <style>
   /* Reparación crítica visible incluso si Safari conserva el CSS anterior */
@@ -517,7 +517,11 @@
 
   <div class="modal-backdrop" id="helpModal" aria-hidden="true"><div class="modal"><button class="modal-close" data-close="helpModal">×</button><p class="eyebrow">INSTALACIÓN</p><h2>Usala como una app.</h2><ol class="help-list"><li>Abrí ZUNAREBORN en Safari.</li><li>Tocá el botón <b>Compartir</b>.</li><li>Elegí <b>Añadir a pantalla de inicio</b>.</li><li>Confirmá el nombre ZUNAREBORN y tocá <b>Añadir</b>.</li></ol></div></div>
 
-  <div id="gymWorkoutModal" class="gym-workout-overlay" hidden><div class="gym-workout-panel" role="dialog" aria-modal="true" aria-labelledby="gymWorkoutTitle"><div class="gym-workout-header"><div><p class="eyebrow">ZUNA TRAINING · SESIÓN</p><h2 id="gymWorkoutTitle">Entrenamiento</h2></div><button id="gymWorkoutClose" class="outline-button" type="button" aria-label="Cerrar entrenamiento">✕</button></div><label class="field-label">Fecha<input id="gymWorkoutDate" type="date"></label><p id="gymWorkoutHelp" class="micro-note"></p><div id="gymWorkoutFields"></div><button id="gymWorkoutSave" class="gold-button full" type="button">GUARDAR ENTRENAMIENTO ↗</button></div></div>
+  <div id="gymWorkoutModal" class="gym-workout-overlay" hidden><div class="gym-workout-panel" role="dialog" aria-modal="true" aria-labelledby="gymWorkoutTitle"><div class="gym-workout-header"><div><p class="eyebrow">ZUNA TRAINING · SESIÓN</p><h2 id="gymWorkoutTitle">Entrenamiento</h2></div><button id="gymWorkoutClose" class="outline-button" type="button" aria-label="Cerrar entrenamiento">✕</button></div><label class="field-label">Fecha<input id="gymWorkoutDate" type="date"></label><p id="gymWorkoutHelp" class="micro-note"></p><section id="gymRestPanel" class="gym-rest-panel" aria-label="Temporizador de descanso">
+<div class="gym-rest-top"><div><p class="eyebrow">DESCANSO ENTRE SERIES</p><strong id="gymRestClock" role="timer" aria-live="off">01:30</strong></div><button type="button" id="gymRestToggle" class="gold-button">INICIAR</button></div>
+<div class="gym-rest-presets"><button type="button" data-rest-seconds="60">60 s</button><button type="button" data-rest-seconds="90" class="selected">90 s</button><button type="button" data-rest-seconds="120">120 s</button><button type="button" id="gymRestReset">REINICIAR</button></div>
+<small id="gymRestHint">Podés iniciar el descanso después de cada serie. Es orientativo: recuperate lo que necesites.</small>
+</section><div id="gymWorkoutFields"></div><button id="gymWorkoutSave" class="gold-button full" type="button">GUARDAR ENTRENAMIENTO ↗</button></div></div>
   <div class="modal-backdrop" id="trainingModal" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="trainingModalTitle"><button class="modal-close" data-close="trainingModal" aria-label="Cerrar">×</button><p class="eyebrow">TU SESIÓN CUENTA</p><h2 id="trainingModalTitle">Registrar entrenamiento</h2><label class="field-label">Fecha<input type="date" id="trainingDate"></label><label class="field-label">Deporte<select id="trainingSport"><option value="running">Running</option><option value="football">Fútbol</option><option value="gym">Gimnasio / fuerza</option><option value="cycling">Ciclismo</option><option value="basketball">Básquet</option><option value="swimming">Natación</option><option value="other">Otro deporte</option></select></label><label class="field-label">Duración (minutos)<input type="number" id="trainingDuration" min="1" max="720" step="1" value="30"></label><label class="field-label">Esfuerzo percibido<select id="trainingEffort"><option value="1">Suave</option><option value="2" selected>Moderado</option><option value="3">Intenso</option></select></label><label class="field-label">¿Qué trabajaste?<textarea id="trainingNotes" maxlength="280" placeholder="Ej. técnica, resistencia, movilidad, coordinación..."></textarea></label><button class="gold-button full" id="saveTraining">GUARDAR ENTRENAMIENTO <span>↗</span></button></div></div>
   <div class="modal-backdrop" id="reminderModal" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="reminderModalTitle">
     <button class="modal-close" data-close="reminderModal" aria-label="Cerrar">×</button><p class="eyebrow">TU CENTRO DE AVISOS</p><h2 id="reminderModalTitle">Recordatorios</h2>
@@ -529,6 +533,6 @@
   <div id="zunaUpdateNotice" class="zuna-update-notice" hidden role="status"><span>✦ <strong>Hay una nueva versión</strong><small>Actualizá para ver las mejoras. Tu progreso se conserva.</small></span><button id="zunaUpdateApply" type="button">ACTUALIZAR ↗</button><button id="zunaUpdateDismiss" type="button" aria-label="Cerrar aviso">×</button></div>
   <div id="zunaReward" class="zuna-reward" hidden role="status" aria-live="polite"><span class="zuna-reward-star">✦</span><b id="zunaRewardTitle">MISIÓN COMPLETADA</b><strong id="zunaRewardXP">+20 XP</strong><small>Un paso más hacia tu evolución</small></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=2.28.1"></script>
+  <script src="app.js?v=2.29.0"></script>
 </body>
 </html>

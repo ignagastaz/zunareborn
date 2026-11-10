@@ -331,21 +331,55 @@
     }
     return 'Sin registros anteriores';
   }
+  // Temporizador local y no persistente: no modifica entrenamientos ni XP.
+  let gymRestSeconds=90,gymRestRemaining=90,gymRestDeadline=0,gymRestTicker=null,gymRestRunning=false;
+  function gymRestPaint(){
+    const seconds=gymRestRunning?Math.max(0,Math.ceil((gymRestDeadline-Date.now())/1000)):gymRestRemaining;
+    $('gymRestClock').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
+    $('gymRestToggle').textContent=gymRestRunning?'PAUSAR':seconds===0?'REPETIR':'INICIAR';
+    document.querySelectorAll('[data-rest-seconds]').forEach(b=>b.classList.toggle('selected',Number(b.dataset.restSeconds)===gymRestSeconds));
+    if(gymRestRunning&&seconds===0){gymRestStop();gymRestRemaining=0;gymRestPaint();$('gymRestHint').textContent='Descanso terminado. Continuá cuando te sientas listo.';}
+  }
+  function gymRestStop(){
+    if(gymRestTicker!==null){clearInterval(gymRestTicker);gymRestTicker=null;}
+    if(gymRestRunning)gymRestRemaining=Math.max(0,Math.ceil((gymRestDeadline-Date.now())/1000));
+    gymRestRunning=false;
+  }
+  function gymRestReset(seconds=gymRestSeconds){gymRestStop();gymRestSeconds=seconds;gymRestRemaining=seconds;gymRestPaint();}
+  $('gymRestToggle').addEventListener('click',()=>{
+    if(gymRestRunning){gymRestStop();gymRestPaint();return;}
+    if(gymRestRemaining<=0)gymRestRemaining=gymRestSeconds;
+    gymRestRunning=true;gymRestDeadline=Date.now()+gymRestRemaining*1000;
+    gymRestTicker=setInterval(gymRestPaint,250);gymRestPaint();
+  });
+  $('gymRestReset').addEventListener('click',()=>gymRestReset());
+  $('gymRestPanel').addEventListener('click',e=>{const b=e.target.closest('[data-rest-seconds]');if(b)gymRestReset(Number(b.dataset.restSeconds));});
+  const gymTechnique=[
+    [/press|flexion|empuje/i,'Mantené hombros estables y mové el peso con control. Evitá arquear excesivamente la espalda.'],
+    [/remo|jal[oó]n|tracci[oó]n/i,'Iniciá el movimiento con control de escápulas; evitá balancearte para mover más peso.'],
+    [/sentadilla|prensa|zancada/i,'Usá un recorrido cómodo, pies estables y rodillas alineadas con el movimiento.'],
+    [/bisagra|peso muerto/i,'Mové la cadera hacia atrás, mantené la carga cerca del cuerpo y la espalda estable.'],
+    [/curl|b[ií]ceps/i,'Evitá impulsarte con el torso. Controlá tanto la subida como la bajada.'],
+    [/elevaci[oó]n|hombro/i,'Usá cargas manejables y elevá los brazos sin encoger los hombros.'],
+    [/gemelo/i,'Apoyá bien los pies y realizá el recorrido sin rebotes.']
+  ];
+  function gymTechniqueText(name){return gymTechnique.find(([r])=>r.test(name))?.[1]||'Movete con control, respirá normalmente y elegí un rango sin dolor. Priorizá técnica antes que carga.';}
   function openGymWorkout(dayIndex){
     const p=state.sport.gymRoutine,schedule=p&&gymSchedule[p.days];
     if(!schedule||p.limit==='both'||dayIndex<0||dayIndex>=schedule.length)return;
     const title=schedule[dayIndex],exercises=gymExercises(p,title);
     if(!exercises.length){showToast('No hay ejercicios disponibles para este día');return;}
     activeGymWorkout={title,date:isoToday(),planKey:gymPlanKey(p),exercises:exercises.map(([name,reps])=>({name,sets:[{kg:'',reps:'',done:false},{kg:'',reps:'',done:false}]}))};
-    renderGymWorkout();$('gymWorkoutModal').hidden=false;
+    gymRestReset();renderGymWorkout();$('gymWorkoutModal').hidden=false;
   }
   function renderGymWorkout(readOnly=false){
     const w=activeGymWorkout;if(!w)return;
     $('gymWorkoutTitle').textContent=w.title;
     $('gymWorkoutDate').value=w.date;
     $('gymWorkoutDate').disabled=readOnly;
-    $('gymWorkoutFields').innerHTML=w.exercises.map((ex,i)=>`<section class="gym-workout-exercise"><div class="gym-workout-ex-head"><b>${esc(ex.name)}</b><small>Anterior: ${esc(gymLastSet(ex.name))}</small></div><div class="gym-set-labels"><span>SERIE</span><span>KG</span><span>REPS</span><span>HECHA</span></div>${ex.sets.map((set,k)=>`<div class="gym-set-row"><span>${k+1}</span><input aria-label="Kilos serie ${k+1} de ${esc(ex.name)}" data-gym-field="kg" data-ex="${i}" data-set="${k}" type="number" inputmode="decimal" min="0" max="999" step="0.5" value="${esc(set.kg)}" ${readOnly?'disabled':''}><input aria-label="Repeticiones serie ${k+1} de ${esc(ex.name)}" data-gym-field="reps" data-ex="${i}" data-set="${k}" type="number" inputmode="numeric" min="1" max="100" step="1" value="${esc(set.reps)}" ${readOnly?'disabled':''}><input aria-label="Serie ${k+1} completada" data-gym-field="done" data-ex="${i}" data-set="${k}" type="checkbox" ${set.done?'checked':''} ${readOnly?'disabled':''}></div>`).join('')}${readOnly?'':`<button type="button" class="gym-add-set" data-gym-add="${i}">＋ Agregar serie</button>`}</section>`).join('');
+    $('gymWorkoutFields').innerHTML=w.exercises.map((ex,i)=>`<section class="gym-workout-exercise"><div class="gym-workout-ex-head"><b>${esc(ex.name)}</b><small>Anterior: ${esc(gymLastSet(ex.name))}</small><details class="gym-technique"><summary>◎ Ver consejo de técnica</summary><p>${esc(gymTechniqueText(ex.name))}</p><small>Consejo general, no reemplaza evaluación profesional. Detenete ante dolor.</small></details></div><div class="gym-set-labels"><span>SERIE</span><span>KG</span><span>REPS</span><span>HECHA</span></div>${ex.sets.map((set,k)=>`<div class="gym-set-row"><span>${k+1}</span><input aria-label="Kilos serie ${k+1} de ${esc(ex.name)}" data-gym-field="kg" data-ex="${i}" data-set="${k}" type="number" inputmode="decimal" min="0" max="999" step="0.5" value="${esc(set.kg)}" ${readOnly?'disabled':''}><input aria-label="Repeticiones serie ${k+1} de ${esc(ex.name)}" data-gym-field="reps" data-ex="${i}" data-set="${k}" type="number" inputmode="numeric" min="1" max="100" step="1" value="${esc(set.reps)}" ${readOnly?'disabled':''}><input aria-label="Serie ${k+1} completada" data-gym-field="done" data-ex="${i}" data-set="${k}" type="checkbox" ${set.done?'checked':''} ${readOnly?'disabled':''}></div>`).join('')}${readOnly?'':`<button type="button" class="gym-add-set" data-gym-add="${i}">＋ Agregar serie</button>`}</section>`).join('');
     $('gymWorkoutSave').hidden=readOnly;
+    $('gymRestPanel').hidden=readOnly;
     $('gymWorkoutHelp').textContent=readOnly?'Registro guardado. Los pesos y repeticiones no generan XP.':'Marcá cada serie realizada. Usá 0 kg para peso corporal. Si sentís dolor, detené el ejercicio.';
   }
   $('gymWorkoutFields').addEventListener('input',e=>{
@@ -362,7 +396,7 @@
     const ex=activeGymWorkout.exercises[Number(b.dataset.gymAdd)];if(!ex||ex.sets.length>=8){showToast('Máximo 8 series por ejercicio');return;}
     ex.sets.push({kg:'',reps:'',done:false});renderGymWorkout();
   });
-  $('gymWorkoutClose').addEventListener('click',()=>{$('gymWorkoutModal').hidden=true;activeGymWorkout=null;});
+  $('gymWorkoutClose').addEventListener('click',()=>{gymRestStop();$('gymWorkoutModal').hidden=true;activeGymWorkout=null;});
   $('gymWorkoutSave').addEventListener('click',()=>{
     if(!activeGymWorkout)return;
     const date=$('gymWorkoutDate').value;
@@ -377,10 +411,10 @@
     if(!count){showToast('Marcá al menos una serie realizada');return;}
     const log={...activeGymWorkout,id:'gym-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),date,exercises:activeGymWorkout.exercises.map(ex=>({name:ex.name,sets:ex.sets.filter(s=>s.done).map(s=>({kg:Number(s.kg),reps:Number(s.reps),done:true}))})).filter(ex=>ex.sets.length)};
     if(!Array.isArray(state.sport.gymLogs))state.sport.gymLogs=[];
-    state.sport.gymLogs.push(log);$('gymWorkoutModal').hidden=true;activeGymWorkout=null;save();showToast(`${count} series guardadas · ¡Buen trabajo!`);
+    state.sport.gymLogs.push(log);gymRestStop();$('gymWorkoutModal').hidden=true;activeGymWorkout=null;save();showToast(`${count} series guardadas · ¡Buen trabajo!`);
   });
   $('gymWorkoutHistory').addEventListener('click',e=>{
-    const view=e.target.closest('[data-gym-view]');if(view){const log=gymLogs().find(l=>l.id===view.dataset.gymView);if(!log)return;activeGymWorkout=JSON.parse(JSON.stringify(log));renderGymWorkout(true);$('gymWorkoutModal').hidden=false;return;}
+    const view=e.target.closest('[data-gym-view]');if(view){const log=gymLogs().find(l=>l.id===view.dataset.gymView);if(!log)return;gymRestStop();activeGymWorkout=JSON.parse(JSON.stringify(log));renderGymWorkout(true);$('gymWorkoutModal').hidden=false;return;}
     const del=e.target.closest('[data-gym-delete]');if(del&&confirm('¿Eliminar este entrenamiento del historial?')){state.sport.gymLogs=gymLogs().filter(l=>l.id!==del.dataset.gymDelete);save();showToast('Registro eliminado');}
   });
   $('gymRoutineOutput').addEventListener('click',e=>{const b=e.target.closest('[data-gym-start]');if(b)openGymWorkout(Number(b.dataset.gymStart));});

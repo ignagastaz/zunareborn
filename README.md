@@ -1,11 +1,11 @@
-# ZUNAREBORN 2.28.1 — reparación de accesibilidad
+# ZUNAREBORN 2.29 — Descanso y técnica
 
-Auditoría de la 2.28: los módulos ZUNA CORE (personaje y etapas), ZUNA STATS, ZUNA LAB (reacción y memoria), COLLECTION, SEASONS, entrenamiento deportivo y gimnasio seguían presentes en el HTML y JavaScript, pero varias funciones quedaron escondidas tras una navegación demasiado profunda.
+Sobre la versión 2.28.1 reparada, sin quitar secciones:
 
-Esta versión añade accesos visibles desde Hoy, un menú de salto dentro de Evolución y otro dentro de Entrenar. El personaje vuelve a aparecer al comienzo de Evolución, antes de Temporadas. Se conserva el registro interactivo de series de la 2.28.
+- Temporizador de descanso en cada sesión de gimnasio: 60, 90 y 120 segundos; iniciar, pausar y reiniciar.
+- Cuenta el tiempo por reloj real, para tolerar la suspensión temporal de pestañas en iPhone. No promete sonar en segundo plano.
+- Consejos generales de técnica desplegables por ejercicio, sin depender de Internet.
+- Se conservan las series, kilos, repeticiones, historial, ZUNA CORE, STATS, LAB, COLLECTION, SEASONS, navegación reparada y resto de funciones.
+- Se mantiene `localStorage` bajo `zunareborn.v2`. Sin migración ni XP adicional.
 
-No cambia las claves de almacenamiento ni borra datos. Se conserva `zunareborn.v2`, el historial de gimnasio y las funciones existentes. No hay migración ni reinicio.
-
-Instalación: exportar respaldo desde Perfil, extraer los 10 archivos y reemplazarlos en GitHub. Esperar la actualización del caché PWA en iPhone.
-
-Validaciones automáticas: sintaxis JS, IDs, integridad ZIP. Prueba real en iPhone pendiente.
+Antes de subir los 10 archivos a GitHub, exportar respaldo desde Perfil. Verificar la versión en Safari si la PWA tarda en actualizarse.
