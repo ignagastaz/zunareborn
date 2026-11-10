@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=2.20.0">
+  <link rel="stylesheet" href="styles.css?v=2.21.0">
 
   <style>
   /* Reparación crítica visible incluso si Safari conserva el CSS anterior */
@@ -214,6 +214,18 @@
           <div class="body-trend-chart" id="bodyTrendChart" role="img" aria-label="Registros de peso recientes"></div>
           <div id="bodyTrendHistory" class="body-trend-history"></div>
           <p class="micro-note">Los datos quedan guardados en este dispositivo y en las copias de seguridad. Podés eliminar cada registro. No se calculan metas de peso ni recomendaciones de adelgazamiento.</p>
+        </section>
+        <section class="collection-section" aria-labelledby="collectionTitle">
+          <div class="section-heading"><div><p class="eyebrow">RECOMPENSAS DE TU CAMINO</p><h2 id="collectionTitle">ZUNA COLLECTION</h2></div><span class="collection-counter" id="collectionCounter">0 / 9</span></div>
+          <p class="collection-intro">Cada carta cuenta algo que ya lograste. Las bloqueadas te muestran qué desafío te espera.</p>
+          <div class="collection-filters" role="group" aria-label="Filtrar cartas">
+            <button type="button" class="collection-filter active" data-collection-filter="all" aria-pressed="true">Todas</button>
+            <button type="button" class="collection-filter" data-collection-filter="unlocked" aria-pressed="false">Desbloqueadas</button>
+            <button type="button" class="collection-filter" data-collection-filter="locked" aria-pressed="false">Por conseguir</button>
+          </div>
+          <div id="collectionGrid" class="collection-grid" aria-live="polite"></div>
+          <div id="collectionDetail" class="collection-detail" role="status" aria-live="polite">Tocá una carta para conocer su historia y cómo desbloquearla.</div>
+          <p class="micro-note">Las cartas se desbloquean según tus registros existentes. No agregan XP extra ni alteran tu progreso. No hay compras ni funciones online.</p>
         </section>
         <div class="section-heading"><div><p class="eyebrow">CONSISTENCIA</p><h2>Últimos 30 días</h2></div></div>
         <article class="calendar-card"><div id="activityGrid" class="activity-grid"></div><div class="legend"><span><i></i>Sin actividad</span><span><i class="mid"></i>En marcha</span><span><i class="high"></i>Día completo</span></div></article>
@@ -439,6 +451,6 @@
     <button class="outline-button full" id="goReminderSettings">CONFIGURAR HORARIOS</button>
   </div></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=2.20.0"></script>
+  <script src="app.js?v=2.21.0"></script>
 </body>
 </html>

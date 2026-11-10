@@ -470,7 +470,7 @@
     $('modeSetting').textContent=state.mode==='66'?'66 DÍAS':'PERMANENTE';$('modeDescription').textContent=state.mode==='66'?'66 días de enfoque y progreso':'Sin fecha de finalización';$('toggleMode').textContent=state.mode==='66'?'CAMBIAR A MODO PERMANENTE':'VOLVER AL PROGRAMA DE 66 DÍAS';
     $('todayLabel').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();$('greeting').textContent=(state.name?state.name+', ':'')+'un día a la vez. Sin excusas, sin perfección.';$('dailyQuote').textContent=quotes[new Date().getDate()%quotes.length];
     const wc=weeklyCount();$('weeklyProgressText').textContent=Math.min(wc,20)+' / 20';$('weeklyProgress').style.width=Math.min(100,wc/20*100)+'%';$('weeklyReward').textContent=state.weeklyRewards[weekKey()]?'RECOMPENSA OBTENIDA':'+150 XP';
-    renderNextMission();renderPillars();renderMissions();renderQuestWeekly();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();renderMemory();renderChallenge();renderCore();
+    renderNextMission();renderPillars();renderMissions();renderQuestWeekly();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderCollection();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();renderMemory();renderChallenge();renderCore();
   }
   function renderPillars(){const due=dueMissions(),done=doneIds();$('pillarList').innerHTML=Object.entries(categories).map(([key,c])=>{const ms=due.filter(m=>m.category===key),count=ms.filter(m=>done.includes(m.id)).length;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><small>${c.desc}</small></div><span class="pillar-value">${count}/${ms.length}</span></div>`}).join('')}
   function weeklyMissionCount(id){return weekDates().filter(d=>doneIds(d).includes(id)).length}
@@ -559,6 +559,51 @@
   $('monthPrev').addEventListener('click',()=>monthShift(-1));$('monthNext').addEventListener('click',()=>monthShift(1));
   $('monthlyGrid').addEventListener('click',e=>{const b=e.target.closest('[data-date]');if(!b)return;viewedDate=b.dataset.date;renderMonthlyCalendar()});
   $('historyHabit').addEventListener('change',e=>{viewedHabitId=e.target.value;renderHabitHistory()});
+  // ZUNA COLLECTION — logros calculados sobre registros existentes, sin recompensas duplicadas.
+  const collectionCards=[
+    {id:'first',name:'Primer paso',type:'ORIGEN',symbol:'✦',copy:'Todo camino empieza con una decisión.',hint:'Completá tu primera misión.',test:s=>totalDone(s)>=1},
+    {id:'ten',name:'En marcha',type:'CONSTANCIA',symbol:'▲',copy:'Diez pequeñas victorias construyen algo grande.',hint:'Completá 10 misiones.',test:s=>totalDone(s)>=10},
+    {id:'streak3',name:'Tres amaneceres',type:'RACHA',symbol:'☀',copy:'Volver tres días seguidos también es una victoria.',hint:'Alcanzá una racha de 3 días.',test:s=>s.bestStreak>=3},
+    {id:'streak7',name:'Siete días',type:'RACHA',symbol:'♜',copy:'La constancia se construye paso a paso.',hint:'Alcanzá una racha de 7 días.',test:s=>s.bestStreak>=7},
+    {id:'xp1000',name:'Energía dorada',type:'EVOLUCIÓN',symbol:'◆',copy:'Mil puntos de experiencia y un camino que sigue.',hint:'Acumulá 1.000 XP.',test:s=>s.xp>=1000},
+    {id:'day30',name:'Horizonte 30',type:'CAMINO',symbol:'◈',copy:'Un mes para conocerte y seguir creciendo.',hint:'Llegá al día 30 de tu programa.',test:s=>programDay(s)>=30},
+    {id:'reflex',name:'Instinto',type:'ZUNA LAB',symbol:'⚡',copy:'El primer desafío de reflejos ya es parte de tu historia.',hint:'Completá una sesión de 5 reflejos.',test:s=>(s.cognitive?.sessions||[]).length>=1},
+    {id:'memory',name:'Mente despierta',type:'ZUNA LAB',symbol:'◇',copy:'Observaste, recordaste y completaste el reto.',hint:'Superá las 3 rondas de Memoria visual.',test:s=>(s.cognitive?.memorySessions||[]).some(x=>x.rounds===3)},
+    {id:'core3',name:'Núcleo ascendente',type:'ZUNA CORE',symbol:'✧',copy:'Tu personaje alcanzó Constancia y su energía evolucionó.',hint:'Alcanzá 1.500 XP (etapa 3 de ZUNA CORE).',test:s=>s.xp>=1500}
+  ];
+  let collectionFilter='all',collectionSelected=null;
+  function renderCollection(){
+    const grid=$('collectionGrid');if(!grid)return;
+    const earned=collectionCards.filter(c=>c.test(state)).length;
+    $('collectionCounter').textContent=earned+' / '+collectionCards.length;
+    document.querySelectorAll('[data-collection-filter]').forEach(b=>{
+      const active=b.dataset.collectionFilter===collectionFilter;
+      b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));
+    });
+    grid.replaceChildren();
+    const cards=collectionCards.filter(c=>collectionFilter==='all'||(collectionFilter==='unlocked'?c.test(state):!c.test(state)));
+    if(!cards.length){const empty=document.createElement('p');empty.className='muted';empty.textContent='No hay cartas en este filtro todavía.';grid.append(empty);}
+    for(const card of cards){
+      const unlocked=!!card.test(state);
+      const button=document.createElement('button');button.type='button';button.className='collection-card'+(unlocked?' unlocked':' locked')+(collectionSelected===card.id?' selected':'');
+      button.dataset.collectionId=card.id;button.setAttribute('aria-pressed',String(collectionSelected===card.id));
+      button.setAttribute('aria-label',card.name+', '+(unlocked?'desbloqueada':'bloqueada')+'. Ver detalles');
+      const kind=document.createElement('span');kind.className='collection-kind';kind.textContent=card.type;
+      const art=document.createElement('span');art.className='collection-art';art.textContent=unlocked?card.symbol:'?';art.setAttribute('aria-hidden','true');
+      const name=document.createElement('strong');name.textContent=card.name;
+      const status=document.createElement('small');status.textContent=unlocked?'✦ DESBLOQUEADA':'◇ BLOQUEADA';
+      button.append(kind,art,name,status);grid.append(button);
+    }
+    const chosen=collectionCards.find(c=>c.id===collectionSelected);
+    $('collectionDetail').textContent=chosen?(chosen.test(state)?'✦ '+chosen.name+' — '+chosen.copy:'◇ '+chosen.name+' — '+chosen.hint):'Tocá una carta para conocer su historia y cómo desbloquearla.';
+  }
+  document.querySelectorAll('[data-collection-filter]').forEach(b=>b.addEventListener('click',()=>{
+    collectionFilter=b.dataset.collectionFilter;collectionSelected=null;renderCollection();
+  }));
+  $('collectionGrid').addEventListener('click',e=>{
+    const card=e.target.closest('[data-collection-id]');if(!card)return;
+    collectionSelected=collectionSelected===card.dataset.collectionId?null:card.dataset.collectionId;renderCollection();
+  });
   function renderAchievements(){$('achievementGrid').innerHTML=achievements.map(a=>{const ok=a.test(state);return `<article class="achievement ${ok?'':'locked'}"><span>${a.icon}</span><b>${a.name}</b><small>${ok?'Desbloqueado':a.copy}</small></article>`}).join('')}
   function renderPillarProgress(){$('pillarProgress').innerHTML=Object.entries(categories).map(([key,c])=>{let due=0,done=0;weekDates().forEach(d=>{const ms=state.missions.filter(m=>!m.archived&&!m.paused&&m.category===key&&dueToday(m,d));due+=ms.length;done+=ms.filter(m=>doneIds(d).includes(m.id)).length});const pct=due?Math.round(done/due*100):0;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><div class="pillar-bar"><i style="width:${pct}%"></i></div></div><span class="pillar-value">${pct}%</span></div>`}).join('')}
   function renderJournal(){if(document.activeElement!==$('journalInput'))$('journalInput').value=state.journal[isoToday()]||'';selectedMood=state.mood[isoToday()]||null;document.querySelectorAll('#moodRow button').forEach(b=>b.classList.toggle('active',Number(b.dataset.mood)===selectedMood))}
