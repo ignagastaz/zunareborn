@@ -1,9 +1,17 @@
-# ZUNAREBORN 2.27 — ZUNA TRAINING
+# ZUNAREBORN 2.8 — Planes semanales deportivos
 
-- Generador local de rutinas de gimnasio y casa para 2 a 5 días, objetivo y experiencia.
-- Días expandibles con ejercicios, series, repeticiones y descansos orientativos.
-- Filtro conservador de zonas a evitar; ante limitaciones en ambas zonas no genera ejercicios.
-- Preferencias guardadas en `state.sport.gymRoutine` bajo `zunareborn.v2`.
-- No altera XP, sesiones, misiones, rachas ni datos existentes.
-- Las propuestas no constituyen rehabilitación ni prescripción médica.
-- Exportá respaldo en Perfil antes de reemplazar los 10 archivos de GitHub.
+Actualización incremental sobre ZUNAREBORN 2.7.
+
+## Funcionalidades
+- Plan semanal por disciplina seleccionada, nivel inicial/intermedio y frecuencia de 2 a 5 días.
+- Propuestas de práctica técnica, ritmo y recuperación según el deporte.
+- Días programados visibles; no se pueden marcar días futuros.
+- Seguimiento de prácticas marcadas y progreso semanal.
+- Planes guardados en `sport.plan`, compatibles con el almacenamiento v2 y el respaldo JSON actual.
+- No concede XP extra ni crea entrenamientos de forma automática para evitar duplicaciones.
+
+## Limitaciones
+El contenido deportivo es orientativo: no sustituye a un entrenador o profesional sanitario. Las sesiones no están individualizadas por historial médico, edad ni condición física. El plan usa patrones de semana y puede reiniciarse cuando se crea otro plan. Los planes semanales no leen sensores ni Apple Health / Health Connect.
+
+## Actualización
+Antes de actualizar: Perfil > Exportar copia de seguridad. Descomprimir el ZIP y cargar los 10 archivos en la raíz del repositorio GitHub Pages. Al terminar verificar progreso, objetivos y registros anteriores.

@@ -11,32 +11,10 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=2.27.0">
-
-  <style>
-  /* Reparación crítica visible incluso si Safari conserva el CSS anterior */
-  .skip-link{position:fixed!important;left:12px!important;top:-150px!important;z-index:100!important;background:#f0d18e!important;color:#111!important;padding:11px 16px!important;border-radius:8px!important;font-size:13px!important;text-decoration:none!important}
-  .skip-link:focus,.skip-link:focus-visible{top:calc(10px + env(safe-area-inset-top))!important}
-  .quick-section{margin:24px 0 15px!important}
-  .quick-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;align-items:stretch!important}
-  .quick-grid .quick-tile{box-sizing:border-box!important;display:flex!important;align-items:center!important;gap:9px!important;width:100%!important;min-width:0!important;min-height:78px!important;border:1px solid #66502b!important;border-radius:13px!important;padding:12px!important;margin:0!important;background:linear-gradient(145deg,#241e14,#141414)!important;color:#f4f0e8!important;text-align:left!important;white-space:normal!important;box-shadow:none!important;line-height:1.3!important}
-  .quick-grid .quick-tile .quick-icon{display:grid!important;place-items:center!important;flex:0 0 31px!important;height:32px!important;border-radius:9px!important;background:#372a17!important;color:#f0d18e!important;font-size:19px!important}
-  .quick-grid .quick-tile>span:nth-child(2){display:block!important;flex:1!important;min-width:0!important}
-  .quick-grid .quick-tile strong{display:block!important;color:#f4f0e8!important;font-size:12px!important;font-weight:700!important;overflow-wrap:anywhere!important}
-  .quick-grid .quick-tile small{display:block!important;color:#b8ad9b!important;font-size:10px!important;margin-top:4px!important;line-height:1.35!important;overflow-wrap:anywhere!important}
-  .quick-grid .quick-tile>span:last-child{color:#d4aa5c!important;flex-shrink:0!important;font-size:13px!important}
-  .next-mission-card{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;margin:14px 0 8px!important;padding:15px!important;background:linear-gradient(120deg,#191713,#121212)!important;border:1px solid #62502f!important;border-radius:13px!important;color:#f4f0e8!important}
-  .next-mission-card>div{min-width:0!important;flex:1!important}
-  .next-mission-card small{display:block!important;color:#d4aa5c!important;font-size:9px!important;letter-spacing:1.1px!important}
-  .next-mission-card strong{display:block!important;font-size:13px!important;line-height:1.5!important;margin-top:5px!important;overflow-wrap:anywhere!important}
-  .next-mission-card span{display:block!important;color:#99958d!important;font-size:11px!important;line-height:1.5!important;margin-top:5px!important}
-  .next-mission-card button{flex-shrink:0!important;background:#302511!important;color:#f0d18e!important;border:1px solid #806638!important;border-radius:9px!important;padding:11px 13px!important;min-height:42px!important}
-  @media(max-width:390px){.quick-grid .quick-tile{padding:10px!important;gap:6px!important}.quick-grid .quick-tile .quick-icon{flex-basis:27px!important;height:28px!important}.quick-grid .quick-tile strong{font-size:11px!important}.quick-grid .quick-tile small{font-size:9px!important}}
-  </style>
+  <link rel="stylesheet" href="styles.css">
   <title>ZUNAREBORN</title>
 </head>
 <body>
-  <a class="skip-link" href="#mainContent">Saltar al contenido</a>
   <div id="app" class="app-shell">
     <header class="topbar">
       <button class="brand" data-view="home" aria-label="Inicio">
@@ -49,7 +27,7 @@
       </div>
     </header>
 
-    <main id="mainContent">
+    <main>
       <section id="view-home" class="view active">
         <div class="welcome-row">
           <div>
@@ -60,11 +38,6 @@
           <div class="day-orb"><span>DÍA</span><strong id="dayNumber">01</strong><small id="dayTotal">/ 66</small></div>
         </div>
 
-        <article class="home-core-teaser" aria-label="Tu evolución ZUNA CORE">
-          <div class="home-core-glow" aria-hidden="true">✦</div>
-          <div class="home-core-copy"><span class="eyebrow">ZUNA CORE · TU EVOLUCIÓN</span><h2 id="homeCoreStage">DESPERTAR</h2><p id="homeCoreMessage">Cada acción alimenta tu núcleo.</p><div class="home-core-progress"><i id="homeCoreProgress"></i></div><small id="homeCoreNext">Tu próxima evolución te espera.</small></div>
-          <button class="home-core-go" data-jump="progress:coreFigure" aria-label="Ver mi personaje ZUNA CORE">VER MI CORE ↗</button>
-        </article>
         <article class="hero-card">
           <div class="hero-top"><span class="tag"><i class="live-dot"></i><span id="programModeLabel">PROGRAMA ACTIVO</span></span><strong id="completionPct">0%</strong></div>
           <h2 id="heroTitle">El cambio se demuestra.</h2>
@@ -74,23 +47,6 @@
           <button class="gold-button" data-view="missions">VER MISIONES DEL DÍA <span>↗</span></button>
         </article>
 
-        <section class="quick-section" aria-labelledby="quickTitle">
-          <div class="section-heading compact-heading"><div><p class="eyebrow">A UN TOQUE</p><h2 id="quickTitle">Elegí tu próximo paso</h2></div></div>
-          <div class="quick-grid" aria-label="Accesos rápidos">
-            <button class="quick-tile" data-view="missions"><span class="quick-icon" aria-hidden="true">✓</span><span><strong>Misiones</strong><small>Mis hábitos de hoy</small></span><span aria-hidden="true">↗</span></button>
-            <button class="quick-tile" data-jump="movement:openTrainingEditor"><span class="quick-icon" aria-hidden="true">◉</span><span><strong>Entrenar</strong><small>Registrar sesión</small></span><span aria-hidden="true">↗</span></button>
-            <button class="quick-tile" data-jump="movement:nutritionTitle"><span class="quick-icon" aria-hidden="true">◈</span><span><strong>Nutrición</strong><small>Organizar comidas</small></span><span aria-hidden="true">↗</span></button>
-            <button class="quick-tile" data-view="lab"><span class="quick-icon" aria-hidden="true">⚡</span><span><strong>ZUNA LAB</strong><small>Reflejos y memoria</small></span><span aria-hidden="true">↗</span></button>
-            <button class="quick-tile" data-view="goals"><span class="quick-icon" aria-hidden="true">◎</span><span><strong>Objetivos</strong><small>Mis metas</small></span><span aria-hidden="true">↗</span></button>
-          </div>
-        </section>
-        <section class="zuna-compass" aria-labelledby="compassTitle">
-          <div class="zuna-compass-head"><div><p class="eyebrow">ZUNA COMPASS · GUÍA DIARIA</p><h2 id="compassTitle">Tu próximo paso</h2></div><span class="zuna-compass-star" aria-hidden="true">✧</span></div>
-          <p id="compassIntro" class="zuna-compass-intro">Preparando tus sugerencias…</p>
-          <div id="compassSteps" class="zuna-compass-steps" aria-live="polite"></div>
-          <small class="zuna-compass-foot">Sugerencias según tus registros. Vos elegís tu ritmo.</small>
-        </section>
-        <article class="next-mission-card" aria-live="polite"><div><small>PRÓXIMA VICTORIA</small><strong id="nextMissionTitle">Preparando tu día...</strong><span id="nextMissionDetail">Una tarea a la vez.</span></div><button id="nextMissionGo" data-view="missions" aria-label="Ir a misiones">Ver ↗</button></article>
         <div class="section-heading"><div><p class="eyebrow">TU RENDIMIENTO</p><h2>Hoy, en números</h2></div><button class="text-button" data-view="progress">Ver progreso ↗</button></div>
         <div class="stat-grid">
           <article class="stat-card"><span>⚡</span><strong id="homeXP">0</strong><small>XP TOTAL</small></article>
@@ -116,55 +72,8 @@
         <article class="quote-card"><span>“</span><p id="dailyQuote"></p><small>— ZUNAREBORN</small></article>
       </section>
 
-      <section id="view-lab" class="view" aria-labelledby="labTitle">
-        <div class="page-heading"><p class="eyebrow">MENTE EN MOVIMIENTO</p><h1 id="labTitle">ZUNA <em>LAB.</em></h1><p class="muted">Desafíos cortos para poner a prueba tu atención y tus reflejos.</p></div>
-        <article class="lab-challenge" aria-labelledby="dailyChallengeTitle">
-          <div class="lab-challenge-top"><span class="lab-challenge-medal" id="challengeMedal" aria-hidden="true">✦</span><div><p class="eyebrow">DESAFÍO DIARIO</p><h2 id="dailyChallengeTitle">Doble enfoque</h2><p id="challengeDate" class="muted"></p></div></div>
-          <p class="lab-challenge-intro">Completá una sesión de reflejos y las tres rondas de memoria en el mismo día.</p>
-          <div class="lab-challenge-tasks"><div id="challengeReflex" class="lab-challenge-task"><span aria-hidden="true">⚡</span><strong>Reflejos</strong><small>Pendiente</small></div><div id="challengeMemory" class="lab-challenge-task"><span aria-hidden="true">🧠</span><strong>Memoria</strong><small>Pendiente</small></div></div>
-          <div class="lab-challenge-progress" role="progressbar" aria-label="Progreso del desafío diario" aria-valuemin="0" aria-valuemax="2" aria-valuenow="0" id="challengeProgress"><span id="challengeProgressFill"></span></div>
-          <p id="challengeStatus" class="lab-feedback" role="status" aria-live="polite"></p>
-          <button type="button" id="challengeClaim" class="gold-button full" disabled>DESBLOQUEÁ +20 XP</button>
-          <p class="micro-note">La recompensa se puede reclamar una sola vez por día. Tus logros quedan en el dispositivo.</p>
-        </article>
-        <article class="lab-panel">
-          <div class="lab-heading"><span class="lab-symbol" aria-hidden="true">⚡</span><div><p class="eyebrow">DESAFÍO 01</p><h2>Reflejos</h2><p class="muted">Esperá el verde y tocá tan rápido como puedas. Son 5 intentos válidos.</p></div></div>
-          <button type="button" id="labTarget" class="lab-target" aria-describedby="labInstructions"><span id="labTargetIcon" aria-hidden="true">⚡</span><strong id="labTargetTitle">¿Listo para reaccionar?</strong><small id="labTargetSubtitle">Tocá para empezar</small></button>
-          <p id="labInstructions" class="micro-note">No toques durante la espera: eso cuenta como salida anticipada. La velocidad depende también del dispositivo.</p>
-          <div class="lab-metrics"><div><small>INTENTOS</small><strong id="labAttempts">0 / 5</strong></div><div><small>ÚLTIMO</small><strong id="labLast">—</strong></div><div><small>MEJOR PERSONAL</small><strong id="labBest">—</strong></div></div>
-          <p id="labFeedback" class="lab-feedback" role="status" aria-live="polite">La señal aparece después de un tiempo aleatorio.</p>
-          <button type="button" class="outline-button full" id="labRestart">REINICIAR PRUEBA</button>
-        </article>
-        <article class="lab-panel">
-          <div class="lab-heading"><span class="lab-symbol" aria-hidden="true">🧠</span><div><p class="eyebrow">DESAFÍO 02</p><h2>Memoria visual</h2><p class="muted">Observá la secuencia de luces y repetila en el mismo orden. Superá 3 rondas.</p></div></div>
-          <div class="lab-metrics"><div><small>RONDA</small><strong id="memoryRound">0 / 3</strong></div><div><small>SECUENCIA</small><strong id="memoryLength">—</strong></div><div><small>MEJOR SESIÓN</small><strong id="memoryBest">—</strong></div></div>
-          <div id="memoryGrid" class="memory-grid" role="group" aria-label="Cuatro botones de memoria visual">
-            <button type="button" class="memory-pad" data-memory-pad="0" aria-label="Posición superior izquierda" disabled><span>◆</span></button>
-            <button type="button" class="memory-pad" data-memory-pad="1" aria-label="Posición superior derecha" disabled><span>●</span></button>
-            <button type="button" class="memory-pad" data-memory-pad="2" aria-label="Posición inferior izquierda" disabled><span>▲</span></button>
-            <button type="button" class="memory-pad" data-memory-pad="3" aria-label="Posición inferior derecha" disabled><span>■</span></button>
-          </div>
-          <p id="memoryFeedback" class="lab-feedback" role="status" aria-live="polite">Empezá cuando quieras. Mirá la secuencia antes de tocar.</p>
-          <button type="button" class="gold-button full" id="memoryStart">EMPEZAR DESAFÍO <span aria-hidden="true">↗</span></button>
-        </article>
-        <div class="section-heading"><div><p class="eyebrow">MEMORIA VISUAL</p><h2>Últimas sesiones</h2></div></div>
-        <div id="memoryHistory" class="lab-history"></div>
-        <div class="section-heading"><div><p class="eyebrow">TU EVOLUCIÓN</p><h2>Historial cognitivo</h2></div></div>
-        <div id="labHistory" class="lab-history"></div>
-        <p class="micro-note">El resultado es orientativo, no una evaluación médica ni una garantía de mejora en el deporte. Una sesión completada puede dar +10 XP una sola vez por día.</p>
-      </section>
-
       <section id="view-missions" class="view">
-        <div class="page-heading"><p class="eyebrow">ACCIÓN SOBRE INTENCIÓN</p><h1>ZUNA <em>QUEST.</em></h1><p class="muted">Cumplí lo que importa. La app calcula qué toca hoy según la frecuencia.</p></div>
-        <div class="quest-banner" aria-label="ZUNA QUEST: tus acciones construyen tu evolución">
-          <div class="quest-banner-art" aria-hidden="true"><span class="quest-sun"></span><span class="quest-mountain quest-mountain-back"></span><span class="quest-mountain quest-mountain-front"></span><span class="quest-traveler">◆</span></div>
-          <div class="quest-banner-copy"><p class="eyebrow">EL CAMINO SE CONSTRUYE</p><h2>Tu aventura empieza hoy.</h2><p>Cada misión completada es un paso hacia tu próxima versión.</p></div>
-        </div>
-        <article class="quest-weekly" aria-labelledby="questWeeklyTitle">
-          <div class="quest-weekly-top"><span class="quest-weekly-icon" aria-hidden="true">✦</span><div><p class="eyebrow">RETO DE CONSTANCIA</p><h3 id="questWeeklyTitle">Siete días, un camino</h3><small id="questWeeklyLabel">Preparando tu progreso…</small></div></div>
-          <div class="quest-weekly-track" id="questWeeklyTrack" aria-label="Actividad de los últimos siete días"></div>
-          <p class="quest-weekly-note" id="questWeeklyNote">Cada día que cumplís al menos una misión suma un paso.</p>
-        </article>
+        <div class="page-heading"><p class="eyebrow">ACCIÓN SOBRE INTENCIÓN</p><h1>Misiones <em>diarias.</em></h1><p class="muted">Cumplí lo que importa. La app calcula qué toca hoy según la frecuencia.</p></div>
         <div class="mission-summary"><div><small>PROGRESO DE HOY</small><strong id="missionCount">0 / 0</strong></div><div class="mini-progress"><i id="missionProgress"></i></div><div class="summary-xp"><b id="missionXP">+0 XP</b><small>GANADOS HOY</small></div></div>
         <div id="missionFilters" class="filter-row"><button class="filter active" data-filter="all">Todas</button><button class="filter" data-filter="open">Pendientes</button><button class="filter" data-filter="done">Completadas</button></div>
         <div id="missionList" class="mission-list"></div>
@@ -185,92 +94,10 @@
       </section>
 
       <section id="view-progress" class="view">
-        <div class="zuna-hub-links" aria-label="Explorar tu evolución"><button data-view="goals">◎ Mis objetivos <span>↗</span></button><button data-view="lab">⚡ ZUNA LAB <span>↗</span></button><button data-view="missions">◇ Misiones <span>↗</span></button></div>
         <div class="page-heading"><p class="eyebrow">CADA DÍA CUENTA</p><h1>Tu <em>evolución.</em></h1><p class="muted">Mirá tendencias, no perfección.</p></div>
-                <section class="season-panel" aria-labelledby="seasonTitle">
-          <div class="season-sky" aria-hidden="true"><span class="season-sun"></span><span class="season-peak"></span></div>
-          <div class="season-content">
-            <p class="eyebrow">ZUNA SEASONS · TU PRÓXIMO CAPÍTULO</p>
-            <h2 id="seasonTitle">Una temporada. Un propósito.</h2>
-            <p class="season-description">Elegí un camino de 30 o 66 días. Cada día con una misión completada suma a tu recorrido.</p>
-            <div id="seasonSetup" class="season-setup">
-              <div class="season-options" role="group" aria-label="Duración de la temporada">
-                <button type="button" data-season-length="30" aria-pressed="true" class="selected">30 días</button>
-                <button type="button" data-season-length="66" aria-pressed="false">66 días</button>
-              </div>
-              <button type="button" id="seasonStart" class="gold-button full">INICIAR TEMPORADA ↗</button>
-            </div>
-            <div id="seasonActive" hidden>
-              <div class="season-metrics"><div><small>DÍA</small><strong id="seasonDay">1 / 30</strong></div><div><small>DÍAS ACTIVOS</small><strong id="seasonActiveDays">0</strong></div><div><small>AVANCE</small><strong id="seasonPercent">0%</strong></div></div>
-              <div class="season-progress" role="progressbar" aria-label="Avance temporal de la temporada" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="seasonProgress"><span id="seasonProgressFill"></span></div>
-              <div class="season-milestones" id="seasonMilestones"></div>
-              <p class="season-status" id="seasonStatus" role="status" aria-live="polite"></p>
-              <button type="button" id="seasonClaim" class="gold-button full" hidden>RECLAMAR INSIGNIA DE TEMPORADA</button>
-              <button type="button" id="seasonNext" class="outline-button full" hidden>COMENZAR OTRA TEMPORADA</button>
-            </div>
-          </div>
-          <p class="micro-note">Las temporadas son opcionales y no cambian tu modo actual. Los días de descanso no restan XP. Insignia por completar al menos una misión en el 70% de los días de la temporada.</p>
-        </section>
-        <section class="core-panel" aria-labelledby="coreHeading">
-          <div class="core-head"><div><p class="eyebrow">TU EVOLUCIÓN TOMA FORMA</p><h2 id="coreHeading">ZUNA <em>CORE.</em></h2></div><span class="core-rank" id="coreStageTag">DESPERTAR</span></div>
-          <div class="core-figure core-cinematic" id="coreFigure" role="img" aria-label="Tu personaje ZUNA CORE">
-            <div class="core-cinematic-halo" aria-hidden="true"></div>
-            <div class="core-portrait" aria-hidden="true"></div>
-            <div class="core-cinematic-shimmer" aria-hidden="true"></div>
-            <div class="core-cinematic-caption"><span id="corePortraitLabel">DESPERTAR</span><span id="corePreviewTag">TU ETAPA ACTUAL</span></div>
-          </div>
-          <div class="core-preview-panel">
-            <p class="eyebrow">EXPLORÁ LAS TRANSFORMACIONES</p>
-            <div class="core-stage-picker" id="coreStagePicker" role="group" aria-label="Previsualizar etapas de evolución">
-              <button type="button" data-core-stage="1" aria-pressed="true"><strong>01</strong><small>Despertar</small></button>
-              <button type="button" data-core-stage="2" aria-pressed="false"><strong>02</strong><small>Enfoque</small></button>
-              <button type="button" data-core-stage="3" aria-pressed="false"><strong>03</strong><small>Constancia</small></button>
-              <button type="button" data-core-stage="4" aria-pressed="false"><strong>04</strong><small>Disciplina</small></button>
-              <button type="button" data-core-stage="5" aria-pressed="false"><strong>05</strong><small>Maestría</small></button>
-            </div>
-            <p id="corePreviewNote" class="micro-note">Podés explorar las etapas sin modificar tus XP ni desbloquearlas.</p>
-            <button type="button" class="outline-button full" id="coreReturnStage" hidden>VOLVER A MI ETAPA</button>
-          </div>
-          <div class="core-info"><strong id="coreStageName">01 · Despertar</strong><p id="coreEnergyText">Tu energía está despertando.</p><div class="core-energy-bar"><span id="coreEnergyFill"></span></div><small id="coreNextStage">Tu siguiente evolución está en camino.</small></div>
-          <fieldset class="core-selector"><legend>Elegí tu personaje</legend><button type="button" class="core-choice" data-core-gender="male" aria-pressed="true">Masculino</button><button type="button" class="core-choice" data-core-gender="female" aria-pressed="false">Femenino</button></fieldset>
-          <p class="micro-note">Las etapas dependen de tus XP acumulados. La energía refleja tu actividad reciente; si bajás el ritmo, nunca perdés las etapas desbloqueadas. Podés cambiar de personaje cuando quieras.</p>
-        </section>
         <article class="level-card"><div class="level-ring"><div><small>NIVEL</small><strong id="levelNumber">1</strong></div></div><div class="level-info"><span class="tag">RANGO <b id="rankName">INICIANTE</b></span><h2 id="levelTitle">El despertar</h2><p id="levelNext">0 / 500 XP</p><div class="progress-track"><div class="progress-fill" id="levelProgress"></div></div></div></article>
         <div class="stat-grid progress-stats"><article class="stat-card"><span>🏆</span><strong id="totalCompleted">0</strong><small>MISIONES</small></article><article class="stat-card"><span>📅</span><strong id="daysActive">0</strong><small>DÍAS ACTIVOS</small></article><article class="stat-card"><span>🔥</span><strong id="bestStreak">0</strong><small>MEJOR RACHA</small></article></div>
 
-        <section class="body-trend" aria-labelledby="bodyTrendTitle">
-          <div class="section-heading"><div><p class="eyebrow">REGISTRO OPCIONAL</p><h2 id="bodyTrendTitle">Evolución física</h2></div></div>
-          <p class="sport-subcopy">Para personas adultas que quieran registrar su peso a lo largo del tiempo. El peso no define tu salud ni tu progreso personal. No modifica XP ni misiones.</p>
-          <form id="bodyEntryForm" class="body-entry-form">
-            <label class="field-label">Fecha<input id="bodyEntryDate" type="date" required></label>
-            <label class="field-label">Peso (kg)<input id="bodyEntryWeight" type="number" inputmode="decimal" min="25" max="350" step="0.1" placeholder="Ej. 70,5" required></label>
-            <button type="submit" class="gold-button">GUARDAR REGISTRO</button>
-          </form>
-          <p class="insight-note" id="bodyTrendNotice"></p>
-          <div class="body-trend-chart" id="bodyTrendChart" role="img" aria-label="Registros de peso recientes"></div>
-          <div id="bodyTrendHistory" class="body-trend-history"></div>
-          <p class="micro-note">Los datos quedan guardados en este dispositivo y en las copias de seguridad. Podés eliminar cada registro. No se calculan metas de peso ni recomendaciones de adelgazamiento.</p>
-        </section>
-        <section class="zstats-section" aria-labelledby="zstatsTitle">
-          <div class="section-heading"><div><p class="eyebrow">TU ACTIVIDAD TOMA FORMA</p><h2 id="zstatsTitle">ZUNA STATS</h2></div><span class="zstats-period">ÚLTIMOS 30 DÍAS</span></div>
-          <p class="zstats-intro">Cinco indicadores de tus registros. No miden capacidades físicas o cognitivas reales: muestran cuánto participaste en cada área.</p>
-          <div class="zstats-hero"><div class="zstats-radar-wrap"><svg id="zstatsRadar" class="zstats-radar" viewBox="0 0 320 292" role="img" aria-label="Gráfico de cinco indicadores de actividad"><g id="zstatsRadarGrid"></g><polygon id="zstatsRadarShape" points="160,146 160,146 160,146 160,146 160,146"></polygon><g id="zstatsRadarDots"></g></svg></div><div class="zstats-total"><span>ACTIVIDAD GLOBAL</span><strong id="zstatsOverall">0</strong><small>Índice orientativo / 100</small></div></div>
-          <div class="zstats-rows" id="zstatsRows"></div>
-          <div class="zstats-detail" id="zstatsDetail" role="status" aria-live="polite">Tocá un atributo para ver cómo se calcula.</div>
-          <p class="micro-note">Cada indicador usa un objetivo de referencia fijo de 30 días. Podés mejorar los valores registrando actividades; descansar no resta XP ni desbloqueos. No es una evaluación de salud o rendimiento.</p>
-        </section>
-        <section class="collection-section" aria-labelledby="collectionTitle">
-          <div class="section-heading"><div><p class="eyebrow">RECOMPENSAS DE TU CAMINO</p><h2 id="collectionTitle">ZUNA COLLECTION</h2></div><span class="collection-counter" id="collectionCounter">0 / 9</span></div>
-          <p class="collection-intro">Cada carta cuenta algo que ya lograste. Las bloqueadas te muestran qué desafío te espera.</p>
-          <div class="collection-filters" role="group" aria-label="Filtrar cartas">
-            <button type="button" class="collection-filter active" data-collection-filter="all" aria-pressed="true">Todas</button>
-            <button type="button" class="collection-filter" data-collection-filter="unlocked" aria-pressed="false">Desbloqueadas</button>
-            <button type="button" class="collection-filter" data-collection-filter="locked" aria-pressed="false">Por conseguir</button>
-          </div>
-          <div id="collectionGrid" class="collection-grid" aria-live="polite"></div>
-          <div id="collectionDetail" class="collection-detail" role="status" aria-live="polite">Tocá una carta para conocer su historia y cómo desbloquearla.</div>
-          <p class="micro-note">Las cartas se desbloquean según tus registros existentes. No agregan XP extra ni alteran tu progreso. No hay compras ni funciones online.</p>
-        </section>
         <div class="section-heading"><div><p class="eyebrow">CONSISTENCIA</p><h2>Últimos 30 días</h2></div></div>
         <article class="calendar-card"><div id="activityGrid" class="activity-grid"></div><div class="legend"><span><i></i>Sin actividad</span><span><i class="mid"></i>En marcha</span><span><i class="high"></i>Día completo</span></div></article>
 
@@ -300,12 +127,6 @@
 
       <section id="view-movement" class="view">
         <div class="page-heading"><p class="eyebrow">ZUNAREBORN SPORT</p><h1>Tu <em>movimiento.</em></h1><p class="muted">Entrená con intención. Registrá sesiones reales y encontrá ideas para mejorar tu disciplina.</p></div>
-        <nav class="movement-shortcuts" aria-label="Secciones de Movimiento">
-          <button data-jump="movement:gymBuilder">Gimnasio</button><button data-jump="movement:createTrainingPlan">Plan semanal</button>
-          <button data-jump="movement:openTrainingEditor">Sesiones</button>
-          <button data-jump="movement:evidenceTitle">Biblioteca</button>
-          <button data-jump="movement:nutritionTitle">Nutrición</button>
-        </nav>
         <article class="sport-summary-card">
           <p class="eyebrow">TU DISCIPLINA</p>
           <div class="sport-title-row"><span id="sportIcon" class="sport-big-icon">🏃</span><div><h2 id="sportName">Running</h2><small id="sportDescription">Elegí tu disciplina principal</small></div></div>
@@ -313,22 +134,6 @@
           <label class="field-label">Objetivo de sesiones por semana<select id="sportWeeklyTarget"><option value="1">1 sesión</option><option value="2">2 sesiones</option><option value="3">3 sesiones</option><option value="4">4 sesiones</option><option value="5">5 sesiones</option><option value="6">6 sesiones</option><option value="7">7 sesiones</option></select></label>
           <button class="outline-button full" id="saveSportPreferences">GUARDAR DISCIPLINA</button>
         </article>
-        <section class="gym-builder" id="gymBuilder">
-          <div class="section-heading"><div><p class="eyebrow">ZUNA TRAINING · GIMNASIO</p><h2>Mi rutina personalizada</h2></div></div>
-          <p class="sport-subcopy">Armá una semana de fuerza según tu objetivo, experiencia y disponibilidad. Las sugerencias son orientativas, no una evaluación médica.</p>
-          <div class="gym-builder-card">
-            <div class="gym-builder-fields">
-              <label class="field-label">Objetivo<select id="gymGoal"><option value="general">Fuerza y salud general</option><option value="muscle">Desarrollo muscular</option><option value="strength">Fuerza</option></select></label>
-              <label class="field-label">Experiencia<select id="gymExperience"><option value="beginner">Principiante</option><option value="intermediate">Intermedio</option></select></label>
-              <label class="field-label">Días por semana<select id="gymDays"><option value="2">2 días</option><option value="3" selected>3 días</option><option value="4">4 días</option><option value="5">5 días</option></select></label>
-              <label class="field-label">Lugar<select id="gymEquipment"><option value="gym">Gimnasio equipado</option><option value="home">Casa / peso corporal</option></select></label>
-              <label class="field-label">Zonas que necesitás evitar por molestias o indicación profesional<select id="gymLimit"><option value="none">Ninguna declarada</option><option value="upper">Tren superior</option><option value="lower">Tren inferior</option><option value="both">Ambas / no estoy seguro</option></select></label>
-            </div>
-            <p class="micro-note">Si tenés dolor, una lesión activa o una restricción médica, consultá a un profesional antes de comenzar. No uses una rutina automática para rehabilitación. No hace falta indicar sexo, altura o peso para esta primera propuesta: el volumen se adapta principalmente a experiencia y disponibilidad.</p>
-            <button class="gold-button full" id="generateGymRoutine">GENERAR MI RUTINA <span>↗</span></button>
-          </div>
-          <div id="gymRoutineOutput" class="gym-routine-output" aria-live="polite"></div>
-        </section>
         <section class="training-program">
           <div class="section-heading"><div><p class="eyebrow">ZUNAREBORN SPORT · NUEVO</p><h2>Mi plan semanal</h2></div></div>
           <p class="sport-subcopy">Organizá prácticas de tu deporte y registrá qué días las hiciste. Es una guía orientativa; adaptá descansos, esfuerzo y técnica a tu situación.</p>
@@ -356,81 +161,11 @@
         </section>
         <div class="section-heading"><div><p class="eyebrow">ESTA SEMANA</p><h2>Registro deportivo</h2></div></div>
         <div class="stat-grid"><article class="stat-card"><span>🏅</span><strong id="sportSessions">0</strong><small>SESIONES</small></article><article class="stat-card"><span>⏱</span><strong id="sportMinutes">0</strong><small>MINUTOS</small></article><article class="stat-card"><span>◎</span><strong id="sportTargetProgress">0/3</strong><small>META SEMANAL</small></article></div>
-        <section class="sport-insights" aria-label="Análisis deportivo">
-          <div class="section-heading"><div><p class="eyebrow">EVOLUCIÓN DEPORTIVA</p><h2>Tus últimas 4 semanas</h2></div></div>
-          <p class="sport-subcopy">Comparamos sesiones reales registradas, sin estimar actividad que no anotaste.</p>
-          <div class="training-trend" id="trainingTrend" aria-label="Gráfico semanal de minutos entrenados"></div>
-          <div class="sport-trend-cards"><div><small>MINUTOS EN 4 SEMANAS</small><strong id="sportMonthMinutes">0</strong></div><div><small>SESIONES EN 4 SEMANAS</small><strong id="sportMonthSessions">0</strong></div><div><small>CAMBIO VS. SEMANA ANTERIOR</small><strong id="sportWeekChange">—</strong></div></div>
-          <div class="sport-insight-message" id="sportInsightMessage" role="status"></div>
-        </section>
         <button class="gold-button full" id="openTrainingEditor">＋ REGISTRAR ENTRENAMIENTO <span>↗</span></button>
         <div class="section-heading"><div><p class="eyebrow">ÚLTIMOS REGISTROS</p><h2>Mis entrenamientos</h2></div></div>
         <div id="trainingList" class="training-list"></div>
         <div class="section-heading"><div><p class="eyebrow">GUÍA INICIAL</p><h2>Mejorá tu práctica</h2></div></div>
         <article class="sport-guide"><p id="sportGuideIntro"></p><div id="sportDrills" class="sport-drills"></div><p class="micro-note">Ideas generales para comenzar; no sustituyen entrenamiento profesional ni asesoramiento médico. Adaptá intensidad y técnica a tu experiencia.</p></article>
-        <section class="evidence-library" aria-labelledby="evidenceTitle">
-          <div class="section-heading"><div><p class="eyebrow">APRENDÉ CON FUENTES</p><h2 id="evidenceTitle">Biblioteca profesional</h2></div></div>
-          <p class="sport-subcopy">Información general basada en organismos y publicaciones profesionales. Cada tema enlaza su fuente original. No son planes clínicos ni asesoramiento individual.</p>
-          <div class="evidence-grid">
-            <article class="evidence-card">
-              <div class="evidence-card-head"><span>🚶</span><small>ACTIVIDAD · OMS</small></div>
-              <h3>Empezar a moverte</h3>
-              <p>Para personas adultas de 18 a 64 años, la OMS recomienda acumular al menos 150 minutos semanales de actividad moderada o 75 de actividad vigorosa. Empezar con menos también aporta beneficios.</p>
-              <a href="https://www.who.int/initiatives/behealthy/physical-activity" target="_blank" rel="noopener noreferrer">Consultar fuente oficial ↗</a>
-            </article>
-            <article class="evidence-card">
-              <div class="evidence-card-head"><span>🏋️</span><small>FUERZA · ACSM 2026</small></div>
-              <h3>Fuerza con constancia</h3>
-              <p>La evidencia destaca que la progresión, la regularidad y adaptar el entrenamiento al objetivo importan más que perseguir una rutina idéntica para todos los usuarios.</p>
-              <a href="https://doi.org/10.1249/MSS.0000000000003897" target="_blank" rel="noopener noreferrer">Consultar estudio original ↗</a>
-            </article>
-            <article class="evidence-card">
-              <div class="evidence-card-head"><span>🥗</span><small>NUTRICIÓN · OMS 2026</small></div>
-              <h3>Comer con variedad</h3>
-              <p>Una alimentación saludable combina suficiencia, equilibrio, moderación y diversidad. Las necesidades reales cambian según edad, actividad, preferencias y situación individual.</p>
-              <a href="https://www.who.int/news-room/fact-sheets/detail/healthy-diet" target="_blank" rel="noopener noreferrer">Consultar guía oficial ↗</a>
-            </article>
-            <article class="evidence-card">
-              <div class="evidence-card-head"><span>🇦🇷</span><small>ALIMENTACIÓN · ARGENTINA</small></div>
-              <h3>Opciones cercanas</h3>
-              <p>Las guías alimentarias argentinas ofrecen recomendaciones de grupos de alimentos, agua segura y variedad que pueden servir como punto de partida culturalmente relevante.</p>
-              <a href="https://www.fao.org/nutrition/education/food-dietary-guidelines/regions/countries/argentina/en/" target="_blank" rel="noopener noreferrer">Consultar guía argentina ↗</a>
-            </article>
-          </div>
-          <p class="evidence-warning">Estas referencias no sustituyen a un médico, nutricionista matriculado o entrenador acreditado. La edad, alergias, lesiones y condiciones médicas requieren valoración individual. ZUNAREBORN no está afiliada a estas organizaciones. Fuentes revisadas: noviembre de 2026.</p>
-        </section>
-
-        <section class="nutrition-planner" aria-labelledby="nutritionTitle">
-          <div class="section-heading"><div><p class="eyebrow">ZUNAREBORN NUTRITION · NUEVO</p><h2 id="nutritionTitle">Organizá tus comidas</h2></div></div>
-          <p class="sport-subcopy">Ideas para organizar una semana de comidas con alimentos comunes. No son una dieta calculada para tu peso ni un plan médico: adaptá porciones y elecciones a tus necesidades.</p>
-          <div class="nutrition-profile" aria-labelledby="nutritionProfileTitle">
-            <h3 id="nutritionProfileTitle">Tu perfil de alimentación</h3>
-            <p class="sport-subcopy">Datos opcionales para orientar consejos generales. No generan una dieta clínica ni una cantidad de calorías. Se guardan únicamente en este dispositivo y en tus respaldos.</p>
-            <div class="nutrition-profile-grid">
-              <label class="field-label">Edad <input id="nutritionAge" type="number" min="13" max="110" inputmode="numeric" placeholder="Años"></label>
-              <label class="field-label">Altura <input id="nutritionHeight" type="number" min="100" max="250" inputmode="decimal" placeholder="cm"></label>
-              <label class="field-label">Peso <input id="nutritionWeight" type="number" min="25" max="350" step="0.1" inputmode="decimal" placeholder="kg"></label>
-              <label class="field-label">Actividad <select id="nutritionActivity"><option value="unspecified">Elegir</option><option value="low">Baja</option><option value="moderate">Moderada</option><option value="high">Alta</option></select></label>
-              <label class="field-label">Objetivo <select id="nutritionGoal"><option value="balance">Comer de forma equilibrada</option><option value="performance">Rendimiento deportivo</option><option value="muscle">Ganar fuerza y músculo</option><option value="habits">Mejorar hábitos</option></select></label>
-            </div>
-            <button id="nutritionSaveProfile" class="outline-button">GUARDAR PERFIL</button>
-            <div id="nutritionGuidance" class="nutrition-guidance" aria-live="polite"></div>
-          </div>
-          <div class="nutrition-toolbar">
-            <label class="field-label">Ideas de comidas<select id="nutritionPattern"><option value="mixed">Variadas</option><option value="vegetarian">Vegetarianas</option></select></label>
-            <button id="nutritionRefresh" class="outline-button">REORGANIZAR ESTA SEMANA ↻</button>
-          </div>
-          <div class="nutrition-notice"><strong>Antes de usar estas ideas</strong><p>Verificá ingredientes y alergias. Si sos menor de edad, estás embarazada, tenés una enfermedad o necesitás objetivos nutricionales específicos, consultá a un nutricionista matriculado. No se calculan calorías ni se indican restricciones.</p></div>
-          <div class="section-heading"><div><p class="eyebrow">PLANIFICACIÓN FLEXIBLE</p><h2>Tu semana</h2></div></div>
-          <div id="nutritionWeek" class="nutrition-week"></div>
-          <div class="section-heading"><div><p class="eyebrow">ORGANIZACIÓN</p><h2>Lista orientativa</h2></div></div>
-          <p class="sport-subcopy">Ingredientes frecuentes de las ideas seleccionadas; revisá lo que ya tenés en casa y ajustá cantidades según las personas que coman.</p>
-          <div id="nutritionShopping" class="nutrition-shopping"></div>
-          <label class="field-label">Notas de compras / sustituciones<textarea id="nutritionNotes" rows="3" maxlength="800" placeholder="Ej. Ya tengo arroz, comprar tomate..." style="width:100%"></textarea></label>
-          <button id="nutritionSaveNotes" class="outline-button full">GUARDAR MIS NOTAS</button>
-          <p class="micro-note">Toda la planificación se guarda en tu navegador y viaja con tu copia de seguridad. No suma XP ni cambia tus objetivos deportivos.</p>
-          <a href="https://www.who.int/news-room/fact-sheets/detail/healthy-diet" target="_blank" rel="noopener noreferrer" class="nutrition-source">Fuente general: OMS — alimentación saludable ↗</a>
-        </section>
         <article class="sport-future"><b>🚶 Pasos automáticos — próxima integración</b><p>Esta web todavía no puede consultar Apple Health o Health Connect en segundo plano. No mostramos pasos ficticios. Cuando construyamos el puente móvil, pediremos permiso para leer los datos reales.</p></article>
       </section>
 
@@ -464,11 +199,11 @@
 
         <section class="settings-group"><h3>DATOS Y PRIVACIDAD</h3><p class="setting-description">Esta versión guarda todo localmente. No hay cuenta ni servidor: tus datos no salen del dispositivo.</p><button class="outline-button full" id="exportData">↓ EXPORTAR COPIA DE SEGURIDAD</button><label class="outline-button full import-label">↑ IMPORTAR COPIA<input type="file" id="importData" accept="application/json"></label><button class="danger-button full" id="resetData">BORRAR TODOS MIS DATOS</button></section>
 
-        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.15</small></footer>
+        <footer class="app-footer"><span class="brand-mark small">Z</span><b>ZUNAREBORN</b><small>BUILD YOURSELF · EVERY DAY</small><small>Web v2.6</small></footer>
       </section>
     </main>
 
-    <nav class="bottom-nav" aria-label="Navegación principal"><button class="nav-item active" aria-current="page" data-view="home"><span>⌂</span><small>Hoy</small></button><button class="nav-item" data-view="movement"><span>◉</span><small>Entrenar</small></button><button class="nav-item" data-view="progress"><span>✦</span><small>Evolución</small></button><button class="nav-item" data-view="profile"><span>♙</span><small>Perfil</small></button></nav>
+    <nav class="bottom-nav" aria-label="Navegación"><button class="nav-item active" data-view="home"><span>⌂</span><small>Inicio</small></button><button class="nav-item" data-view="missions"><span>◇</span><small>Misiones</small></button><button class="nav-item" data-view="goals"><span>◎</span><small>Objetivos</small></button><button class="nav-item" data-view="progress"><span>▥</span><small>Progreso</small></button><button class="nav-item" data-view="profile"><span>♙</span><small>Perfil</small></button></nav>
   </div>
 
   <div class="modal-backdrop" id="missionModal" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="missionModalTitle">
@@ -510,9 +245,7 @@
     <button class="outline-button full" id="markRemindersRead">MARCAR TODOS COMO LEÍDOS</button>
     <button class="outline-button full" id="goReminderSettings">CONFIGURAR HORARIOS</button>
   </div></div>
-  <div id="zunaUpdateNotice" class="zuna-update-notice" hidden role="status"><span>✦ <strong>Hay una nueva versión</strong><small>Actualizá para ver las mejoras. Tu progreso se conserva.</small></span><button id="zunaUpdateApply" type="button">ACTUALIZAR ↗</button><button id="zunaUpdateDismiss" type="button" aria-label="Cerrar aviso">×</button></div>
-  <div id="zunaReward" class="zuna-reward" hidden role="status" aria-live="polite"><span class="zuna-reward-star">✦</span><b id="zunaRewardTitle">MISIÓN COMPLETADA</b><strong id="zunaRewardXP">+20 XP</strong><small>Un paso más hacia tu evolución</small></div>
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=2.27.0"></script>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="app.js"></script>
 </body>
 </html>
