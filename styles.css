@@ -317,3 +317,14 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .zuna-update-notice{position:fixed;z-index:1600;left:12px;right:12px;bottom:calc(80px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:10px;max-width:530px;margin:auto;padding:12px;background:#1c1813;border:1px solid #c7a46b;border-radius:13px;box-shadow:0 12px 35px #0009;color:#e9d2a5}
 .zuna-update-notice span{flex:1;min-width:0;font-size:12px}.zuna-update-notice small{display:block;font-size:10px;color:#bdb1a0;margin-top:4px}.zuna-update-notice button{border:0;background:#d4ae70;color:#17110b;border-radius:7px;padding:9px 8px;font-size:10px;font-weight:800}.zuna-update-notice button:last-child{background:transparent;color:#c5b9a6;font-size:20px;padding:5px}
 @media(prefers-reduced-motion:reduce){.zuna-reward.playing{animation:none}.home-core-progress i{transition:none}}
+
+/* ZUNAREBORN 2.25 — ZUNA COMPASS */
+.zuna-compass{margin:20px 0 17px;padding:17px;border:1px solid #896735;border-radius:18px;background:radial-gradient(circle at 95% 0%,#77532633,transparent 45%),linear-gradient(150deg,#20180f,#10100f);box-shadow:inset 0 1px #c99c4c22}
+.zuna-compass-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.zuna-compass-head h2{font-family:Georgia,serif;font-size:22px;color:#f1d49b;margin:4px 0}.zuna-compass-star{font-size:37px;color:#ddb66e;text-shadow:0 0 18px #b78642}
+.zuna-compass-intro{font-size:12px;color:#cfc0a8;line-height:1.6;margin:9px 0 15px}.zuna-compass-steps{display:grid;gap:9px}
+.zuna-compass-step{display:grid;grid-template-columns:39px minmax(0,1fr);gap:11px;align-items:start;border:1px solid #56442a;border-radius:13px;padding:12px;background:#171511}
+.zuna-compass-glyph{width:39px;height:39px;display:grid;place-items:center;background:#392917;border:1px solid #8b6b3e;border-radius:12px;color:#e5c181;font-size:21px}
+.zuna-compass-copy{min-width:0}.zuna-compass-copy small{display:block;color:#c69d5a;font-size:9px;letter-spacing:.09em;margin-bottom:4px}.zuna-compass-copy strong{display:block;color:#f0dfc1;font-size:13px;line-height:1.4;overflow-wrap:anywhere}.zuna-compass-copy p{color:#bdb09d;font-size:11px;line-height:1.45;margin:5px 0 0}
+.zuna-compass-go{grid-column:2;justify-self:start;border:0;background:transparent;color:#e2b970;font-size:10px;letter-spacing:.05em;font-weight:700;padding:7px 0;cursor:pointer}
+.zuna-compass-go:focus-visible{outline:2px solid #f2ce83;outline-offset:3px}.zuna-compass-foot{display:block;margin-top:13px;color:#998c78;font-size:10px;line-height:1.5}
+@media(max-width:350px){.zuna-compass{padding:12px}.zuna-compass-step{gap:8px;padding:10px}}

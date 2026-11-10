@@ -1,10 +1,7 @@
-# ZUNAREBORN 2.24 — Experiencia mejorada
+# ZUNAREBORN 2.25 — ZUNA COMPASS
 
-- Nuevo panel ZUNA CORE en Inicio, con etapa real y progreso hacia la próxima etapa.
-- Animación dorada breve al completar una misión. Respeta la preferencia de movimiento reducido.
-- Aviso de nueva versión de la PWA cuando el service worker instala una actualización; permite actualizar con un toque o cerrar el aviso.
-- Caché de PWA versionada; se evitan respuestas HTTP fallidas en caché.
-- Misiones, XP, personajes, colección, estadísticas, temporadas y datos existentes se conservan bajo `zunareborn.v2`.
-- Se mantienen los mismos diez archivos.
+Nuevo panel de guía diaria en Inicio: muestra una misión pendiente priorizando menor XP, estado de constancia de los últimos siete días y temporada activa u opcional. En días completos invita al descanso; en días libres propone explorar ZUNA LAB.
 
-Instalación: exportar respaldo en Perfil, descomprimir y subir los 10 archivos al repositorio. Puede haber demoras en la actualización de la PWA instalada en iPhone.
+Todas las sugerencias se calculan localmente desde registros existentes, sin red, sin IA remota, sin sumar XP, sin modificar localStorage ni penalizar descansos. Botones conectados con vistas reales. Diseño negro y dorado, responsive, compatible con reducción de movimiento.
+
+Actualización: exportar respaldo en Perfil, descomprimir ZIP, subir los diez archivos a GitHub. Caché PWA 2.25.0.

@@ -461,6 +461,39 @@
     $('bodyEntryWeight').value='';save();showToast('Registro guardado');
   });
   $('bodyTrendHistory').addEventListener('click',e=>{const b=e.target.closest('[data-body-remove]');if(!b)return;if(!confirm('¿Eliminar este registro de peso?'))return;state.nutrition.bodyHistory=state.nutrition.bodyHistory.filter(x=>x.date!==b.dataset.bodyRemove);save();showToast('Registro eliminado');});
+  // ZUNA COMPASS: recomendaciones locales basadas en el estado actual, sin IA remota ni XP extra.
+  function renderCompass(){
+    const target=$('compassSteps');if(!target)return;
+    const due=dueMissions(),done=new Set(doneIds()),pending=due.filter(m=>!done.has(m.id));
+    const steps=[];
+    if(pending.length){
+      const easiest=pending.slice().sort((a,b)=>(Number(a.xp)||0)-(Number(b.xp)||0))[0];
+      steps.push({icon:'◇',type:'PRIMERA VICTORIA',title:easiest.name,detail:'Una misión pendiente para empezar a avanzar.',view:'missions',action:'IR A MISIONES'});
+    }else if(due.length){
+      steps.push({icon:'✓',type:'OBJETIVO CUMPLIDO',title:'Tus misiones de hoy están completas',detail:'El descanso también es parte de entrenar.',view:'progress',action:'VER PROGRESO'});
+    }else{
+      steps.push({icon:'☼',type:'DÍA LIBRE',title:'Hoy no tenés misiones programadas',detail:'Podés descansar o explorar un desafío mental.',view:'lab',action:'EXPLORAR LAB'});
+    }
+    const activeDays=Object.keys(state.completions).filter(d=>d<=isoToday()&&d>=addDays(isoToday(),-6)&&doneIds(d).length).length;
+    if(activeDays<3){steps.push({icon:'✦',type:'CONSTANCIA',title:'Sumá un día a tu camino',detail:activeDays+' de los últimos 7 días tienen misiones registradas.',view:'missions',action:'VER MIS MISIONES'});}
+    else{steps.push({icon:'✦',type:'TU CAMINO',title:'Estás construyendo constancia',detail:activeDays+' de los últimos 7 días tienen misiones registradas.',view:'progress',action:'VER ESTADÍSTICAS'});}
+    const s=state.season&&state.season.current;
+    if(s){const elapsed=Math.max(0,daysBetween(s.start,isoToday()));steps.push({icon:'◆',type:'TEMPORADA ACTIVA',title:'Día '+Math.min(s.length,elapsed+1)+' de '+s.length,detail:'Mirá tus hitos y tu avance en ZUNA SEASONS.',view:'progress',action:'VER TEMPORADA'});}
+    else{steps.push({icon:'◆',type:'NUEVO DESAFÍO',title:'¿Una temporada de 30 o 66 días?',detail:'Es opcional y no reinicia tus logros.',view:'progress',action:'EXPLORAR SEASONS'});}
+    $('compassIntro').textContent=pending.length?'Tenés '+pending.length+' misión'+(pending.length===1?' pendiente':'es pendientes')+' hoy. Elegí una para comenzar.':due.length?'¡Buen trabajo! Hoy ya completaste lo que tenías programado.':'Un día sin misiones también puede sumar bienestar.';
+    target.replaceChildren();
+    steps.forEach(step=>{
+      const item=document.createElement('article');item.className='zuna-compass-step';
+      const glyph=document.createElement('span');glyph.className='zuna-compass-glyph';glyph.textContent=step.icon;
+      const copy=document.createElement('div');copy.className='zuna-compass-copy';
+      const type=document.createElement('small');type.textContent=step.type;
+      const title=document.createElement('strong');title.textContent=step.title;
+      const detail=document.createElement('p');detail.textContent=step.detail;
+      copy.append(type,title,detail);
+      const button=document.createElement('button');button.type='button';button.className='zuna-compass-go';button.dataset.view=step.view;button.textContent=step.action+' ↗';
+      item.append(glyph,copy,button);target.append(item);
+    });
+  }
   function renderHomeCore(){
     const thresholds=[0,500,1500,3000,6000],names=['DESPERTAR','ENFOQUE','CONSTANCIA','DISCIPLINA','MAESTRÍA'];
     const xp=Math.max(0,Number(state.xp)||0);let level=0;
@@ -486,7 +519,7 @@
     $('modeSetting').textContent=state.mode==='66'?'66 DÍAS':'PERMANENTE';$('modeDescription').textContent=state.mode==='66'?'66 días de enfoque y progreso':'Sin fecha de finalización';$('toggleMode').textContent=state.mode==='66'?'CAMBIAR A MODO PERMANENTE':'VOLVER AL PROGRAMA DE 66 DÍAS';
     $('todayLabel').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();$('greeting').textContent=(state.name?state.name+', ':'')+'un día a la vez. Sin excusas, sin perfección.';$('dailyQuote').textContent=quotes[new Date().getDate()%quotes.length];
     const wc=weeklyCount();$('weeklyProgressText').textContent=Math.min(wc,20)+' / 20';$('weeklyProgress').style.width=Math.min(100,wc/20*100)+'%';$('weeklyReward').textContent=state.weeklyRewards[weekKey()]?'RECOMPENSA OBTENIDA':'+150 XP';
-    renderHomeCore();renderNextMission();renderPillars();renderMissions();renderQuestWeekly();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderCollection();renderZStats();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();renderMemory();renderChallenge();renderCore();renderSeason();
+    renderHomeCore();renderCompass();renderNextMission();renderPillars();renderMissions();renderQuestWeekly();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderCollection();renderZStats();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();renderMemory();renderChallenge();renderCore();renderSeason();
   }
   function renderPillars(){const due=dueMissions(),done=doneIds();$('pillarList').innerHTML=Object.entries(categories).map(([key,c])=>{const ms=due.filter(m=>m.category===key),count=ms.filter(m=>done.includes(m.id)).length;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><small>${c.desc}</small></div><span class="pillar-value">${count}/${ms.length}</span></div>`}).join('')}
   function weeklyMissionCount(id){return weekDates().filter(d=>doneIds(d).includes(id)).length}

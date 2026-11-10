@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=2.24.0">
+  <link rel="stylesheet" href="styles.css?v=2.25.0">
 
   <style>
   /* Reparación crítica visible incluso si Safari conserva el CSS anterior */
@@ -83,6 +83,12 @@
             <button class="quick-tile" data-view="lab"><span class="quick-icon" aria-hidden="true">⚡</span><span><strong>ZUNA LAB</strong><small>Reflejos y memoria</small></span><span aria-hidden="true">↗</span></button>
             <button class="quick-tile" data-view="goals"><span class="quick-icon" aria-hidden="true">◎</span><span><strong>Objetivos</strong><small>Mis metas</small></span><span aria-hidden="true">↗</span></button>
           </div>
+        </section>
+        <section class="zuna-compass" aria-labelledby="compassTitle">
+          <div class="zuna-compass-head"><div><p class="eyebrow">ZUNA COMPASS · GUÍA DIARIA</p><h2 id="compassTitle">Tu próximo paso</h2></div><span class="zuna-compass-star" aria-hidden="true">✧</span></div>
+          <p id="compassIntro" class="zuna-compass-intro">Preparando tus sugerencias…</p>
+          <div id="compassSteps" class="zuna-compass-steps" aria-live="polite"></div>
+          <small class="zuna-compass-foot">Sugerencias según tus registros. Vos elegís tu ritmo.</small>
         </section>
         <article class="next-mission-card" aria-live="polite"><div><small>PRÓXIMA VICTORIA</small><strong id="nextMissionTitle">Preparando tu día...</strong><span id="nextMissionDetail">Una tarea a la vez.</span></div><button id="nextMissionGo" data-view="missions" aria-label="Ir a misiones">Ver ↗</button></article>
         <div class="section-heading"><div><p class="eyebrow">TU RENDIMIENTO</p><h2>Hoy, en números</h2></div><button class="text-button" data-view="progress">Ver progreso ↗</button></div>
@@ -490,6 +496,6 @@
   <div id="zunaUpdateNotice" class="zuna-update-notice" hidden role="status"><span>✦ <strong>Hay una nueva versión</strong><small>Actualizá para ver las mejoras. Tu progreso se conserva.</small></span><button id="zunaUpdateApply" type="button">ACTUALIZAR ↗</button><button id="zunaUpdateDismiss" type="button" aria-label="Cerrar aviso">×</button></div>
   <div id="zunaReward" class="zuna-reward" hidden role="status" aria-live="polite"><span class="zuna-reward-star">✦</span><b id="zunaRewardTitle">MISIÓN COMPLETADA</b><strong id="zunaRewardXP">+20 XP</strong><small>Un paso más hacia tu evolución</small></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=2.24.0"></script>
+  <script src="app.js?v=2.25.0"></script>
 </body>
 </html>
