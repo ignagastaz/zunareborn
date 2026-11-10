@@ -302,3 +302,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .season-panel button:focus-visible{outline:3px solid #ffe1a0;outline-offset:3px}
 .season-panel [hidden]{display:none!important}
 @media(prefers-reduced-motion:reduce){.season-progress span{transition:none}}
+
+/* ZUNA 2.24: cinematic home evolution + restrained reward + PWA update UI */
+.home-core-teaser{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-wrap:wrap;align-items:center;gap:14px;min-height:156px;margin:12px 0 18px;padding:20px 17px;border-radius:19px;border:1px solid #97713c;background:radial-gradient(ellipse at 10% 15%,#9c703e44,transparent 50%),linear-gradient(130deg,#261b11,#100f0e 75%)}
+.home-core-glow{position:absolute;z-index:-1;right:7%;top:-50px;font-size:180px;line-height:1;color:#b88b4266;filter:drop-shadow(0 0 30px #e0b35a77);transform:rotate(18deg)}
+.home-core-copy{flex:1 1 175px;min-width:0}.home-core-copy h2{font-family:Georgia,serif;letter-spacing:.09em;font-size:25px;color:#f3d49b;margin:8px 0 5px}.home-core-copy p{font-size:12px;color:#c6b69c;margin:0 0 12px}
+.home-core-progress{width:100%;max-width:230px;height:5px;border-radius:6px;background:#51402a;overflow:hidden}.home-core-progress i{display:block;height:100%;background:linear-gradient(90deg,#9c6a32,#f6d78f);border-radius:6px;transition:width .5s ease}
+.home-core-copy small{display:block;color:#d3af72;font-size:9px;letter-spacing:.05em;margin-top:8px}
+.home-core-go{background:#d8b36b;color:#1c140b;border:0;border-radius:9px;padding:12px 10px;font-size:10px;font-weight:800;letter-spacing:.02em;cursor:pointer}
+.zuna-reward[hidden],.zuna-update-notice[hidden]{display:none!important}
+.zuna-reward{position:fixed;z-index:1500;left:50%;top:39%;transform:translate(-50%,-50%);width:min(270px,80vw);display:flex;flex-direction:column;align-items:center;gap:7px;padding:22px 16px;border:1px solid #e5bf7c;border-radius:19px;background:radial-gradient(circle at 50% 0%,#765124,#15100cf5 76%);box-shadow:0 0 0 100vmax #0007,0 0 42px #c9974b55;color:#f7e5bf;pointer-events:none;text-align:center}
+.zuna-reward-star{font-size:36px;color:#f8d98c;text-shadow:0 0 25px #f7c15a}.zuna-reward b{font-size:12px;letter-spacing:.16em}.zuna-reward strong{font-family:Georgia,serif;font-size:32px;color:#f7d18a}.zuna-reward small{font-size:11px;color:#cbbda6}
+.zuna-reward.playing{animation:zunaRewardIn 1.9s ease both}@keyframes zunaRewardIn{0%{opacity:0;transform:translate(-50%,-45%) scale(.88)}18%,80%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-55%) scale(1.04)}}
+.zuna-update-notice{position:fixed;z-index:1600;left:12px;right:12px;bottom:calc(80px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:10px;max-width:530px;margin:auto;padding:12px;background:#1c1813;border:1px solid #c7a46b;border-radius:13px;box-shadow:0 12px 35px #0009;color:#e9d2a5}
+.zuna-update-notice span{flex:1;min-width:0;font-size:12px}.zuna-update-notice small{display:block;font-size:10px;color:#bdb1a0;margin-top:4px}.zuna-update-notice button{border:0;background:#d4ae70;color:#17110b;border-radius:7px;padding:9px 8px;font-size:10px;font-weight:800}.zuna-update-notice button:last-child{background:transparent;color:#c5b9a6;font-size:20px;padding:5px}
+@media(prefers-reduced-motion:reduce){.zuna-reward.playing{animation:none}.home-core-progress i{transition:none}}

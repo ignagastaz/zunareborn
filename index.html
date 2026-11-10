@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=2.23.0">
+  <link rel="stylesheet" href="styles.css?v=2.24.0">
 
   <style>
   /* Reparación crítica visible incluso si Safari conserva el CSS anterior */
@@ -60,6 +60,11 @@
           <div class="day-orb"><span>DÍA</span><strong id="dayNumber">01</strong><small id="dayTotal">/ 66</small></div>
         </div>
 
+        <article class="home-core-teaser" aria-label="Tu evolución ZUNA CORE">
+          <div class="home-core-glow" aria-hidden="true">✦</div>
+          <div class="home-core-copy"><span class="eyebrow">ZUNA CORE · TU EVOLUCIÓN</span><h2 id="homeCoreStage">DESPERTAR</h2><p id="homeCoreMessage">Cada acción alimenta tu núcleo.</p><div class="home-core-progress"><i id="homeCoreProgress"></i></div><small id="homeCoreNext">Tu próxima evolución te espera.</small></div>
+          <button class="home-core-go" data-jump="progress:coreFigure" aria-label="Ver mi personaje ZUNA CORE">VER MI CORE ↗</button>
+        </article>
         <article class="hero-card">
           <div class="hero-top"><span class="tag"><i class="live-dot"></i><span id="programModeLabel">PROGRAMA ACTIVO</span></span><strong id="completionPct">0%</strong></div>
           <h2 id="heroTitle">El cambio se demuestra.</h2>
@@ -482,7 +487,9 @@
     <button class="outline-button full" id="markRemindersRead">MARCAR TODOS COMO LEÍDOS</button>
     <button class="outline-button full" id="goReminderSettings">CONFIGURAR HORARIOS</button>
   </div></div>
+  <div id="zunaUpdateNotice" class="zuna-update-notice" hidden role="status"><span>✦ <strong>Hay una nueva versión</strong><small>Actualizá para ver las mejoras. Tu progreso se conserva.</small></span><button id="zunaUpdateApply" type="button">ACTUALIZAR ↗</button><button id="zunaUpdateDismiss" type="button" aria-label="Cerrar aviso">×</button></div>
+  <div id="zunaReward" class="zuna-reward" hidden role="status" aria-live="polite"><span class="zuna-reward-star">✦</span><b id="zunaRewardTitle">MISIÓN COMPLETADA</b><strong id="zunaRewardXP">+20 XP</strong><small>Un paso más hacia tu evolución</small></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=2.23.0"></script>
+  <script src="app.js?v=2.24.0"></script>
 </body>
 </html>

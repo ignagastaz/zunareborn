@@ -461,6 +461,22 @@
     $('bodyEntryWeight').value='';save();showToast('Registro guardado');
   });
   $('bodyTrendHistory').addEventListener('click',e=>{const b=e.target.closest('[data-body-remove]');if(!b)return;if(!confirm('¿Eliminar este registro de peso?'))return;state.nutrition.bodyHistory=state.nutrition.bodyHistory.filter(x=>x.date!==b.dataset.bodyRemove);save();showToast('Registro eliminado');});
+  function renderHomeCore(){
+    const thresholds=[0,500,1500,3000,6000],names=['DESPERTAR','ENFOQUE','CONSTANCIA','DISCIPLINA','MAESTRÍA'];
+    const xp=Math.max(0,Number(state.xp)||0);let level=0;
+    thresholds.forEach((threshold,i)=>{if(xp>=threshold)level=i});
+    $('homeCoreStage').textContent=names[level];
+    $('homeCoreMessage').textContent=level===4?'Alcanzaste Maestría. Tu camino sigue creciendo.':'Cada misión fortalece tu evolución.';
+    $('homeCoreProgress').style.width=(level===4?100:Math.max(0,Math.min(100,(xp-thresholds[level])/(thresholds[level+1]-thresholds[level])*100)))+'%';
+    $('homeCoreNext').textContent=level===4?'ETAPA MÁXIMA DESBLOQUEADA':(thresholds[level+1]-xp).toLocaleString('es-AR')+' XP PARA '+names[level+1];
+  }
+  let rewardTimer;
+  function showQuestReward(xp){
+    const el=$('zunaReward');if(!el)return;
+    $('zunaRewardXP').textContent='+'+xp+' XP';
+    el.hidden=false;el.classList.remove('playing');void el.offsetWidth;el.classList.add('playing');
+    clearTimeout(rewardTimer);rewardTimer=setTimeout(()=>{el.hidden=true;el.classList.remove('playing')},1900);
+  }
   function render(){
     updateStreak(); const day=programDay(), li=levelInfo(), due=dueMissions(), done=doneIds().filter(id=>due.some(m=>m.id===id)), pct=state.mode==='66'?Math.min(100,Math.round((Math.min(day-1,66)/66)*100)):Math.min(100,Math.round((done.length/Math.max(1,due.length))*100));
     $('topStreak').textContent=state.streak; const initial=(state.name||'Z').trim().charAt(0).toUpperCase();$('avatarInitial').textContent=initial;$('profileAvatar').textContent=initial;$('profileName').textContent=state.name||'Tu perfil';$('profileSince').textContent='Miembro desde '+localDate(state.createdAt).toLocaleDateString('es-AR',{day:'numeric',month:'short'});$('profileLevel').textContent=li.level;$('nameInput').value=state.name||'';$('goalInput').value=state.goal||'balance';
@@ -470,7 +486,7 @@
     $('modeSetting').textContent=state.mode==='66'?'66 DÍAS':'PERMANENTE';$('modeDescription').textContent=state.mode==='66'?'66 días de enfoque y progreso':'Sin fecha de finalización';$('toggleMode').textContent=state.mode==='66'?'CAMBIAR A MODO PERMANENTE':'VOLVER AL PROGRAMA DE 66 DÍAS';
     $('todayLabel').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();$('greeting').textContent=(state.name?state.name+', ':'')+'un día a la vez. Sin excusas, sin perfección.';$('dailyQuote').textContent=quotes[new Date().getDate()%quotes.length];
     const wc=weeklyCount();$('weeklyProgressText').textContent=Math.min(wc,20)+' / 20';$('weeklyProgress').style.width=Math.min(100,wc/20*100)+'%';$('weeklyReward').textContent=state.weeklyRewards[weekKey()]?'RECOMPENSA OBTENIDA':'+150 XP';
-    renderNextMission();renderPillars();renderMissions();renderQuestWeekly();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderCollection();renderZStats();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();renderMemory();renderChallenge();renderCore();renderSeason();
+    renderHomeCore();renderNextMission();renderPillars();renderMissions();renderQuestWeekly();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderCollection();renderZStats();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();renderMemory();renderChallenge();renderCore();renderSeason();
   }
   function renderPillars(){const due=dueMissions(),done=doneIds();$('pillarList').innerHTML=Object.entries(categories).map(([key,c])=>{const ms=due.filter(m=>m.category===key),count=ms.filter(m=>done.includes(m.id)).length;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><small>${c.desc}</small></div><span class="pillar-value">${count}/${ms.length}</span></div>`}).join('')}
   function weeklyMissionCount(id){return weekDates().filter(d=>doneIds(d).includes(id)).length}
@@ -764,7 +780,7 @@
       state.completionXP[date] ||= {};
       const awarded=was?(state.completionXP[date][id]??m.xp):m.xp;
       if(was)delete state.completionXP[date][id];else state.completionXP[date][id]=m.xp;
-      state.xp=Math.max(0,state.xp+(was?-awarded:awarded));awardGoals();save();showToast(was?'Misión desmarcada':'Misión completada · +'+awarded+' XP');return;
+      state.xp=Math.max(0,state.xp+(was?-awarded:awarded));awardGoals();save();if(!was)showQuestReward(awarded);showToast(was?'Misión desmarcada':'Misión completada · +'+awarded+' XP');return;
     }
     const edit=e.target.closest('[data-edit]');if(edit)openMissionEditor(edit.dataset.edit);
   });
@@ -1159,7 +1175,30 @@
 
   $('resetData').addEventListener('click',()=>{if(confirm('¿Borrar todo tu progreso?')&&confirm('Esta acción no se puede deshacer. ¿Continuar?')){state=fresh();migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();migrateNutrition();migrateCognitive();migrateCore();migrateSeason();labReset();memoryReset();saveRaw();render();openModal('onboardingModal')}});
   $('finishOnboarding').addEventListener('click',()=>{state.name=$('onboardingName').value.trim()||'Usuario';state.onboarded=true;save();closeModal('onboardingModal');showToast('Bienvenido a ZUNAREBORN')});
-  if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  // PWA: detect updates without silently reloading or touching user data.
+  if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
+    navigator.serviceWorker.register('./sw.js').then(reg=>{
+      let dismissed=false;
+      const notice=$('zunaUpdateNotice');
+      const offer=()=>{if(!dismissed&&reg.waiting&&navigator.serviceWorker.controller)notice.hidden=false};
+      if(reg.waiting)offer();
+      reg.addEventListener('updatefound',()=>{
+        const worker=reg.installing;if(!worker)return;
+        worker.addEventListener('statechange',()=>{if(worker.state==='installed')offer()});
+      });
+      $('zunaUpdateDismiss').addEventListener('click',()=>{dismissed=true;notice.hidden=true});
+      $('zunaUpdateApply').addEventListener('click',()=>{
+        notice.hidden=true;
+        if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});
+        else location.reload();
+      });
+      let reloadRequested=false;
+      navigator.serviceWorker.addEventListener('controllerchange',()=>{
+        if(!reloadRequested&&document.visibilityState==='visible'){reloadRequested=true;location.reload()}
+      });
+      document.addEventListener('visibilitychange',()=>{if(!document.hidden){reg.update().catch(()=>{});offer()}});
+    }).catch(()=>{});
+  }
   // Si la app permanece abierta durante la medianoche, actualizamos el estado al volver a ella.
   let lastVisibleDay=isoToday();
   document.addEventListener('visibilitychange',()=>{if(!document.hidden){const now=isoToday();if(lastVisibleDay!==now){lastVisibleDay=now;render()}checkReminders()}});
