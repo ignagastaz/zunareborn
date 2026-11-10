@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=2.26.0">
+  <link rel="stylesheet" href="styles.css?v=2.27.0">
 
   <style>
   /* Reparación crítica visible incluso si Safari conserva el CSS anterior */
@@ -301,7 +301,7 @@
       <section id="view-movement" class="view">
         <div class="page-heading"><p class="eyebrow">ZUNAREBORN SPORT</p><h1>Tu <em>movimiento.</em></h1><p class="muted">Entrená con intención. Registrá sesiones reales y encontrá ideas para mejorar tu disciplina.</p></div>
         <nav class="movement-shortcuts" aria-label="Secciones de Movimiento">
-          <button data-jump="movement:createTrainingPlan">Plan semanal</button>
+          <button data-jump="movement:gymBuilder">Gimnasio</button><button data-jump="movement:createTrainingPlan">Plan semanal</button>
           <button data-jump="movement:openTrainingEditor">Sesiones</button>
           <button data-jump="movement:evidenceTitle">Biblioteca</button>
           <button data-jump="movement:nutritionTitle">Nutrición</button>
@@ -313,6 +313,22 @@
           <label class="field-label">Objetivo de sesiones por semana<select id="sportWeeklyTarget"><option value="1">1 sesión</option><option value="2">2 sesiones</option><option value="3">3 sesiones</option><option value="4">4 sesiones</option><option value="5">5 sesiones</option><option value="6">6 sesiones</option><option value="7">7 sesiones</option></select></label>
           <button class="outline-button full" id="saveSportPreferences">GUARDAR DISCIPLINA</button>
         </article>
+        <section class="gym-builder" id="gymBuilder">
+          <div class="section-heading"><div><p class="eyebrow">ZUNA TRAINING · GIMNASIO</p><h2>Mi rutina personalizada</h2></div></div>
+          <p class="sport-subcopy">Armá una semana de fuerza según tu objetivo, experiencia y disponibilidad. Las sugerencias son orientativas, no una evaluación médica.</p>
+          <div class="gym-builder-card">
+            <div class="gym-builder-fields">
+              <label class="field-label">Objetivo<select id="gymGoal"><option value="general">Fuerza y salud general</option><option value="muscle">Desarrollo muscular</option><option value="strength">Fuerza</option></select></label>
+              <label class="field-label">Experiencia<select id="gymExperience"><option value="beginner">Principiante</option><option value="intermediate">Intermedio</option></select></label>
+              <label class="field-label">Días por semana<select id="gymDays"><option value="2">2 días</option><option value="3" selected>3 días</option><option value="4">4 días</option><option value="5">5 días</option></select></label>
+              <label class="field-label">Lugar<select id="gymEquipment"><option value="gym">Gimnasio equipado</option><option value="home">Casa / peso corporal</option></select></label>
+              <label class="field-label">Zonas que necesitás evitar por molestias o indicación profesional<select id="gymLimit"><option value="none">Ninguna declarada</option><option value="upper">Tren superior</option><option value="lower">Tren inferior</option><option value="both">Ambas / no estoy seguro</option></select></label>
+            </div>
+            <p class="micro-note">Si tenés dolor, una lesión activa o una restricción médica, consultá a un profesional antes de comenzar. No uses una rutina automática para rehabilitación. No hace falta indicar sexo, altura o peso para esta primera propuesta: el volumen se adapta principalmente a experiencia y disponibilidad.</p>
+            <button class="gold-button full" id="generateGymRoutine">GENERAR MI RUTINA <span>↗</span></button>
+          </div>
+          <div id="gymRoutineOutput" class="gym-routine-output" aria-live="polite"></div>
+        </section>
         <section class="training-program">
           <div class="section-heading"><div><p class="eyebrow">ZUNAREBORN SPORT · NUEVO</p><h2>Mi plan semanal</h2></div></div>
           <p class="sport-subcopy">Organizá prácticas de tu deporte y registrá qué días las hiciste. Es una guía orientativa; adaptá descansos, esfuerzo y técnica a tu situación.</p>
@@ -497,6 +513,6 @@
   <div id="zunaUpdateNotice" class="zuna-update-notice" hidden role="status"><span>✦ <strong>Hay una nueva versión</strong><small>Actualizá para ver las mejoras. Tu progreso se conserva.</small></span><button id="zunaUpdateApply" type="button">ACTUALIZAR ↗</button><button id="zunaUpdateDismiss" type="button" aria-label="Cerrar aviso">×</button></div>
   <div id="zunaReward" class="zuna-reward" hidden role="status" aria-live="polite"><span class="zuna-reward-star">✦</span><b id="zunaRewardTitle">MISIÓN COMPLETADA</b><strong id="zunaRewardXP">+20 XP</strong><small>Un paso más hacia tu evolución</small></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=2.26.0"></script>
+  <script src="app.js?v=2.27.0"></script>
 </body>
 </html>

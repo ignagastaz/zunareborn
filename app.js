@@ -302,6 +302,32 @@
     const note=totalSessions===0?'Todavía no hay entrenamientos registrados en estas cuatro semanas. Empezá con una sesión que se adapte a tu nivel.':current.sessions===0?'Esta semana todavía no registraste sesiones. Una pausa también puede formar parte del plan.':previous.minutes===0?'Ya hay actividad registrada esta semana. A medida que acumules semanas, podrás comparar tus avances.':current.minutes>previous.minutes*1.5?'Esta semana llevás más minutos que la anterior. No aumentes la intensidad sólo por mejorar el número: priorizá recuperación y técnica.': 'Vas construyendo un historial útil. Compará tus sesiones con tus sensaciones, no sólo con los minutos.';
     $('sportInsightMessage').textContent=note;
   }
+  // ZUNA TRAINING: propuesta de gimnasio local, sin XP automático ni datos sensibles adicionales.
+  const gymTemplates={
+    gym:{upper:[['Press de pecho en máquina','2–3 × 8–12'],['Remo sentado en polea','2–3 × 8–12'],['Jalón al pecho','2 × 8–12'],['Elevaciones laterales livianas','2 × 10–15']],lower:[['Sentadilla a banco o prensa','2–3 × 8–12'],['Bisagra de cadera con mancuernas livianas','2 × 8–12'],['Curl femoral en máquina','2 × 10–12'],['Elevación de gemelos','2 × 10–15']]},
+    home:{upper:[['Flexiones inclinadas contra pared o mesa estable','2–3 × 6–12'],['Remo con banda anclada de forma segura','2–3 × 8–12'],['Retracciones escapulares','2 × 10–12'],['Plancha de antebrazos adaptada','2 × 15–30 s']],lower:[['Sentarse y levantarse de una silla firme','2–3 × 8–12'],['Puente de glúteos','2 × 8–12'],['Subida a escalón bajo y estable','2 × 8 por lado'],['Elevación de gemelos con apoyo','2 × 10–15']]}
+  };
+  const gymSchedule={2:['Cuerpo completo A','Cuerpo completo B'],3:['Cuerpo completo A','Cuerpo completo B','Cuerpo completo C'],4:['Superior A','Inferior A','Superior B','Inferior B'],5:['Superior A','Inferior A','Cuerpo completo','Superior B','Inferior B']};
+  function renderGymRoutine(){
+    const target=$('gymRoutineOutput'),p=state.sport.gymRoutine;
+    if(!p||typeof p!=='object'||!gymSchedule[p.days]||!gymTemplates[p.equipment]){target.innerHTML='<div class="empty-state"><b>Tu rutina empieza acá.</b>Elegí tus preferencias y generá un plan orientativo.</div>';return;}
+    for(const [id,key] of [['gymGoal','goal'],['gymExperience','experience'],['gymDays','days'],['gymEquipment','equipment'],['gymLimit','limit']])$(id).value=String(p[key]);
+    if(p.limit==='both'){target.innerHTML='<div class="gym-safety"><b>Primero, seguridad.</b><p>Como marcaste limitaciones en ambas zonas o no estás seguro, no generamos ejercicios. Pedí orientación profesional para definir movimientos apropiados.</p></div>';return;}
+    const schedule=gymSchedule[p.days],template=gymTemplates[p.equipment];
+    const days=schedule.map((title,i)=>{
+      const zones=title.startsWith('Superior')?['upper']:title.startsWith('Inferior')?['lower']:['lower','upper'];
+      const available=zones.filter(z=>p.limit!==(z==='upper'?'upper':'lower'));
+      const exercises=available.flatMap(z=>template[z]).slice(0,p.experience==='beginner'?5:7);
+      return `<details class="gym-day" ${i===0?'open':''}><summary><span class="gym-day-index">${String(i+1).padStart(2,'0')}</span><span><b>${esc(title)}</b><small>${exercises.length} ejercicios sugeridos · 60–120 s de descanso</small></span><span>⌄</span></summary><div class="gym-day-body">${exercises.length?exercises.map(([name,reps])=>`<div class="gym-exercise"><span>✦</span><div><b>${esc(name)}</b><small>${p.experience==='beginner'?reps.replace('2–3','2'):reps}</small></div></div>`).join(''):'<p>Sin ejercicios recomendados para las zonas disponibles. Consultá a un profesional.</p>'}<p class="micro-note">Calentá 5–10 minutos, usá una carga controlable y detenete ante dolor. Dejá recuperación entre sesiones exigentes del mismo grupo muscular.</p></div></details>`;
+    });
+    const label={general:'Fuerza y salud general',muscle:'Desarrollo muscular',strength:'Fuerza'}[p.goal]||'Entrenamiento general';
+    target.innerHTML=`<div class="gym-routine-head"><span class="eyebrow">TU PLAN GUARDADO</span><h3>${esc(label)}</h3><p>${p.days} días · ${p.equipment==='gym'?'Gimnasio':'Casa'} · ${p.experience==='beginner'?'Principiante':'Intermedio'}</p></div>${days.join('')}<p class="micro-note">Esta rutina no se registra como sesión ni otorga XP. Al terminar, registrá el entrenamiento desde “Sesiones”. Los días son sugerencias: distribuí el descanso según tu disponibilidad.</p>`;
+  }
+  $('generateGymRoutine').addEventListener('click',()=>{
+    const p={goal:$('gymGoal').value,experience:$('gymExperience').value,days:Number($('gymDays').value),equipment:$('gymEquipment').value,limit:$('gymLimit').value};
+    if(!['general','muscle','strength'].includes(p.goal)||!['beginner','intermediate'].includes(p.experience)||!gymSchedule[p.days]||!gymTemplates[p.equipment]||!['none','upper','lower','both'].includes(p.limit))return;
+    state.sport.gymRoutine=p;save();showToast(p.limit==='both'?'Revisá la advertencia de seguridad':'Rutina guardada');
+  });
   function renderSport(){
     const chosen=sports[state.sport.primary],sessions=weeklySportSessions(),minutes=sessions.reduce((n,s)=>n+s.minutes,0);
     $('sportChoice').value=state.sport.primary;$('sportWeeklyTarget').value=String(state.sport.weeklyTarget);
@@ -311,7 +337,7 @@
     $('homeSportSummary').textContent=sessions.length+' '+(sessions.length===1?'sesión registrada':'sesiones registradas')+' esta semana · '+minutes+' min';
     $('sportGuideIntro').textContent=chosen.intro;
     $('sportDrills').innerHTML=chosen.drills.map((t,i)=>`<div class="sport-drill"><span>${String(i+1).padStart(2,'0')}</span><p>${esc(t)}</p></div>`).join('');
-    renderSportSkills();renderTrainingPlan();renderSportInsights();
+    renderSportSkills();renderTrainingPlan();renderGymRoutine();renderSportInsights();
     const sorted=[...state.sport.sessions].sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id)).slice(0,20);
     $('trainingList').innerHTML=sorted.length?sorted.map(s=>`<article class="training-entry"><span class="training-entry-icon">${sports[s.sport].icon}</span><div><b>${esc(sports[s.sport].name)} · ${s.minutes} min</b><small>${esc(s.date)} · ${['','Suave','Moderado','Intenso'][s.effort]||'Moderado'}</small>${s.notes?`<p>${esc(s.notes)}</p>`:''}</div><button data-training-edit="${esc(s.id)}" class="training-edit" aria-label="Editar sesión">Editar</button><button data-training-delete="${esc(s.id)}" class="training-delete" aria-label="Borrar sesión">×</button></article>`).join(''):'<div class="empty-state"><b>Tu próximo entrenamiento empieza acá.</b>Registrá una sesión para ver tu historial deportivo.</div>';
   }

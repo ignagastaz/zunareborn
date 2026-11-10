@@ -1,9 +1,9 @@
-# ZUNAREBORN 2.26 — Navegación más simple
+# ZUNAREBORN 2.27 — ZUNA TRAINING
 
-- Navegación principal reducida de cinco a cuatro destinos: Hoy, Entrenar, Evolución y Perfil.
-- Misiones, Objetivos y ZUNA LAB siguen funcionando, ahora como accesos contextuales desde Hoy y Evolución.
-- La pestaña activa representa el área correspondiente incluso al visitar pantallas secundarias.
-- Sin cambios destructivos al almacenamiento local ni a los XP.
-- No incluye todavía rutinas médicamente adaptadas; se planifican para una próxima versión con preguntas sobre objetivo, días, equipamiento, experiencia y limitaciones físicas.
-
-Instalación: exportá respaldo en Perfil, descomprimí y subí los 10 archivos al repositorio. La actualización de PWA puede demorar en el iPhone.
+- Generador local de rutinas de gimnasio y casa para 2 a 5 días, objetivo y experiencia.
+- Días expandibles con ejercicios, series, repeticiones y descansos orientativos.
+- Filtro conservador de zonas a evitar; ante limitaciones en ambas zonas no genera ejercicios.
+- Preferencias guardadas en `state.sport.gymRoutine` bajo `zunareborn.v2`.
+- No altera XP, sesiones, misiones, rachas ni datos existentes.
+- Las propuestas no constituyen rehabilitación ni prescripción médica.
+- Exportá respaldo en Perfil antes de reemplazar los 10 archivos de GitHub.
