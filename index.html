@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=2.21.0">
+  <link rel="stylesheet" href="styles.css?v=2.22.0">
 
   <style>
   /* Reparación crítica visible incluso si Safari conserva el CSS anterior */
@@ -214,6 +214,14 @@
           <div class="body-trend-chart" id="bodyTrendChart" role="img" aria-label="Registros de peso recientes"></div>
           <div id="bodyTrendHistory" class="body-trend-history"></div>
           <p class="micro-note">Los datos quedan guardados en este dispositivo y en las copias de seguridad. Podés eliminar cada registro. No se calculan metas de peso ni recomendaciones de adelgazamiento.</p>
+        </section>
+        <section class="zstats-section" aria-labelledby="zstatsTitle">
+          <div class="section-heading"><div><p class="eyebrow">TU ACTIVIDAD TOMA FORMA</p><h2 id="zstatsTitle">ZUNA STATS</h2></div><span class="zstats-period">ÚLTIMOS 30 DÍAS</span></div>
+          <p class="zstats-intro">Cinco indicadores de tus registros. No miden capacidades físicas o cognitivas reales: muestran cuánto participaste en cada área.</p>
+          <div class="zstats-hero"><div class="zstats-radar-wrap"><svg id="zstatsRadar" class="zstats-radar" viewBox="0 0 320 292" role="img" aria-label="Gráfico de cinco indicadores de actividad"><g id="zstatsRadarGrid"></g><polygon id="zstatsRadarShape" points="160,146 160,146 160,146 160,146 160,146"></polygon><g id="zstatsRadarDots"></g></svg></div><div class="zstats-total"><span>ACTIVIDAD GLOBAL</span><strong id="zstatsOverall">0</strong><small>Índice orientativo / 100</small></div></div>
+          <div class="zstats-rows" id="zstatsRows"></div>
+          <div class="zstats-detail" id="zstatsDetail" role="status" aria-live="polite">Tocá un atributo para ver cómo se calcula.</div>
+          <p class="micro-note">Cada indicador usa un objetivo de referencia fijo de 30 días. Podés mejorar los valores registrando actividades; descansar no resta XP ni desbloqueos. No es una evaluación de salud o rendimiento.</p>
         </section>
         <section class="collection-section" aria-labelledby="collectionTitle">
           <div class="section-heading"><div><p class="eyebrow">RECOMPENSAS DE TU CAMINO</p><h2 id="collectionTitle">ZUNA COLLECTION</h2></div><span class="collection-counter" id="collectionCounter">0 / 9</span></div>
@@ -451,6 +459,6 @@
     <button class="outline-button full" id="goReminderSettings">CONFIGURAR HORARIOS</button>
   </div></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=2.21.0"></script>
+  <script src="app.js?v=2.22.0"></script>
 </body>
 </html>

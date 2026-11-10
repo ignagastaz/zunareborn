@@ -1,18 +1,18 @@
-# ZUNAREBORN 2.21 — ZUNA COLLECTION
+# ZUNAREBORN 2.22 — ZUNA STATS
 
-Actualización acumulativa que conserva ZUNA CORE, ZUNA QUEST, ZUNA LAB, nutrición, deporte, misiones y todos los datos previos.
+Actualización acumulativa de 2.21, sin reiniciar datos.
 
 ## Novedades
-- Colección original de 9 cartas en **Progreso**, con estética negra y dorada.
-- Cartas desbloqueadas y bloqueadas con detalles y condiciones de desbloqueo.
-- Filtros: Todas, Desbloqueadas y Por conseguir.
-- Logros retroactivos basados en misiones, XP, mejor racha, día de programa, reflejos, memoria y etapa de ZUNA CORE.
-- Sin XP extra ni nuevos datos persistentes: no se duplican recompensas ni se alteran respaldos.
-- Cache PWA versionada 2.21.0.
+- Panel ZUNA STATS en Progreso, entre Evolución física y ZUNA COLLECTION.
+- Gráfico pentagonal original y cinco barras interactivas: Fuerza, Disciplina, Enfoque, Constancia, Conocimiento.
+- Índices de actividad de los últimos 30 días, calculados a partir de misiones, sesiones deportivas y desafíos de ZUNA LAB ya registrados.
+- Al tocar un atributo se explica el cálculo y se muestra el número de días.
+- No se inventan medidas de fuerza, inteligencia ni aptitud física: los valores son indicadores de participación, no pruebas de capacidad.
+- No se otorgan XP por abrir el panel; no se modifican recompensas ni logros.
+- Mismo almacenamiento `zunareborn.v2`; no hay nuevas migraciones destructivas.
 
-## Actualización
-1. Exportá una copia de seguridad desde Perfil.
-2. Descomprimí el ZIP y subí los 10 archivos a la raíz del repositorio GitHub, reemplazando los anteriores.
-3. Esperá la publicación. Si la PWA instalada demora en actualizarse, abrí primero la URL en Safari.
+## Cálculo
+Cada atributo toma días distintos con actividad en los últimos 30 días, con tope 100: Fuerza (misión Físico o sesión deportiva, referencia 12 días), Disciplina (misión Disciplina, 12 días), Enfoque (ZUNA LAB, 10 días), Constancia (cualquier misión, 20 días), Conocimiento (misión Mentalidad, 12 días). El índice global es la media redondeada de los cinco.
 
-Las cartas son un sistema recreativo de motivación, no una medida de valor personal ni de salud.
+## Instalación
+Exportá una copia de seguridad desde Perfil, descomprimí el ZIP y reemplazá los 10 archivos de la raíz del repositorio GitHub. Tras la publicación, revisá Progreso → ZUNA STATS. Si la PWA del iPhone tarda en actualizarse, abrí primero la web en Safari. No borres la app ni sus datos.

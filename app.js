@@ -470,7 +470,7 @@
     $('modeSetting').textContent=state.mode==='66'?'66 DÍAS':'PERMANENTE';$('modeDescription').textContent=state.mode==='66'?'66 días de enfoque y progreso':'Sin fecha de finalización';$('toggleMode').textContent=state.mode==='66'?'CAMBIAR A MODO PERMANENTE':'VOLVER AL PROGRAMA DE 66 DÍAS';
     $('todayLabel').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();$('greeting').textContent=(state.name?state.name+', ':'')+'un día a la vez. Sin excusas, sin perfección.';$('dailyQuote').textContent=quotes[new Date().getDate()%quotes.length];
     const wc=weeklyCount();$('weeklyProgressText').textContent=Math.min(wc,20)+' / 20';$('weeklyProgress').style.width=Math.min(100,wc/20*100)+'%';$('weeklyReward').textContent=state.weeklyRewards[weekKey()]?'RECOMPENSA OBTENIDA':'+150 XP';
-    renderNextMission();renderPillars();renderMissions();renderQuestWeekly();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderCollection();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();renderMemory();renderChallenge();renderCore();
+    renderNextMission();renderPillars();renderMissions();renderQuestWeekly();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderCollection();renderZStats();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();renderMemory();renderChallenge();renderCore();
   }
   function renderPillars(){const due=dueMissions(),done=doneIds();$('pillarList').innerHTML=Object.entries(categories).map(([key,c])=>{const ms=due.filter(m=>m.category===key),count=ms.filter(m=>done.includes(m.id)).length;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><small>${c.desc}</small></div><span class="pillar-value">${count}/${ms.length}</span></div>`}).join('')}
   function weeklyMissionCount(id){return weekDates().filter(d=>doneIds(d).includes(id)).length}
@@ -559,6 +559,74 @@
   $('monthPrev').addEventListener('click',()=>monthShift(-1));$('monthNext').addEventListener('click',()=>monthShift(1));
   $('monthlyGrid').addEventListener('click',e=>{const b=e.target.closest('[data-date]');if(!b)return;viewedDate=b.dataset.date;renderMonthlyCalendar()});
   $('historyHabit').addEventListener('change',e=>{viewedHabitId=e.target.value;renderHabitHistory()});
+  // ZUNA STATS: índices de actividad (no medidas de aptitud, salud o inteligencia).
+  const zstatsDefs=[
+    {id:'strength',name:'Fuerza',icon:'◉',target:12,description:'Días con al menos una misión física o una sesión deportiva registrada en los últimos 30 días. Referencia: 12 días.'},
+    {id:'discipline',name:'Disciplina',icon:'◆',target:12,description:'Días con al menos una misión de la categoría Disciplina completada en los últimos 30 días. Referencia: 12 días.'},
+    {id:'focus',name:'Enfoque',icon:'◇',target:10,description:'Días con una sesión completada de ZUNA LAB (Reflejos o Memoria) en los últimos 30 días. Referencia: 10 días.'},
+    {id:'consistency',name:'Constancia',icon:'▲',target:20,description:'Días con al menos una misión registrada en los últimos 30 días. Referencia: 20 días.'},
+    {id:'knowledge',name:'Conocimiento',icon:'✧',target:12,description:'Días con al menos una misión de Mentalidad completada en los últimos 30 días. Referencia: 12 días.'}
+  ];
+  let zstatsSelected='strength';
+  function zstatsValues(){
+    const dates=Array.from({length:30},(_,i)=>addDays(isoToday(),i-29));
+    const sportDays=new Set((state.sport.sessions||[]).map(s=>s.date));
+    const cognitiveDays=new Set([...(state.cognitive.sessions||[]),...(state.cognitive.memorySessions||[])].map(s=>s.date));
+    const missionIds={fitness:new Set(state.missions.filter(m=>m.category==='fitness').map(m=>m.id)),discipline:new Set(state.missions.filter(m=>m.category==='discipline').map(m=>m.id)),mind:new Set(state.missions.filter(m=>m.category==='mind').map(m=>m.id))};
+    const counts={strength:0,discipline:0,focus:0,consistency:0,knowledge:0};
+    for(const d of dates){
+      const done=doneIds(d);
+      if(done.some(id=>missionIds.fitness.has(id))||sportDays.has(d))counts.strength++;
+      if(done.some(id=>missionIds.discipline.has(id)))counts.discipline++;
+      if(cognitiveDays.has(d))counts.focus++;
+      if(done.length)counts.consistency++;
+      if(done.some(id=>missionIds.mind.has(id)))counts.knowledge++;
+    }
+    return zstatsDefs.map(def=>({...def,count:counts[def.id],score:Math.min(100,Math.round(counts[def.id]/def.target*100))}));
+  }
+  function renderZStats(){
+    const container=$('zstatsRows');if(!container)return;
+    const values=zstatsValues();
+    const overall=Math.round(values.reduce((sum,x)=>sum+x.score,0)/values.length);
+    $('zstatsOverall').textContent=overall;
+    const svgNS='http://www.w3.org/2000/svg',centerX=160,centerY=144,radius=94;
+    const xy=(i,scale)=>{const a=-Math.PI/2+i*2*Math.PI/5;return [centerX+Math.cos(a)*radius*scale,centerY+Math.sin(a)*radius*scale]};
+    const pts=arr=>arr.map(([x,y])=>x.toFixed(1)+','+y.toFixed(1)).join(' ');
+    const grid=$('zstatsRadarGrid');grid.replaceChildren();
+    for(const level of [.25,.5,.75,1]){
+      const poly=document.createElementNS(svgNS,'polygon');poly.setAttribute('points',pts(values.map((_,i)=>xy(i,level))));poly.setAttribute('class','zstats-grid-ring');grid.append(poly);
+    }
+    for(let i=0;i<5;i++){
+      const line=document.createElementNS(svgNS,'line');const [x,y]=xy(i,1);
+      line.setAttribute('x1',String(centerX));line.setAttribute('y1',String(centerY));line.setAttribute('x2',String(x));line.setAttribute('y2',String(y));line.setAttribute('class','zstats-grid-axis');grid.append(line);
+    }
+    $('zstatsRadarShape').setAttribute('points',pts(values.map((v,i)=>xy(i,v.score/100))));
+    const dots=$('zstatsRadarDots');dots.replaceChildren();
+    values.forEach((v,i)=>{
+      const [x,y]=xy(i,v.score/100),[lx,ly]=xy(i,1.25);
+      const dot=document.createElementNS(svgNS,'circle');dot.setAttribute('cx',String(x));dot.setAttribute('cy',String(y));dot.setAttribute('r','4');dot.setAttribute('class','zstats-dot');dots.append(dot);
+      const label=document.createElementNS(svgNS,'text');label.setAttribute('x',String(lx));label.setAttribute('y',String(ly));label.setAttribute('text-anchor','middle');label.setAttribute('dominant-baseline','middle');label.setAttribute('class','zstats-chart-label');label.textContent=v.name;dots.append(label);
+    });
+    container.replaceChildren();
+    for(const v of values){
+      const btn=document.createElement('button');btn.type='button';btn.className='zstats-row'+(zstatsSelected===v.id?' selected':'');btn.setAttribute('aria-pressed',String(zstatsSelected===v.id));btn.dataset.zstat=v.id;
+      const heading=document.createElement('span');heading.className='zstats-row-head';
+      const name=document.createElement('span');name.textContent=v.icon+' '+v.name;
+      const score=document.createElement('strong');score.textContent=v.score+' / 100';heading.append(name,score);
+      const track=document.createElement('span');track.className='zstats-row-track';
+      const fill=document.createElement('span');fill.style.width=v.score+'%';track.append(fill);
+      const meta=document.createElement('small');meta.textContent=v.count+' / '+v.target+' días de referencia';
+      btn.append(heading,track,meta);container.append(btn);
+    }
+    const selected=values.find(v=>v.id===zstatsSelected)||values[0];
+    $('zstatsDetail').textContent=selected.name+': '+selected.description+' Tu registro: '+selected.count+' días.';
+  }
+  $('zstatsRows').addEventListener('click',e=>{
+    const button=e.target.closest('[data-zstat]');if(!button)return;
+    if(!zstatsDefs.some(d=>d.id===button.dataset.zstat))return;
+    zstatsSelected=button.dataset.zstat;renderZStats();
+  });
+
   // ZUNA COLLECTION — logros calculados sobre registros existentes, sin recompensas duplicadas.
   const collectionCards=[
     {id:'first',name:'Primer paso',type:'ORIGEN',symbol:'✦',copy:'Todo camino empieza con una decisión.',hint:'Completá tu primera misión.',test:s=>totalDone(s)>=1},
