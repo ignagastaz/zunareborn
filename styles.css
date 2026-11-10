@@ -328,3 +328,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .zuna-compass-go{grid-column:2;justify-self:start;border:0;background:transparent;color:#e2b970;font-size:10px;letter-spacing:.05em;font-weight:700;padding:7px 0;cursor:pointer}
 .zuna-compass-go:focus-visible{outline:2px solid #f2ce83;outline-offset:3px}.zuna-compass-foot{display:block;margin-top:13px;color:#998c78;font-size:10px;line-height:1.5}
 @media(max-width:350px){.zuna-compass{padding:12px}.zuna-compass-step{gap:8px;padding:10px}}
+
+/* 2.26 navigation simplification: four stable destinations, contextual shortcuts */
+.bottom-nav .nav-item{width:min(25%,145px);min-height:52px}
+.bottom-nav .nav-item small{font-size:10px;letter-spacing:.15px}
+.zuna-hub-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 20px}
+.zuna-hub-links button{display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;gap:12px;min-height:72px;text-align:left;padding:12px 10px;border:1px solid #65502d;border-radius:13px;background:linear-gradient(135deg,#241d13,#121110);font-size:10px;font-weight:700;color:#e5c78d}
+.zuna-hub-links button span{align-self:flex-end;color:#a28b67}
+@media(max-width:360px){.zuna-hub-links{gap:5px}.zuna-hub-links button{font-size:9px;padding:9px 7px}}

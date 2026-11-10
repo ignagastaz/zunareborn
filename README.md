@@ -1,7 +1,9 @@
-# ZUNAREBORN 2.25 — ZUNA COMPASS
+# ZUNAREBORN 2.26 — Navegación más simple
 
-Nuevo panel de guía diaria en Inicio: muestra una misión pendiente priorizando menor XP, estado de constancia de los últimos siete días y temporada activa u opcional. En días completos invita al descanso; en días libres propone explorar ZUNA LAB.
+- Navegación principal reducida de cinco a cuatro destinos: Hoy, Entrenar, Evolución y Perfil.
+- Misiones, Objetivos y ZUNA LAB siguen funcionando, ahora como accesos contextuales desde Hoy y Evolución.
+- La pestaña activa representa el área correspondiente incluso al visitar pantallas secundarias.
+- Sin cambios destructivos al almacenamiento local ni a los XP.
+- No incluye todavía rutinas médicamente adaptadas; se planifican para una próxima versión con preguntas sobre objetivo, días, equipamiento, experiencia y limitaciones físicas.
 
-Todas las sugerencias se calculan localmente desde registros existentes, sin red, sin IA remota, sin sumar XP, sin modificar localStorage ni penalizar descansos. Botones conectados con vistas reales. Diseño negro y dorado, responsive, compatible con reducción de movimiento.
-
-Actualización: exportar respaldo en Perfil, descomprimir ZIP, subir los diez archivos a GitHub. Caché PWA 2.25.0.
+Instalación: exportá respaldo en Perfil, descomprimí y subí los 10 archivos al repositorio. La actualización de PWA puede demorar en el iPhone.

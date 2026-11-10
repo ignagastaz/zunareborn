@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=2.25.0">
+  <link rel="stylesheet" href="styles.css?v=2.26.0">
 
   <style>
   /* Reparación crítica visible incluso si Safari conserva el CSS anterior */
@@ -75,7 +75,7 @@
         </article>
 
         <section class="quick-section" aria-labelledby="quickTitle">
-          <div class="section-heading compact-heading"><div><p class="eyebrow">A UN TOQUE</p><h2 id="quickTitle">¿Qué querés hacer?</h2></div></div>
+          <div class="section-heading compact-heading"><div><p class="eyebrow">A UN TOQUE</p><h2 id="quickTitle">Elegí tu próximo paso</h2></div></div>
           <div class="quick-grid" aria-label="Accesos rápidos">
             <button class="quick-tile" data-view="missions"><span class="quick-icon" aria-hidden="true">✓</span><span><strong>Misiones</strong><small>Mis hábitos de hoy</small></span><span aria-hidden="true">↗</span></button>
             <button class="quick-tile" data-jump="movement:openTrainingEditor"><span class="quick-icon" aria-hidden="true">◉</span><span><strong>Entrenar</strong><small>Registrar sesión</small></span><span aria-hidden="true">↗</span></button>
@@ -185,6 +185,7 @@
       </section>
 
       <section id="view-progress" class="view">
+        <div class="zuna-hub-links" aria-label="Explorar tu evolución"><button data-view="goals">◎ Mis objetivos <span>↗</span></button><button data-view="lab">⚡ ZUNA LAB <span>↗</span></button><button data-view="missions">◇ Misiones <span>↗</span></button></div>
         <div class="page-heading"><p class="eyebrow">CADA DÍA CUENTA</p><h1>Tu <em>evolución.</em></h1><p class="muted">Mirá tendencias, no perfección.</p></div>
                 <section class="season-panel" aria-labelledby="seasonTitle">
           <div class="season-sky" aria-hidden="true"><span class="season-sun"></span><span class="season-peak"></span></div>
@@ -451,7 +452,7 @@
       </section>
     </main>
 
-    <nav class="bottom-nav" aria-label="Navegación principal"><button class="nav-item active" aria-current="page" data-view="home"><span>⌂</span><small>Inicio</small></button><button class="nav-item" data-view="missions"><span>◇</span><small>Misiones</small></button><button class="nav-item" data-view="goals"><span>◎</span><small>Objetivos</small></button><button class="nav-item" data-view="progress"><span>▥</span><small>Progreso</small></button><button class="nav-item" data-view="profile"><span>♙</span><small>Perfil</small></button></nav>
+    <nav class="bottom-nav" aria-label="Navegación principal"><button class="nav-item active" aria-current="page" data-view="home"><span>⌂</span><small>Hoy</small></button><button class="nav-item" data-view="movement"><span>◉</span><small>Entrenar</small></button><button class="nav-item" data-view="progress"><span>✦</span><small>Evolución</small></button><button class="nav-item" data-view="profile"><span>♙</span><small>Perfil</small></button></nav>
   </div>
 
   <div class="modal-backdrop" id="missionModal" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="missionModalTitle">
@@ -496,6 +497,6 @@
   <div id="zunaUpdateNotice" class="zuna-update-notice" hidden role="status"><span>✦ <strong>Hay una nueva versión</strong><small>Actualizá para ver las mejoras. Tu progreso se conserva.</small></span><button id="zunaUpdateApply" type="button">ACTUALIZAR ↗</button><button id="zunaUpdateDismiss" type="button" aria-label="Cerrar aviso">×</button></div>
   <div id="zunaReward" class="zuna-reward" hidden role="status" aria-live="polite"><span class="zuna-reward-star">✦</span><b id="zunaRewardTitle">MISIÓN COMPLETADA</b><strong id="zunaRewardXP">+20 XP</strong><small>Un paso más hacia tu evolución</small></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=2.25.0"></script>
+  <script src="app.js?v=2.26.0"></script>
 </body>
 </html>
