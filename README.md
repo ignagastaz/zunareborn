@@ -1,18 +1,15 @@
-# ZUNAREBORN 2.22 — ZUNA STATS
+# ZUNAREBORN 2.23 — ZUNA SEASONS
 
-Actualización acumulativa de 2.21, sin reiniciar datos.
+Temporadas opcionales de 30 o 66 días, disponibles en Progreso.
 
-## Novedades
-- Panel ZUNA STATS en Progreso, entre Evolución física y ZUNA COLLECTION.
-- Gráfico pentagonal original y cinco barras interactivas: Fuerza, Disciplina, Enfoque, Constancia, Conocimiento.
-- Índices de actividad de los últimos 30 días, calculados a partir de misiones, sesiones deportivas y desafíos de ZUNA LAB ya registrados.
-- Al tocar un atributo se explica el cálculo y se muestra el número de días.
-- No se inventan medidas de fuerza, inteligencia ni aptitud física: los valores son indicadores de participación, no pruebas de capacidad.
-- No se otorgan XP por abrir el panel; no se modifican recompensas ni logros.
-- Mismo almacenamiento `zunareborn.v2`; no hay nuevas migraciones destructivas.
-
-## Cálculo
-Cada atributo toma días distintos con actividad en los últimos 30 días, con tope 100: Fuerza (misión Físico o sesión deportiva, referencia 12 días), Disciplina (misión Disciplina, 12 días), Enfoque (ZUNA LAB, 10 días), Constancia (cualquier misión, 20 días), Conocimiento (misión Mentalidad, 12 días). El índice global es la media redondeada de los cinco.
+- Elegí 30 o 66 días e iniciá una temporada.
+- Visualizá el avance temporal, días con al menos una misión completada y los hitos 7/14/30/66.
+- Al finalizar, desbloqueá una insignia si registraste al menos una misión en el 70% de los días. Sin XP adicionales ni penalización por descansar.
+- Podés iniciar otra temporada después de terminar la anterior. Se conservan hasta 30 temporadas históricas en los datos locales.
+- No modifica el modo actual de la app ni reinicia misiones, XP, rachas o colecciones.
+- Migración no destructiva; el nuevo campo `season` queda incluido en la exportación JSON.
 
 ## Instalación
-Exportá una copia de seguridad desde Perfil, descomprimí el ZIP y reemplazá los 10 archivos de la raíz del repositorio GitHub. Tras la publicación, revisá Progreso → ZUNA STATS. Si la PWA del iPhone tarda en actualizarse, abrí primero la web en Safari. No borres la app ni sus datos.
+Exportá respaldo desde Perfil. Descomprimí el ZIP y subí los 10 archivos a la raíz del repositorio GitHub, reemplazando los anteriores. Esperá la publicación y revisá Progreso. En iPhone, si la PWA no se actualiza, abrí primero la versión web en Safari.
+
+La insignia es simbólica. La actividad se calcula con registros de misiones y no representa una medición clínica o deportiva.

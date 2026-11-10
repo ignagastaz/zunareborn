@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=2.22.0">
+  <link rel="stylesheet" href="styles.css?v=2.23.0">
 
   <style>
   /* Reparación crítica visible incluso si Safari conserva el CSS anterior */
@@ -175,6 +175,30 @@
 
       <section id="view-progress" class="view">
         <div class="page-heading"><p class="eyebrow">CADA DÍA CUENTA</p><h1>Tu <em>evolución.</em></h1><p class="muted">Mirá tendencias, no perfección.</p></div>
+                <section class="season-panel" aria-labelledby="seasonTitle">
+          <div class="season-sky" aria-hidden="true"><span class="season-sun"></span><span class="season-peak"></span></div>
+          <div class="season-content">
+            <p class="eyebrow">ZUNA SEASONS · TU PRÓXIMO CAPÍTULO</p>
+            <h2 id="seasonTitle">Una temporada. Un propósito.</h2>
+            <p class="season-description">Elegí un camino de 30 o 66 días. Cada día con una misión completada suma a tu recorrido.</p>
+            <div id="seasonSetup" class="season-setup">
+              <div class="season-options" role="group" aria-label="Duración de la temporada">
+                <button type="button" data-season-length="30" aria-pressed="true" class="selected">30 días</button>
+                <button type="button" data-season-length="66" aria-pressed="false">66 días</button>
+              </div>
+              <button type="button" id="seasonStart" class="gold-button full">INICIAR TEMPORADA ↗</button>
+            </div>
+            <div id="seasonActive" hidden>
+              <div class="season-metrics"><div><small>DÍA</small><strong id="seasonDay">1 / 30</strong></div><div><small>DÍAS ACTIVOS</small><strong id="seasonActiveDays">0</strong></div><div><small>AVANCE</small><strong id="seasonPercent">0%</strong></div></div>
+              <div class="season-progress" role="progressbar" aria-label="Avance temporal de la temporada" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="seasonProgress"><span id="seasonProgressFill"></span></div>
+              <div class="season-milestones" id="seasonMilestones"></div>
+              <p class="season-status" id="seasonStatus" role="status" aria-live="polite"></p>
+              <button type="button" id="seasonClaim" class="gold-button full" hidden>RECLAMAR INSIGNIA DE TEMPORADA</button>
+              <button type="button" id="seasonNext" class="outline-button full" hidden>COMENZAR OTRA TEMPORADA</button>
+            </div>
+          </div>
+          <p class="micro-note">Las temporadas son opcionales y no cambian tu modo actual. Los días de descanso no restan XP. Insignia por completar al menos una misión en el 70% de los días de la temporada.</p>
+        </section>
         <section class="core-panel" aria-labelledby="coreHeading">
           <div class="core-head"><div><p class="eyebrow">TU EVOLUCIÓN TOMA FORMA</p><h2 id="coreHeading">ZUNA <em>CORE.</em></h2></div><span class="core-rank" id="coreStageTag">DESPERTAR</span></div>
           <div class="core-figure core-cinematic" id="coreFigure" role="img" aria-label="Tu personaje ZUNA CORE">
@@ -459,6 +483,6 @@
     <button class="outline-button full" id="goReminderSettings">CONFIGURAR HORARIOS</button>
   </div></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="app.js?v=2.22.0"></script>
+  <script src="app.js?v=2.23.0"></script>
 </body>
 </html>

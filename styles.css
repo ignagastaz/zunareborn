@@ -278,3 +278,27 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .zstats-row:focus-visible{outline:3px solid #f3d18b;outline-offset:3px}
 .zstats-detail{font-size:12px;line-height:1.6;color:#e3c895;background:#201a12;border-left:3px solid #d9ad62;padding:12px;margin:14px 0}
 @media(max-width:370px){.zstats-section{padding:12px}.zstats-chart-label{font-size:9px}}
+
+/* ZUNA SEASONS 2.23 */
+.season-panel{position:relative;overflow:hidden;border:1px solid #a47b40;border-radius:20px;background:#15120e;margin:14px 0 22px;padding:0 0 16px}
+.season-sky{position:absolute;inset:0 0 auto;height:195px;overflow:hidden;background:radial-gradient(ellipse at 75% 20%,#8b592a77,transparent 62%),linear-gradient(#282015,#111)}
+.season-sun{position:absolute;right:14%;top:22px;width:95px;height:95px;border:1px solid #e2ae6388;border-radius:50%;box-shadow:0 0 45px #d4a25255}
+.season-peak{position:absolute;inset:45px 0 0;background:linear-gradient(135deg,#5a422a,#14110f);clip-path:polygon(0 100%,0 72%,25% 44%,40% 75%,66% 13%,89% 72%,100% 52%,100% 100%)}
+.season-content{position:relative;padding:80px 18px 0;background:linear-gradient(0deg,#15120e 20%,#15120edc 60%,transparent)}
+.season-content h2{font-family:Georgia,serif;color:#f4dfb8;font-size:24px;line-height:1.2;margin:7px 0}
+.season-description{font-size:12px;line-height:1.6;color:#c7b8a0;margin:10px 0 18px}
+.season-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.season-options button{border:1px solid #755b36;border-radius:12px;background:#211c15;color:#e4d2b2;padding:13px;min-height:44px}
+.season-options button.selected{background:#d4aa5c;color:#18110b;font-weight:700;border-color:#f0d18a}
+.season-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.season-metrics div{border:1px solid #54402b;background:#1d1914;border-radius:12px;padding:12px 5px;display:flex;flex-direction:column;align-items:center;gap:7px}
+.season-metrics small{font-size:9px;color:#bba88c;letter-spacing:.07em}.season-metrics strong{font-size:19px;color:#f0cf85}
+.season-progress{height:9px;background:#443727;border-radius:20px;overflow:hidden;margin:16px 0}
+.season-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#9c7130,#f4d58a);transition:width .3s}
+.season-milestones{display:flex;flex-wrap:wrap;gap:7px}.season-milestone{font-size:11px;padding:7px 9px;border:1px solid #55432c;border-radius:20px;color:#a99c86}
+.season-milestone.reached{color:#f0d28e;border-color:#b18c4d;background:#2d2417}
+.season-status{font-size:12px;line-height:1.6;color:#d9c4a2;margin:16px 0}
+.season-panel>.micro-note{margin:12px 18px 0}
+.season-panel button:focus-visible{outline:3px solid #ffe1a0;outline-offset:3px}
+.season-panel [hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){.season-progress span{transition:none}}

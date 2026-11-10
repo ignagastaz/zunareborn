@@ -470,7 +470,7 @@
     $('modeSetting').textContent=state.mode==='66'?'66 DÍAS':'PERMANENTE';$('modeDescription').textContent=state.mode==='66'?'66 días de enfoque y progreso':'Sin fecha de finalización';$('toggleMode').textContent=state.mode==='66'?'CAMBIAR A MODO PERMANENTE':'VOLVER AL PROGRAMA DE 66 DÍAS';
     $('todayLabel').textContent=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();$('greeting').textContent=(state.name?state.name+', ':'')+'un día a la vez. Sin excusas, sin perfección.';$('dailyQuote').textContent=quotes[new Date().getDate()%quotes.length];
     const wc=weeklyCount();$('weeklyProgressText').textContent=Math.min(wc,20)+' / 20';$('weeklyProgress').style.width=Math.min(100,wc/20*100)+'%';$('weeklyReward').textContent=state.weeklyRewards[weekKey()]?'RECOMPENSA OBTENIDA':'+150 XP';
-    renderNextMission();renderPillars();renderMissions();renderQuestWeekly();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderCollection();renderZStats();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();renderMemory();renderChallenge();renderCore();
+    renderNextMission();renderPillars();renderMissions();renderQuestWeekly();renderManageMissions();renderActivity();renderMonthlyCalendar();renderWeeklyInsights();renderHabitHistory();renderAchievements();renderCollection();renderZStats();renderPillarProgress();renderJournal();renderGoals();renderReminderInbox();renderReminderSettings();renderSport();renderNutrition();renderBodyTrend();renderLab();renderMemory();renderChallenge();renderCore();renderSeason();
   }
   function renderPillars(){const due=dueMissions(),done=doneIds();$('pillarList').innerHTML=Object.entries(categories).map(([key,c])=>{const ms=due.filter(m=>m.category===key),count=ms.filter(m=>done.includes(m.id)).length;return `<div class="pillar-row"><div class="pillar-icon">${c.icon}</div><div class="pillar-main"><b>${c.name}</b><small>${c.desc}</small></div><span class="pillar-value">${count}/${ms.length}</span></div>`}).join('')}
   function weeklyMissionCount(id){return weekDates().filter(d=>doneIds(d).includes(id)).length}
@@ -844,7 +844,7 @@
     clean.missions.forEach(m=>{m.days ||= []});
     return clean;
   }
-  $('importData').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.missions)||!imported.completions)throw Error();state=validateBackup(imported);migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();migrateNutrition();migrateCognitive();migrateCore();labReset();memoryReset();save();showToast('Copia restaurada')}catch{showToast('Archivo inválido')}e.target.value=''});
+  $('importData').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.missions)||!imported.completions)throw Error();state=validateBackup(imported);migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();migrateNutrition();migrateCognitive();migrateCore();migrateSeason();labReset();memoryReset();save();showToast('Copia restaurada')}catch{showToast('Archivo inválido')}e.target.value=''});
 
   // ZUNA LAB: minijuego local, sin servicios externos ni recompensas repetibles.
   function migrateCognitive(){
@@ -1036,6 +1036,73 @@
   });
 
 
+
+  // ZUNA SEASONS — calendario local, no modifica XP ni las misiones existentes.
+  let seasonSelectedLength=30;
+  function migrateSeason(){
+    const s=state.season;
+    if(!s||typeof s!=='object'||Array.isArray(s)){state.season={current:null,history:[]};return;}
+    const dateOK=d=>typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d)&&Number.isFinite(localDate(d).getTime())&&dateKey(localDate(d))===d;
+    const valid=x=>x&&typeof x==='object'&&[30,66].includes(x.length)&&dateOK(x.start)&&typeof x.claimed==='boolean';
+    state.season={current:valid(s.current)?{start:s.current.start,length:s.current.length,claimed:s.current.claimed}:null,
+      history:(Array.isArray(s.history)?s.history:[]).filter(valid).slice(-30).map(x=>({start:x.start,length:x.length,claimed:x.claimed}))};
+  }
+  migrateSeason();
+  function seasonCounts(s){
+    const elapsed=Math.max(0,daysBetween(s.start,isoToday()));
+    const passed=Math.min(s.length,elapsed+1);
+    let active=0;
+    for(let i=0;i<passed;i++){const d=addDays(s.start,i);if(doneIds(d).length)active++;}
+    return {elapsed,passed,active,finished:elapsed>=s.length-1,required:Math.ceil(s.length*.7)};
+  }
+  function renderSeason(){
+    if(!$('seasonSetup'))return;
+    const s=state.season.current,setup=$('seasonSetup'),active=$('seasonActive');
+    setup.hidden=!!s;active.hidden=!s;
+    document.querySelectorAll('[data-season-length]').forEach(b=>{
+      const selected=Number(b.dataset.seasonLength)===seasonSelectedLength;
+      b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected));
+    });
+    if(!s)return;
+    const v=seasonCounts(s),pct=Math.min(100,Math.round(v.passed/s.length*100));
+    $('seasonDay').textContent=v.passed+' / '+s.length;
+    $('seasonActiveDays').textContent=String(v.active);
+    $('seasonPercent').textContent=pct+'%';
+    $('seasonProgress').setAttribute('aria-valuenow',String(pct));
+    $('seasonProgressFill').style.width=pct+'%';
+    const milestones=[7,14,30,66].filter(n=>n<=s.length);
+    const holder=$('seasonMilestones');holder.replaceChildren();
+    for(const n of milestones){
+      const span=document.createElement('span');span.className='season-milestone'+(v.passed>=n?' reached':'');
+      span.textContent=(v.passed>=n?'✦ ':'◇ ')+n+' días';holder.append(span);
+    }
+    const eligible=v.finished&&v.active>=v.required;
+    $('seasonClaim').hidden=!eligible||s.claimed;
+    $('seasonNext').hidden=!v.finished;
+    $('seasonStatus').textContent=s.claimed?'¡Insignia conseguida! Tu temporada quedó registrada.':
+      !v.finished?'Llevás '+v.active+' días activos. Meta de insignia: '+v.required+' días con al menos una misión.':
+      eligible?'¡Temporada completada! Ya podés reclamar tu insignia.':
+      'Terminó la temporada. Registraste '+v.active+' días activos de '+v.required+' necesarios para la insignia. Podés empezar otra cuando quieras.';
+  }
+  document.querySelectorAll('[data-season-length]').forEach(b=>b.addEventListener('click',()=>{
+    seasonSelectedLength=Number(b.dataset.seasonLength);renderSeason();
+  }));
+  $('seasonStart').addEventListener('click',()=>{
+    if(state.season.current)return;
+    state.season.current={start:isoToday(),length:seasonSelectedLength,claimed:false};
+    save();showToast('¡Tu temporada empezó!');
+  });
+  $('seasonClaim').addEventListener('click',()=>{
+    const s=state.season.current;if(!s||s.claimed)return;
+    const v=seasonCounts(s);if(!v.finished||v.active<v.required)return;
+    s.claimed=true;save();showToast('¡Insignia de temporada desbloqueada!');
+  });
+  $('seasonNext').addEventListener('click',()=>{
+    const s=state.season.current;if(!s||!seasonCounts(s).finished)return;
+    state.season.history.push({...s});state.season.history=state.season.history.slice(-30);
+    state.season.current=null;save();
+  });
+
   // ZUNA CORE 2.18 — evolución visual y selección de personaje, sin penalizar XP.
   function migrateCore(){
     const raw=state.core&&typeof state.core==='object'&&!Array.isArray(state.core)?state.core:{};
@@ -1090,7 +1157,7 @@
     state.core.gender=b.dataset.coreGender;save();showToast('Personaje actualizado');
   }));
 
-  $('resetData').addEventListener('click',()=>{if(confirm('¿Borrar todo tu progreso?')&&confirm('Esta acción no se puede deshacer. ¿Continuar?')){state=fresh();migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();migrateNutrition();migrateCognitive();migrateCore();labReset();memoryReset();saveRaw();render();openModal('onboardingModal')}});
+  $('resetData').addEventListener('click',()=>{if(confirm('¿Borrar todo tu progreso?')&&confirm('Esta acción no se puede deshacer. ¿Continuar?')){state=fresh();migrateMissionData();migrateReminders();migrateSport();migrateTrainingPlan();migrateNutrition();migrateCognitive();migrateCore();migrateSeason();labReset();memoryReset();saveRaw();render();openModal('onboardingModal')}});
   $('finishOnboarding').addEventListener('click',()=>{state.name=$('onboardingName').value.trim()||'Usuario';state.onboarded=true;save();closeModal('onboardingModal');showToast('Bienvenido a ZUNAREBORN')});
   if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
   // Si la app permanece abierta durante la medianoche, actualizamos el estado al volver a ella.
